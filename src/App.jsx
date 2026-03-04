@@ -95,13 +95,4 @@ export default function App() {
     </div>
   );
 
-  import Footer from './Footer';
-
-// At the end of JSX, wrap with Footer
-return (
-  <div>
-    {renderContent()}
-    <Footer />
-  </div>
-);
 }
