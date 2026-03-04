@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { 
-  LayoutDashboard, Package, ShoppingCart, Settings, CheckCircle2, Truck, Plus, Minus,
-  Edit, TrendingUp, CreditCard, Menu, LogOut, Lock, User, Key, Send, Wallet, Info, Users,
-  Eye, X, ChevronLeft, Calendar, DollarSign, PieChart, ArrowUpRight, ArrowDownRight, Camera,
-  Image as ImageIcon, Trash2, Phone
+  LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, 
+  Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart, 
+  ArrowUpRight, ArrowDownRight, Camera, Image as ImageIcon, Trash2, Phone,
+  Plus
 } from 'lucide-react';
-import { formatIDR, UI_RADIUS, MENU_OPTIONS, INITIAL_SETTINGS } from './utils';
+import { formatIDR, UI_RADIUS, MENU_OPTIONS } from './utils';
 
 // --- MODAL PRODUK ---
 function ProductModal({ product, onClose, onSave }) {
@@ -37,7 +37,7 @@ function ProductModal({ product, onClose, onSave }) {
     }
     onSave({
       ...formData,
-      id: product?.id || Date.now(),
+      id: product?.id,
       cost: Number(formData.cost),
       price: Number(formData.price),
       stock: Number(formData.stock)
@@ -168,6 +168,117 @@ function ProductModal({ product, onClose, onSave }) {
   );
 }
 
+// --- MODAL USER ---
+function UserModal({ user, onClose, onSave }) {
+  const [formData, setFormData] = useState(user || {
+    name: '',
+    username: '',
+    password: '',
+    permissions: ['dashboard', 'transactions', 'products', 'finance', 'settings', 'users']
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.username || !formData.password) {
+      alert("Mohon lengkapi semua field!");
+      return;
+    }
+    onSave({
+      ...formData,
+      id: user?.id || Date.now()
+    });
+  };
+
+  const togglePermission = (perm) => {
+    setFormData({
+      ...formData,
+      permissions: formData.permissions.includes(perm)
+        ? formData.permissions.filter(p => p !== perm)
+        : [...formData.permissions, perm]
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className={`bg-white w-full max-w-lg ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300`}>
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+          <h3 className="font-bold text-slate-900">{user ? 'Edit User' : 'Tambah User Baru'}</h3>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
+            <input 
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              placeholder="Nama Lengkap" 
+              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Username</label>
+            <input 
+              required
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              placeholder="Username" 
+              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Password</label>
+            <input 
+              required
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              placeholder="Password" 
+              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+            />
+          </div>
+
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <p className="text-[10px] font-bold text-slate-400 uppercase">Hak Akses Modul</p>
+            <div className="grid grid-cols-2 gap-3">
+              {['dashboard', 'transactions', 'products', 'finance', 'settings', 'users'].map(perm => (
+                <label key={perm} className="flex items-center gap-2 cursor-pointer group">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.permissions.includes(perm)}
+                    onChange={() => togglePermission(perm)}
+                    className="w-4 h-4 accent-blue-600 rounded" 
+                  />
+                  <span className="text-xs text-slate-600 font-medium group-hover:text-blue-600 transition-colors capitalize">{perm}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-4 flex gap-3">
+            <button 
+              type="button"
+              onClick={onClose}
+              className={`flex-1 py-3.5 bg-slate-100 text-slate-600 ${UI_RADIUS.inner} font-bold text-sm hover:bg-slate-200 transition-all`}
+            >
+              Batal
+            </button>
+            <button 
+              type="submit"
+              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
+            >
+              Simpan User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // --- FINANCE VIEW ---
 function FinanceView({ transactions, products }) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -279,7 +390,7 @@ function FinanceView({ transactions, products }) {
                     {s.profit > 0 ? (
                       <div className="flex items-center justify-end text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[10px] font-bold uppercase">Profit</span></div>
                     ) : (
-                      <div className="flex items-center justify-end text-slate-300 gap-1"><Minus size={14} /></div>
+                      <div className="flex items-center justify-end text-slate-300 gap-1">-</div>
                     )}
                   </td>
                 </tr>
@@ -293,7 +404,7 @@ function FinanceView({ transactions, products }) {
 }
 
 // --- TRANSACTION LIST ---
-function TransactionList({ transactions, onDetail, updateStatus, full = false }) {
+function TransactionList({ transactions, onDetail, updateStatus }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
@@ -369,26 +480,37 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 }
 
 // --- MAIN ADMIN LAYOUT ---
-export default function AdminDashboard({ adminTab, setAdminTab, products, setProducts, users, setUsers, settings, setSettings, mobileMenuOpen, setMobileMenuOpen, handleLogout, onCustomerView, transactions, updateTransactionStatus }) {
+export default function AdminDashboard({ 
+  adminTab, setAdminTab, products, saveProduct, deleteProduct,
+  users, setUsers, settings, saveSettings, mobileMenuOpen, setMobileMenuOpen, 
+  handleLogout, onCustomerView, transactions, updateTransactionStatus 
+}) {
   const [selectedTx, setSelectedTx] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
 
-  const saveProduct = (productData) => {
-    if (editingProduct) {
-      setProducts(prev => prev.map(p => p.id === editingProduct.id ? productData : p));
-    } else {
-      setProducts(prev => [...prev, productData]);
-    }
+  const handleProductSave = (productData) => {
+    saveProduct(productData);
     setEditingProduct(null);
     setIsAddingProduct(false);
   };
 
-  const deleteProduct = (id) => {
-    if (confirm("Hapus produk ini?")) {
-      setProducts(prev => prev.filter(p => p.id !== id));
+  const handleUserSave = (userData) => {
+    if (editingUser) {
+      // Update existing user
+      setUsers(prev => prev.map(u => u.id === editingUser.id ? userData : u));
+    } else {
+      // Add new user
+      setUsers(prev => [...prev, userData]);
     }
+    setEditingUser(null);
+    setIsAddingUser(false);
+  };
+
+  const handleSettingsSave = () => {
+    saveSettings(settings);
   };
 
   return (
@@ -405,7 +527,7 @@ export default function AdminDashboard({ adminTab, setAdminTab, products, setPro
               'ShoppingCart': ShoppingCart,
               'Package': Package,
               'DollarSign': DollarSign,
-              'Users': Users,
+              'Users': User,
               'Settings': Settings
             };
             const IconComponent = iconMap[m.icon];
@@ -452,7 +574,7 @@ export default function AdminDashboard({ adminTab, setAdminTab, products, setPro
 
         {adminTab === 'transactions' && (
           <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 overflow-hidden`}>
-            <TransactionList transactions={transactions} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} full />
+            <TransactionList transactions={transactions} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
           </div>
         )}
 
@@ -521,18 +643,29 @@ export default function AdminDashboard({ adminTab, setAdminTab, products, setPro
             <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm`}>
               <div className="flex justify-between items-center mb-8">
                 <h3 className="font-bold text-slate-800 text-sm">Kelola Akses Admin</h3>
-                <button onClick={() => setIsAddingUser(true)} className={`px-4 py-2 bg-blue-600 text-white text-xs font-bold ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20`}>+ Tambah User</button>
+                <button 
+                  onClick={() => setIsAddingUser(true)}
+                  className={`px-4 py-2 bg-blue-600 text-white text-xs font-bold ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
+                >
+                  <Plus size={16} /> Tambah User
+                </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {users.map(u => (
                   <div key={u.id} className={`p-5 border border-slate-100 ${UI_RADIUS.inner} bg-slate-50/50 flex items-center justify-between`}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className={`w-10 h-10 bg-white shadow-sm ${UI_RADIUS.inner} flex items-center justify-center text-slate-400`}><User size={20} /></div>
-                      <div>
+                      <div className="flex-1">
                         <p className="font-bold text-slate-800 text-sm">{u.name}</p>
                         <p className="text-[10px] text-slate-400 font-medium">@{u.username}</p>
                       </div>
                     </div>
+                    <button 
+                      onClick={() => setEditingUser(u)}
+                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
+                    >
+                      <Edit size={16} />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -570,6 +703,12 @@ export default function AdminDashboard({ adminTab, setAdminTab, products, setPro
                   </div>
                 </div>
               </div>
+              <button 
+                onClick={handleSettingsSave}
+                className={`w-full py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
+              >
+                Simpan Pengaturan
+              </button>
             </div>
           </div>
         )}
@@ -580,7 +719,16 @@ export default function AdminDashboard({ adminTab, setAdminTab, products, setPro
         <ProductModal 
           product={editingProduct} 
           onClose={() => { setEditingProduct(null); setIsAddingProduct(false); }}
-          onSave={saveProduct}
+          onSave={handleProductSave}
+        />
+      )}
+
+      {/* Modal CRUD User */}
+      {(isAddingUser || editingUser) && (
+        <UserModal 
+          user={editingUser} 
+          onClose={() => { setEditingUser(null); setIsAddingUser(false); }}
+          onSave={handleUserSave}
         />
       )}
 
@@ -626,34 +774,6 @@ export default function AdminDashboard({ adminTab, setAdminTab, products, setPro
             <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
               <button onClick={() => setSelectedTx(null)} className={`px-6 py-2.5 font-bold text-slate-600 text-xs hover:bg-slate-100 rounded-lg`}>Tutup</button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {isAddingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className={`bg-white w-full max-w-md ${UI_RADIUS.outer} shadow-2xl p-8 animate-in zoom-in duration-300`}>
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="font-bold text-slate-900">Tambah Admin Baru</h3>
-              <button onClick={() => setIsAddingUser(false)} className="text-slate-400"><X size={20} /></button>
-            </div>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsAddingUser(false); }}>
-              <input placeholder="Nama Lengkap" className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-medium`} />
-              <input placeholder="Username" className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-medium`} />
-              <input placeholder="Password" type="password" className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-medium`} />
-              <div className="space-y-3 pt-2">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Hak Akses Modul</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {MENU_OPTIONS.map(m => (
-                    <label key={m.id} className="flex items-center gap-2 cursor-pointer group">
-                      <input type="checkbox" defaultChecked className="w-4 h-4 accent-blue-600 rounded" />
-                      <span className="text-xs text-slate-600 font-medium group-hover:text-blue-600 transition-colors">{m.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <button type="submit" className={`w-full py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm mt-6 shadow-lg shadow-blue-500/20`}>Simpan User</button>
-            </form>
           </div>
         </div>
       )}
