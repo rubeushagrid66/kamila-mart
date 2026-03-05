@@ -1022,6 +1022,9 @@ export default function AdminDashboard({
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [visibleTransactions, setVisibleTransactions] = useState(20);
+  const [visibleProducts, setVisibleProducts] = useState(20);
+  const [visibleUsers, setVisibleUsers] = useState(20);
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
 
   const handleProductSave = (productData) => {
@@ -1206,7 +1209,17 @@ export default function AdminDashboard({
                   </button>
                 </div>
               </div>
-              <TransactionList transactions={filteredTransactions} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
+              <TransactionList transactions={filteredTransactions.slice(0, visibleTransactions)} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
+              {filteredTransactions.length > visibleTransactions && (
+                <div className="flex justify-center pt-6">
+                  <button
+                    onClick={() => setVisibleTransactions(prev => prev + 20)}
+                    className={`px-8 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest ${UI_RADIUS.inner} hover:bg-slate-100 active:scale-95 transition-all shadow-sm`}
+                  >
+                    Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1222,7 +1235,7 @@ export default function AdminDashboard({
                 </button>
               </div>
               <div className="grid grid-cols-1 gap-4 md:hidden">
-                {products.map(p => (
+                {products.slice(0, visibleProducts).map(p => (
                   <div key={p.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
                     <div className="flex justify-between items-start">
                       <div>
@@ -1287,7 +1300,7 @@ export default function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {products.map(p => (
+                    {products.slice(0, visibleProducts).map(p => (
                       <tr key={p.id} className={`text-sm hover:bg-slate-50/50 group transition-colors ${(p.status === 'tidak_aktif' || (!p.status && p.isArchived)) ? 'bg-slate-50/50' : ''}`}>
                         <td className="py-4">
                           <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-1 rounded">{p.customId || 'NO-ID'}</span>
@@ -1329,6 +1342,16 @@ export default function AdminDashboard({
                   </tbody>
                 </table>
               </div>
+              {products.length > visibleProducts && (
+                <div className="flex justify-center pt-8">
+                  <button
+                    onClick={() => setVisibleProducts(prev => prev + 20)}
+                    className={`px-8 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest ${UI_RADIUS.inner} hover:bg-slate-100 active:scale-95 transition-all shadow-sm`}
+                  >
+                    Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1349,7 +1372,7 @@ export default function AdminDashboard({
                   <p className="text-slate-400 text-xs py-8 text-center">Belum ada user. Klik tombol "Tambah User" untuk membuat user baru.</p>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {users.map(u => (
+                    {users.slice(0, visibleUsers).map(u => (
                       <div key={u.id} className={`p-5 border border-slate-100 ${UI_RADIUS.inner} bg-slate-50/50 flex flex-col`}>
                         <div className="flex items-center gap-3 mb-4">
                           <div className={`w-10 h-10 bg-white shadow-sm ${UI_RADIUS.inner} flex items-center justify-center text-slate-400 shrink-0`}><User size={20} /></div>
@@ -1389,6 +1412,16 @@ export default function AdminDashboard({
                         </div>
                       </div>
                     ))}
+                  </div>
+                )}
+                {users.length > visibleUsers && (
+                  <div className="flex justify-center pt-8">
+                    <button
+                      onClick={() => setVisibleUsers(prev => prev + 20)}
+                      className={`px-8 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest ${UI_RADIUS.inner} hover:bg-slate-100 active:scale-95 transition-all shadow-sm`}
+                    >
+                      Muat Lebih Banyak ({users.length - visibleUsers} Tersisa)
+                    </button>
                   </div>
                 )}
               </div>
