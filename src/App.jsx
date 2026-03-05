@@ -123,6 +123,14 @@ function AppContent() {
 
       await loadPublicData();
 
+      // Fetch users list early for login fallback
+      try {
+        const usersSnap = await getDocs(collection(db, 'users'));
+        if (mounted) setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching users for fallback:", err);
+      }
+
       unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
           if (mounted) {
@@ -130,16 +138,12 @@ function AppContent() {
             setCustomUser(null);
           }
 
-          // Legacy load for products/users (static-ish)
-          const usersSnap = await getDocs(collection(db, 'users'));
-          if (mounted) setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-
           // Setup real-time listener for transactions
           const unsubTx = setupRealtimeTransactions();
           const originalUnsub = unsubscribe;
           unsubscribe = () => {
-            originalUnsub();
             unsubTx();
+            originalUnsub();
           };
         } else {
           if (mounted && !customUser) {
