@@ -429,6 +429,197 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
   );
 }
 
+// --- TRANSACTION MODAL ---
+function TransactionModal({ onClose, onSave, products }) {
+  const [formData, setFormData] = useState({
+    customer: '',
+    phone: '',
+    address: '',
+    items: [],
+    method: 'cod',
+    date: new Date().toISOString(),
+    paymentStatus: 'menunggu',
+    shippingStatus: 'menunggu'
+  });
+
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [quantity, setQuantity] = useState(1);
+
+  const addItem = () => {
+    if (!selectedProduct) return;
+    const product = products.find(p => p.id === selectedProduct);
+    if (!product) return;
+
+    setFormData(prev => ({
+      ...prev,
+      items: [...prev.items, {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        qty: quantity
+      }]
+    }));
+    setSelectedProduct('');
+    setQuantity(1);
+  };
+
+  const removeItem = (idx) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.filter((_, i) => i !== idx)
+    }));
+  };
+
+  const total = formData.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.customer || !formData.phone || formData.items.length === 0) {
+      alert("Mohon lengkapi data pelanggan dan item!");
+      return;
+    }
+
+    onSave({
+      ...formData,
+      total,
+      time: new Date(formData.date).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className={`bg-white w-full max-w-2xl ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto`}>
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+          <h3 className="font-bold text-slate-900">Tambah Transaksi Manual</h3>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Pelanggan</label>
+              <input
+                required
+                value={formData.customer}
+                onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
+                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm`}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp</label>
+              <input
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm`}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Alamat</label>
+            <textarea
+              required
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm resize-none`}
+              rows="2"
+            />
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Item Transaksi</p>
+            <div className="flex gap-2">
+              <select
+                value={selectedProduct}
+                onChange={(e) => setSelectedProduct(e.target.value)}
+                className={`flex-1 p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
+              >
+                <option value="">Pilih Produk</option>
+                {products.map(p => (
+                  <option key={p.id} value={p.id}>{p.name} - {formatIDR(p.price)}</option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className={`w-20 p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-bold text-center`}
+              />
+              <button
+                type="button"
+                onClick={addItem}
+                className={`p-3 bg-blue-600 text-white ${UI_RADIUS.inner} hover:bg-blue-700 transition-all`}
+              >
+                <Plus size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {formData.items.map((item, idx) => (
+                <div key={idx} className={`flex justify-between items-center p-3 bg-slate-50 ${UI_RADIUS.inner} text-sm`}>
+                  <div className="flex-1">
+                    <span className="font-bold text-slate-800">{item.qty}x</span> {item.name}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-bold text-blue-600">{formatIDR(item.price * item.qty)}</span>
+                    <button type="button" onClick={() => removeItem(idx)} className="text-slate-300 hover:text-red-500"><X size={16} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Metode</label>
+              <select
+                value={formData.method}
+                onChange={(e) => setFormData({ ...formData, method: e.target.value })}
+                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
+              >
+                <option value="cod">COD</option>
+                <option value="transfer">Transfer</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label>
+              <input
+                type="datetime-local"
+                value={formData.date.slice(0, 16)}
+                onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value).toISOString() })}
+                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
+              />
+            </div>
+          </div>
+
+          <div className={`p-4 bg-blue-50 ${UI_RADIUS.inner} flex justify-between items-center`}>
+            <span className="font-bold text-blue-900/50 text-xs uppercase tracking-widest">Total Bayar</span>
+            <span className="text-xl font-black text-blue-600">{formatIDR(total)}</span>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className={`flex-1 py-3.5 bg-slate-100 text-slate-600 ${UI_RADIUS.inner} font-bold text-sm hover:bg-slate-200 transition-all`}
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
+            >
+              Simpan Transaksi
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // --- STAT CARD ---
 function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }) {
   return (
@@ -446,13 +637,14 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 export default function AdminDashboard({
   adminTab, setAdminTab, products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, updateTransactionStatus, currentUserData
+  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, updateTransactionStatus, currentUserData
 }) {
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [isAddingTransaction, setIsAddingTransaction] = useState(false);
 
   const handleProductSave = (productData) => {
     saveProduct(productData);
@@ -464,6 +656,11 @@ export default function AdminDashboard({
     await saveUser(userData);
     setEditingUser(null);
     setIsAddingUser(false);
+  };
+
+  const handleTransactionSave = async (transactionData) => {
+    await saveTransaction(transactionData);
+    setIsAddingTransaction(false);
   };
 
   const handleDeleteUser = (userId) => {
@@ -478,6 +675,19 @@ export default function AdminDashboard({
   const filteredMenuOptions = MENU_OPTIONS.filter(m =>
     currentUserData?.permissions?.includes(m.id) || m.id === 'dashboard'
   );
+
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const monthsList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const yearsList = [2024, 2025, 2026];
+
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(t => {
+      const d = new Date(t.date);
+      return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+    });
+  }, [transactions, selectedMonth, selectedYear]);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#F1F5F9]">
@@ -540,8 +750,32 @@ export default function AdminDashboard({
           {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
 
           {adminTab === 'transactions' && (
-            <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 overflow-hidden`}>
-              <TransactionList transactions={transactions} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
+            <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 space-y-6`}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-50 pb-6">
+                <div className="flex items-center gap-3">
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    className="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 outline-none"
+                  >
+                    {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                  </select>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    className="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 outline-none"
+                  >
+                    {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+                <button
+                  onClick={() => setIsAddingTransaction(true)}
+                  className={`px-5 py-2.5 bg-blue-600 text-white text-xs font-black ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
+                >
+                  <Plus size={16} /> Tambah Transaksi
+                </button>
+              </div>
+              <TransactionList transactions={filteredTransactions} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
             </div>
           )}
 
@@ -725,6 +959,15 @@ export default function AdminDashboard({
           user={editingUser}
           onClose={() => { setEditingUser(null); setIsAddingUser(false); }}
           onSave={handleUserSave}
+        />
+      )}
+
+      {/* Manual Transaction Modal */}
+      {isAddingTransaction && (
+        <TransactionModal
+          onClose={() => setIsAddingTransaction(false)}
+          onSave={handleTransactionSave}
+          products={products}
         />
       )}
 
