@@ -1156,8 +1156,19 @@ export default function AdminDashboard({
                 <StatCard label="Total Pesanan" val={transactions.length} icon={TrendingUp} color="bg-emerald-50 text-emerald-600" />
               </div>
               <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm`}>
-                <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2 text-sm"><ShoppingCart size={16} className="text-blue-600" /> Pesanan Terbaru</h3>
-                {transactions.length === 0 ? <p className="text-slate-400 text-xs py-8 text-center">Belum ada transaksi.</p> : <TransactionList transactions={transactions.slice(0, 5)} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />}
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm"><ShoppingCart size={16} className="text-blue-600" /> Pesanan Terbaru</h3>
+                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 text-xs font-bold hover:underline">Lihat Selengkapnya</button>
+                </div>
+                {transactions.length === 0 ? (
+                  <p className="text-slate-400 text-xs py-8 text-center">Belum ada transaksi.</p>
+                ) : (
+                  <TransactionList
+                    transactions={[...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                    onDetail={setSelectedTx}
+                    updateStatus={updateTransactionStatus}
+                  />
+                )}
               </div>
             </div>
           )}
