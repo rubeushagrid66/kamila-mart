@@ -427,12 +427,10 @@ function AppContent() {
           }
         />
         <Route
-          path="/dashboard"
+          path="/dashboard/:tab"
           element={
             user ? (
               <AdminDashboard
-                adminTab={adminTab}
-                setAdminTab={setAdminTab}
                 products={products}
                 saveProduct={saveProduct}
                 deleteProduct={deleteProduct}
@@ -466,6 +464,7 @@ function AppContent() {
             )
           }
         />
+        <Route path="/dashboard" element={<Navigate to="/dashboard/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

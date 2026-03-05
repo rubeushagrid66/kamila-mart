@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User,
   Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
-  Plus, Download, FileText, Archive, EyeOff
+  Plus, Download, FileText, Archive, EyeOff, CheckCircle2
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS } from './utils';
 import Footer from './Footer';
@@ -431,6 +432,7 @@ function FinanceView({ transactions, products }) {
 function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings }) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [editingMonthFormula, setEditingMonthFormula] = useState(null);
+  const [editingFormula, setEditingFormula] = useState(false);
   const [tempFormula, setTempFormula] = useState({
     marbotPercent: settings?.marbotPercent || 60,
     internalPercent: settings?.internalPercent || 40
@@ -1006,11 +1008,15 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 
 // --- MAIN ADMIN LAYOUT ---
 export default function AdminDashboard({
-  adminTab, setAdminTab, products, saveProduct, deleteProduct,
+  products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
   handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, updateTransactionStatus,
   monthlyReports, saveMonthlyReport, currentUserData
 }) {
+  const { tab: adminTab = 'dashboard' } = useParams();
+  const navigate = useNavigate();
+  const setAdminTab = (newTab) => navigate(`/dashboard/${newTab}`);
+
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [isAddingUser, setIsAddingUser] = useState(false);
