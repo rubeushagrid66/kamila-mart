@@ -952,8 +952,8 @@ function TransactionModal({ onClose, onSave, products }) {
                 onChange={(e) => setFormData({ ...formData, method: e.target.value })}
                 className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
               >
-                <option value="cod">COD</option>
-                <option value="transfer">Transfer</option>
+                <option value="cod">Bayar di Tempat</option>
+                <option value="transfer">Transfer Bank</option>
               </select>
             </div>
             <div className="space-y-1">
@@ -1074,7 +1074,7 @@ export default function AdminDashboard({
       `"${t.address?.replace(/"/g, '""')}"`,
       `"${t.items.map(i => `${i.qty}x ${i.name}`).join(', ')}"`,
       t.total,
-      t.method,
+      t.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat',
       t.paymentStatus,
       t.shippingStatus,
       `"${(t.notes || '').replace(/"/g, '""')}"`
@@ -1493,34 +1493,20 @@ export default function AdminDashboard({
 
               <div>
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Metode Pembayaran</label>
-                <p className="text-xs font-bold text-slate-700 capitalize flex items-center gap-1.5"><CreditCard size={12} className="text-blue-500" /> {selectedTx.method || '-'}</p>
+                <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 capitalize">
+                  <CreditCard size={12} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat'}
+                </p>
               </div>
 
               <div>
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Item Dipesan</label>
                 <div className="space-y-2">
-                  {selectedTx.items.map((item, idx) => {
-                    const product = products.find(p => p.id === item.id);
-                    const currentStatus = product?.status || (product?.isArchived ? 'tidak_aktif' : 'aktif');
-                    return (
-                      <div key={idx} className="flex justify-between items-center text-sm py-3 border-b border-slate-50 last:border-0">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-medium text-slate-700">{item.qty}x {item.name}</span>
-                          {product && (
-                            <select
-                              value={currentStatus}
-                              onChange={(e) => saveProduct({ ...product, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
-                              className={`text-[9px] font-bold uppercase w-fit px-1.5 py-0.5 rounded border-0 outline-none cursor-pointer transition-colors ${currentStatus === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
-                            >
-                              <option value="aktif">Aktif</option>
-                              <option value="tidak_aktif">Tidak Aktif</option>
-                            </select>
-                          )}
-                        </div>
-                        <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
-                      </div>
-                    );
-                  })}
+                  {selectedTx.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm py-3 border-b border-slate-50 last:border-0">
+                      <span className="font-medium text-slate-700">{item.qty}x {item.name}</span>
+                      <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
