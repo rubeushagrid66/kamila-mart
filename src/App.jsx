@@ -60,7 +60,12 @@ function AppContent() {
     const setupRealtimeTransactions = () => {
       const q = query(collection(db, 'transactions'), orderBy('date', 'desc'));
       return onSnapshot(q, (snapshot) => {
-        const txList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const txList = snapshot.docs.map(doc => {
+          const data = doc.data();
+          // Normalize Firestore Timestamps
+          const date = data.date?.toDate ? data.date.toDate() : new Date(data.date);
+          return { id: doc.id, ...data, date };
+        });
         if (mounted) setTransactions(txList);
 
         if (!isFirstLoad) {

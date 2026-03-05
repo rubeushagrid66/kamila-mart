@@ -685,7 +685,9 @@ export default function AdminDashboard({
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
-      const d = new Date(t.date);
+      if (!t.date) return false;
+      const d = (t.date instanceof Date) ? t.date : new Date(t.date);
+      if (isNaN(d.getTime())) return false;
       return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     });
   }, [transactions, selectedMonth, selectedYear]);
