@@ -1028,6 +1028,7 @@ export default function AdminDashboard({
               'ShoppingCart': ShoppingCart,
               'Package': Package,
               'DollarSign': DollarSign,
+              'FileText': FileText,
               'Users': User,
               'Settings': Settings
             };
