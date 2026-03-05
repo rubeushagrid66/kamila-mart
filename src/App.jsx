@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit, increment } from 'firebase/firestore';
 import { auth, db } from './firebase-config';
 import Login from './Login';
 import Pemesanan from './Pemesanan';
@@ -257,8 +257,21 @@ function AppContent() {
         // Add new
         delete dataToSave.id; // Let Firebase generate
         const docRef = await addDoc(collection(db, 'transactions'), dataToSave);
+
+        // --- REDUCE STOCK ---
+        const stockUpdates = dataToSave.items.map(async (item) => {
+          if (item.id) {
+            const productRef = doc(db, 'products', item.id.toString());
+            await updateDoc(productRef, {
+              stock: increment(-item.qty)
+            });
+          }
+        });
+        await Promise.all(stockUpdates);
+        // --------------------
+
         setTransactions(prev => [...prev, { id: docRef.id, ...dataToSave }]);
-        toast.success('Transaksi berhasil ditambahkan!');
+        toast.success('Pesanan berhasil dibuat!');
       }
     } catch (error) {
       console.error('Error saving transaction:', error);
@@ -348,7 +361,7 @@ function AppContent() {
       if (foundUser) {
         setCustomUser(foundUser);
         setUser({ email: `${foundUser.username}@kamilamart.com` }); // Mock user object for routing
-        toast.success(`Login berhasil sebagai ${foundUser.name}!`);
+        toast.success(`Login berhasil sebagai ${foundUser.name} !`);
         navigate('/dashboard');
       } else {
         toast.error('Gagal login: Username atau Password salah');

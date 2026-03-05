@@ -7,7 +7,15 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
 
   const handleAddToCart = (product, change) => {
     const existing = cart.find(item => item.id === product.id);
-    const newQty = Math.max(0, (existing ? existing.qty : 0) + change);
+    const currentQty = existing ? existing.qty : 0;
+    const newQty = Math.max(0, currentQty + change);
+
+    // Check stock limit when increasing
+    if (change > 0 && newQty > product.stock) {
+      alert(`Stok tidak mencukupi. Stok tersedia: ${product.stock}`);
+      return;
+    }
+
     if (newQty <= 0) setCart(cart.filter(item => item.id !== product.id));
     else if (existing) setCart(cart.map(item => item.id === product.id ? { ...item, qty: newQty } : item));
     else setCart([...cart, { ...product, qty: newQty }]);
@@ -98,26 +106,36 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
           <div className="grid grid-cols-1 gap-2.5">
             {products.map(p => {
               const qty = cart.find(i => i.id === p.id)?.qty || 0;
+              const isOutOfStock = p.stock <= 0;
               return (
                 <div
                   key={p.id}
-                  className={`p-3 bg-white ${UI_RADIUS.outer} border transition-all flex items-center gap-4 ${qty > 0 ? 'border-blue-200 ring-2 ring-blue-50' : 'border-white shadow-sm hover:shadow-md'}`}
+                  className={`p-3 bg-white ${UI_RADIUS.outer} border transition-all flex items-center gap-4 ${qty > 0 ? 'border-blue-200 ring-2 ring-blue-50' : 'border-white shadow-sm hover:shadow-md'} ${isOutOfStock ? 'opacity-60 grayscale-[0.5]' : ''}`}
                 >
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-800 text-sm truncate">{p.name}</h3>
-                    <p className="text-blue-600 font-bold text-sm mt-0.5">{formatIDR(p.price)}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-blue-600 font-bold text-sm">{formatIDR(p.price)}</p>
+                      {isOutOfStock ? (
+                        <span className="text-[9px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-sm animate-pulse">Stok Habis</span>
+                      ) : (
+                        <span className={`text-[9px] font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-300'} uppercase tracking-tight`}>Stok: {p.stock}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className={`flex items-center bg-slate-50 ${UI_RADIUS.inner} border border-slate-100 p-0.5`}>
+                  <div className={`flex items-center bg-slate-50 ${UI_RADIUS.inner} border border-slate-100 p-0.5 ${isOutOfStock ? 'pointer-events-none' : ''}`}>
                     <button
                       onClick={() => handleAddToCart(p, -1)}
-                      className={`p-2 text-slate-400 hover:text-red-500 hover:bg-white ${UI_RADIUS.inner} transition-all`}
+                      disabled={isOutOfStock}
+                      className={`p-2 text-slate-400 hover:text-red-500 hover:bg-white ${UI_RADIUS.inner} transition-all disabled:opacity-30`}
                     >
                       <Minus size={14} />
                     </button>
                     <span className="w-8 text-center text-sm font-bold text-slate-800 tracking-tighter">{qty}</span>
                     <button
                       onClick={() => handleAddToCart(p, 1)}
-                      className={`p-2 text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all`}
+                      disabled={isOutOfStock || (qty >= p.stock)}
+                      className={`p-2 text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all disabled:opacity-30`}
                     >
                       <Plus size={14} />
                     </button>
