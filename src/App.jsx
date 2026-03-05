@@ -10,6 +10,9 @@ import toast, { Toaster } from 'react-hot-toast';
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [currentView, setCurrentView] = useState('store');
+  const [cart, setCart] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [adminTab, setAdminTab] = useState('dashboard');
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
@@ -29,6 +32,7 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        setCurrentView('admin');
         await fetchAllData();
       } else {
         setUser(null);
@@ -172,15 +176,20 @@ export default function App() {
   // TRANSACTION CRUD
   const saveTransaction = async (transactionData) => {
     try {
-      if (transactionData.id) {
+      const idStr = transactionData.id ? transactionData.id.toString() : null;
+      const dataToSave = { ...transactionData };
+      if (idStr) dataToSave.id = idStr;
+
+      if (idStr && transactions.some(t => t.id === idStr)) {
         // Update existing
-        await updateDoc(doc(db, 'transactions', transactionData.id), transactionData);
-        setTransactions(prev => prev.map(t => t.id === transactionData.id ? { id: transactionData.id, ...transactionData } : t));
+        await updateDoc(doc(db, 'transactions', idStr), dataToSave);
+        setTransactions(prev => prev.map(t => t.id === idStr ? dataToSave : t));
         toast.success('Transaksi berhasil diperbarui!');
       } else {
         // Add new
-        const docRef = await addDoc(collection(db, 'transactions'), transactionData);
-        setTransactions(prev => [...prev, { id: docRef.id, ...transactionData }]);
+        delete dataToSave.id; // Let Firebase generate
+        const docRef = await addDoc(collection(db, 'transactions'), dataToSave);
+        setTransactions(prev => [...prev, { id: docRef.id, ...dataToSave }]);
         toast.success('Transaksi berhasil ditambahkan!');
       }
     } catch (error) {
@@ -231,13 +240,24 @@ export default function App() {
   };
 
   // Auth functions
-  const handleLogin = async (email, password) => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    let email = fd.get('username');
+    const password = fd.get('password');
+
+    // Add domain if they only typed username (since Firebase requires email)
+    if (email && !email.includes('@')) {
+      email = `${email}@kamilamart.com`;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      setCurrentView('admin');
       toast.success('Login berhasil!');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('Email atau password salah');
+      toast.error('Gagal login: Periksa username/email dan password');
     }
   };
 
@@ -245,6 +265,7 @@ export default function App() {
     try {
       await signOut(auth);
       setUser(null);
+      setCurrentView('store');
       setAdminTab('dashboard');
       toast.success('Logout berhasil!');
     } catch (error) {
@@ -255,8 +276,53 @@ export default function App() {
 
   const onCustomerView = () => {
     setMobileMenuOpen(false);
-    // Switch to customer view
-    setUser(null);
+    setCurrentView('store');
+  };
+
+  const renderContent = () => {
+    if (currentView === 'store') {
+      return (
+        <Pemesanan
+          settings={settings} products={products} cart={cart}
+          setCart={setCart} showSuccess={showSuccess} setShowSuccess={setShowSuccess}
+          onAdminClick={() => setCurrentView('login')}
+          onNewTransaction={saveTransaction}
+        />
+      );
+    }
+
+    if (currentView === 'login') {
+      return <Login onLogin={handleLogin} onBack={() => setCurrentView('store')} />;
+    }
+
+    return (
+      <AdminDashboard
+        adminTab={adminTab}
+        setAdminTab={setAdminTab}
+        products={products}
+        saveProduct={saveProduct}
+        deleteProduct={deleteProduct}
+        users={users}
+        setUsers={(callback) => {
+          if (typeof callback === 'function') {
+            setUsers(callback);
+          } else {
+            setUsers(callback);
+          }
+        }}
+        settings={settings}
+        setSettings={setSettings}
+        saveSettings={saveSettings}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        handleLogout={handleLogout}
+        onCustomerView={onCustomerView}
+        transactions={transactions}
+        saveTransaction={saveTransaction}
+        deleteTransaction={deleteTransaction}
+        updateTransactionStatus={updateTransactionStatus}
+      />
+    );
   };
 
   if (loading) {
@@ -273,37 +339,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Toaster position="top-center" />
-
-      {!user ? (
-        <Login onLogin={handleLogin} />
-      ) : (
-        <AdminDashboard
-          adminTab={adminTab}
-          setAdminTab={setAdminTab}
-          products={products}
-          saveProduct={saveProduct}
-          deleteProduct={deleteProduct}
-          users={users}
-          setUsers={(callback) => {
-            if (typeof callback === 'function') {
-              setUsers(callback);
-            } else {
-              setUsers(callback);
-            }
-          }}
-          settings={settings}
-          setSettings={setSettings}
-          saveSettings={saveSettings}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-          handleLogout={handleLogout}
-          onCustomerView={onCustomerView}
-          transactions={transactions}
-          saveTransaction={saveTransaction}
-          deleteTransaction={deleteTransaction}
-          updateTransactionStatus={updateTransactionStatus}
-        />
-      )}
+      {renderContent()}
     </div>
   );
 }
