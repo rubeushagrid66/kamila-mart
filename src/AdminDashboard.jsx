@@ -326,7 +326,44 @@ function FinanceView({ transactions, products }) {
           <PieChart size={18} className="text-blue-600" />
           <h4 className="text-sm font-bold text-slate-800">Rincian Laba Rugi Bulanan</h4>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile View: Cards */}
+        <div className="grid grid-cols-1 gap-0 self-stretch md:hidden divide-y divide-slate-50">
+          {stats.map((s, i) => (
+            <div key={i} className={`p-5 space-y-4 hover:bg-slate-50/30 transition-colors ${s.profit > 0 ? '' : 'opacity-60'}`}>
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-slate-700 text-sm">{s.monthName}</span>
+                {s.profit > 0 ? (
+                  <div className="flex items-center text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[10px] font-bold uppercase tracking-tight">Profit</span></div>
+                ) : (
+                  <div className="text-slate-300 font-bold text-[10px]">-</div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status Transaksi</p>
+                  <div className="flex gap-2">
+                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold">{s.successCount} Sukses</span>
+                    <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-bold">{s.pendingCount} Menunggu</span>
+                  </div>
+                </div>
+                <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Keuntungan</p>
+                  <p className="font-black text-slate-900 text-[13px]">{formatIDR(s.profit)}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-1 px-1">
+                <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Omzet</span>
+                <span className="text-slate-600 font-bold text-sm tracking-tight">{formatIDR(s.revenue)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -370,62 +407,125 @@ function FinanceView({ transactions, products }) {
 // --- TRANSACTION LIST ---
 function TransactionList({ transactions, onDetail, updateStatus }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            <th className="pb-4">Tanggal</th>
-            <th className="pb-4">Pelanggan</th>
-            <th className="pb-4">Detail</th>
-            <th className="pb-4">Status Bayar</th>
-            <th className="pb-4">Pengiriman</th>
-            <th className="pb-4 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-50">
-          {transactions.map(t => (
-            <tr key={t.id} className="text-sm group">
-              <td className="py-4 text-slate-400 font-medium text-[11px]">{t.time}</td>
-              <td className="py-4">
-                <div className="space-y-0.5">
-                  <p className="font-bold text-slate-800 tracking-tight">{t.customer}</p>
-                  <p className="text-[10px] text-slate-400 font-medium">{t.phone}</p>
-                </div>
-              </td>
-              <td className="py-4">
-                <div className="flex flex-col">
-                  <span className="text-slate-500 text-xs font-medium">{t.items.length} item</span>
-                  <span className="text-blue-600 font-bold">{formatIDR(t.total)}</span>
-                </div>
-              </td>
-              <td className="py-4">
+    <div className="space-y-4">
+      {/* Mobile view: Cards */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {transactions.map(t => (
+          <div key={t.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.time}</p>
+                <p className="font-bold text-slate-800 text-base mt-1">{t.customer}</p>
+                <p className="text-xs text-slate-500 font-medium">{t.phone}</p>
+              </div>
+              <button onClick={() => onDetail(t)} className="p-2.5 bg-slate-50 text-blue-600 rounded-lg"><Eye size={18} /></button>
+            </div>
+
+            <div className="flex justify-between items-center bg-slate-50/50 p-3 rounded-lg border border-slate-50">
+              <div className="flex flex-col">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-tighter">Total</span>
+                <span className="text-blue-600 font-black text-lg">{formatIDR(t.total)}</span>
+              </div>
+              <span className="px-2 py-1 bg-white border border-slate-100 rounded text-[10px] font-bold text-slate-500 uppercase">{t.items.length} Item</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-slate-400 uppercase">Pembayaran</label>
                 <select
                   value={t.paymentStatus}
                   onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
-                  className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.paymentStatus === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+                  className={`w-full text-[10px] font-bold uppercase p-2 rounded border-0 outline-none cursor-pointer ${t.paymentStatus === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
                 >
                   <option value="menunggu">Menunggu</option>
                   <option value="sukses">Sukses</option>
                 </select>
-              </td>
-              <td className="py-4">
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-slate-400 uppercase">Pengiriman</label>
                 <select
                   value={t.shippingStatus}
                   onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
-                  className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.shippingStatus === 'sukses' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
+                  className={`w-full text-[10px] font-bold uppercase p-2 rounded border-0 outline-none cursor-pointer ${t.shippingStatus === 'sukses' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
                 >
                   <option value="menunggu">Menunggu</option>
                   <option value="dikirim">Dikirim</option>
                   <option value="sukses">Sampai</option>
                 </select>
-              </td>
-              <td className="py-4 text-right">
-                <button onClick={() => onDetail(t)} className="p-2 text-slate-300 hover:text-blue-600 transition-colors"><Eye size={18} /></button>
-              </td>
+              </div>
+            </div>
+          </div>
+        ))}
+        {transactions.length === 0 && (
+          <div className="text-center py-10 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+            <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop view: Table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              <th className="pb-4 px-2">Tanggal</th>
+              <th className="pb-4 px-2">Pelanggan</th>
+              <th className="pb-4 px-2">Detail</th>
+              <th className="pb-4 px-2">Status Bayar</th>
+              <th className="pb-4 px-2">Pengiriman</th>
+              <th className="pb-4 px-2 text-right">Aksi</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-slate-50">
+            {transactions.map(t => (
+              <tr key={t.id} className="text-sm group hover:bg-slate-50/50 transition-colors">
+                <td className="py-4 px-2 text-slate-400 font-medium text-[11px] whitespace-nowrap">{t.time}</td>
+                <td className="py-4 px-2">
+                  <div className="space-y-0.5 min-w-[120px]">
+                    <p className="font-bold text-slate-800 tracking-tight">{t.customer}</p>
+                    <p className="text-[10px] text-slate-400 font-medium">{t.phone}</p>
+                  </div>
+                </td>
+                <td className="py-4 px-2">
+                  <div className="flex flex-col whitespace-nowrap">
+                    <span className="text-slate-500 text-xs font-medium">{t.items.length} item</span>
+                    <span className="text-blue-600 font-bold">{formatIDR(t.total)}</span>
+                  </div>
+                </td>
+                <td className="py-4 px-2">
+                  <select
+                    value={t.paymentStatus}
+                    onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
+                    className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.paymentStatus === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+                  >
+                    <option value="menunggu">Menunggu</option>
+                    <option value="sukses">Sukses</option>
+                  </select>
+                </td>
+                <td className="py-4 px-2">
+                  <select
+                    value={t.shippingStatus}
+                    onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
+                    className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.shippingStatus === 'sukses' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
+                  >
+                    <option value="menunggu">Menunggu</option>
+                    <option value="dikirim">Dikirim</option>
+                    <option value="sukses">Sampai</option>
+                  </select>
+                </td>
+                <td className="py-4 px-2 text-right">
+                  <button onClick={() => onDetail(t)} className="p-2 text-slate-300 hover:text-blue-600 transition-colors"><Eye size={18} /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {transactions.length === 0 && (
+          <div className="text-center py-10">
+            <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -832,7 +932,49 @@ export default function AdminDashboard({
                   + Tambah Produk
                 </button>
               </div>
-              <div className="overflow-x-auto">
+              <div className="grid grid-cols-1 gap-4 md:hidden">
+                {products.map(p => (
+                  <div key={p.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-bold text-slate-800 text-base">{p.name}</p>
+                        <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold ${p.stock < 10 ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>{p.stock} Unit Tersedia</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setEditingProduct(p)}
+                          className="p-2.5 bg-slate-50 text-blue-600 rounded-lg"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => deleteProduct(p.id)}
+                          className="p-2.5 bg-slate-50 text-rose-600 rounded-lg"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 bg-slate-50/50 p-3 rounded-lg border border-slate-50">
+                      <div className="flex flex-col">
+                        <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Harga Jual</span>
+                        <span className="text-blue-600 font-black text-base">{formatIDR(p.price)}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Harga Beli</span>
+                        <span className="text-slate-600 font-bold text-base">{formatIDR(p.cost)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {products.length === 0 && (
+                  <div className="text-center py-10 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    <p className="text-slate-400 text-xs font-medium">Belum ada produk</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
