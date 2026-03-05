@@ -1,9 +1,5 @@
 # 🎯 START HERE - Complete Upload Guide
 
-You have everything you need to upload to GitHub **WITHOUT using terminal**.
-
----
-
 ## 📚 Reading Guide
 
 Read these files in this order:
