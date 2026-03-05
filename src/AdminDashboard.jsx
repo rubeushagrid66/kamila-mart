@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User,
   Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Image as ImageIcon, Trash2, Phone,
-  Plus
+  Plus, Download, FileText
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS } from './utils';
 import Footer from './Footer';
@@ -683,6 +683,37 @@ export default function AdminDashboard({
   const monthsList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   const yearsList = [2024, 2025, 2026];
 
+  const handleExportCSV = () => {
+    if (filteredTransactions.length === 0) {
+      toast.error("Tidak ada data untuk diekspor");
+      return;
+    }
+
+    const headers = ["Tanggal", "Pelanggan", "WhatsApp", "Alamat", "Items", "Total", "Metode", "Status Bayar", "Status Kirim", "Catatan"];
+    const rows = filteredTransactions.map(t => [
+      t.time,
+      t.customer,
+      t.phone,
+      `"${t.address?.replace(/"/g, '""')}"`,
+      `"${t.items.map(i => `${i.qty}x ${i.name}`).join(', ')}"`,
+      t.total,
+      t.method,
+      t.paymentStatus,
+      t.shippingStatus,
+      `"${(t.notes || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Laporan_Transaksi_${monthsList[selectedMonth]}_${selectedYear}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
       if (!t.date) return false;
@@ -771,12 +802,20 @@ export default function AdminDashboard({
                     {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
-                <button
-                  onClick={() => setIsAddingTransaction(true)}
-                  className={`px-5 py-2.5 bg-blue-600 text-white text-xs font-black ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
-                >
-                  <Plus size={16} /> Tambah Transaksi
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleExportCSV}
+                    className={`px-5 py-2.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold ${UI_RADIUS.inner} shadow-sm active:scale-95 transition-all flex items-center gap-2 hover:bg-slate-50`}
+                  >
+                    <Download size={16} /> Ekspor CSV
+                  </button>
+                  <button
+                    onClick={() => setIsAddingTransaction(true)}
+                    className={`px-5 py-2.5 bg-blue-600 text-white text-xs font-black ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
+                  >
+                    <Plus size={16} /> Tambah Transaksi
+                  </button>
+                </div>
               </div>
               <TransactionList transactions={filteredTransactions} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
             </div>
@@ -997,6 +1036,12 @@ export default function AdminDashboard({
                   <p className="text-xs text-slate-600 leading-relaxed font-medium">{selectedTx.address}</p>
                 </div>
               </div>
+
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Metode Pembayaran</label>
+                <p className="text-xs font-bold text-slate-700 capitalize flex items-center gap-1.5"><CreditCard size={12} className="text-blue-500" /> {selectedTx.method || '-'}</p>
+              </div>
+
               <div>
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Item Dipesan</label>
                 <div className="space-y-2">
@@ -1008,6 +1053,20 @@ export default function AdminDashboard({
                   ))}
                 </div>
               </div>
+
+              <div>
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Catatan Internal</label>
+                <div className="relative">
+                  <textarea
+                    defaultValue={selectedTx.notes || ''}
+                    onBlur={(e) => updateStatus(selectedTx.id, 'notes', e.target.value)}
+                    placeholder="Tulis catatan di sini... (otomatis tersimpan saat keluar)"
+                    className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-200 transition-all resize-none h-20 font-medium`}
+                  />
+                  <FileText size={14} className="absolute right-3 bottom-3 text-slate-300" />
+                </div>
+              </div>
+
               <div className={`p-4 bg-slate-50 ${UI_RADIUS.inner} flex justify-between items-center`}>
                 <span className="font-bold text-slate-500 text-xs">Total Pembayaran</span>
                 <span className="text-xl font-black text-blue-600 tracking-tighter">{formatIDR(selectedTx.total)}</span>
