@@ -1142,7 +1142,7 @@ export default function AdminDashboard({
           {adminTab === 'dashboard' && (
             <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <StatCard label="Produk Aktif" val={products.length} icon={Package} />
+                <StatCard label="Produk Aktif" val={products.filter(p => (p.status === 'aktif' || (!p.status && !p.isArchived))).length} icon={Package} />
                 <StatCard label="Total User" val={users.length} icon={User} />
                 <StatCard label="Total Pesanan" val={transactions.length} icon={TrendingUp} color="bg-emerald-50 text-emerald-600" />
               </div>
@@ -1229,7 +1229,7 @@ export default function AdminDashboard({
                       <div className="flex gap-1">
                         <select
                           value={p.status || (p.isArchived ? 'tidak_aktif' : 'aktif')}
-                          onChange={(e) => onSave({ ...p, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
+                          onChange={(e) => saveProduct({ ...p, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
                           className={`text-[10px] font-bold uppercase p-2 px-1.5 rounded-lg border-0 outline-none cursor-pointer transition-colors ${(p.status === 'aktif' || (!p.status && !p.isArchived)) ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
                         >
                           <option value="aktif">Aktif</option>
@@ -1298,7 +1298,7 @@ export default function AdminDashboard({
                           <div className="flex justify-end gap-1">
                             <select
                               value={p.status || (p.isArchived ? 'tidak_aktif' : 'aktif')}
-                              onChange={(e) => onSave({ ...p, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
+                              onChange={(e) => saveProduct({ ...p, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
                               className={`text-[10px] font-bold uppercase p-1.5 px-2 rounded-lg border-0 outline-none cursor-pointer transition-colors ${(p.status === 'aktif' || (!p.status && !p.isArchived)) ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
                             >
                               <option value="aktif">Aktif</option>
@@ -1493,12 +1493,28 @@ export default function AdminDashboard({
               <div>
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Item Dipesan</label>
                 <div className="space-y-2">
-                  {selectedTx.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm py-2 border-b border-slate-50 last:border-0">
-                      <span className="font-medium text-slate-700">{item.qty}x {item.name}</span>
-                      <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
-                    </div>
-                  ))}
+                  {selectedTx.items.map((item, idx) => {
+                    const product = products.find(p => p.id === item.id);
+                    const currentStatus = product?.status || (product?.isArchived ? 'tidak_aktif' : 'aktif');
+                    return (
+                      <div key={idx} className="flex justify-between items-center text-sm py-3 border-b border-slate-50 last:border-0">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-medium text-slate-700">{item.qty}x {item.name}</span>
+                          {product && (
+                            <select
+                              value={currentStatus}
+                              onChange={(e) => saveProduct({ ...product, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
+                              className={`text-[9px] font-bold uppercase w-fit px-1.5 py-0.5 rounded border-0 outline-none cursor-pointer transition-colors ${currentStatus === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
+                            >
+                              <option value="aktif">Aktif</option>
+                              <option value="tidak_aktif">Tidak Aktif</option>
+                            </select>
+                          )}
+                        </div>
+                        <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
