@@ -325,7 +325,12 @@ function AppContent() {
                 saveTransaction={saveTransaction}
                 deleteTransaction={deleteTransaction}
                 updateTransactionStatus={updateTransactionStatus}
-                currentUserData={users.find(u => u.username === user.email.split('@')[0]) || { permissions: ['dashboard'] }}
+                currentUserData={
+                  users.find(u => u.username === user.email.split('@')[0]) ||
+                  (user.email.split('@')[0] === 'admin'
+                    ? { name: 'Super Admin', permissions: ['dashboard', 'transactions', 'products', 'finance', 'users', 'settings'] }
+                    : { permissions: ['dashboard'] })
+                }
               />
             ) : (
               <Navigate to="/login" replace />
