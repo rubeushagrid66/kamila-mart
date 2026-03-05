@@ -38,6 +38,7 @@ function AppContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [monthlyReports, setMonthlyReports] = useState([]);
 
   // Sync customUser with localStorage
   useEffect(() => {
@@ -140,9 +141,17 @@ function AppContent() {
 
           // Setup real-time listener for transactions
           const unsubTx = setupRealtimeTransactions();
+
+          // Setup real-time listener for monthly reports
+          const unsubReports = onSnapshot(collection(db, 'monthly_reports'), (snapshot) => {
+            const reports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (mounted) setMonthlyReports(reports);
+          });
+
           const originalUnsub = unsubscribe;
           unsubscribe = () => {
             unsubTx();
+            unsubReports();
             originalUnsub();
           };
         } else {
@@ -285,6 +294,19 @@ function AppContent() {
     }
   };
 
+  // MONTHLY REPORTS
+  const saveMonthlyReport = async (reportId, data) => {
+    try {
+      const reportRef = doc(db, 'monthly_reports', reportId);
+      await setDoc(reportRef, data, { merge: true });
+      // State will be updated by onSnapshot if we set it up, 
+      // otherwise we update manually. Let's setup onSnapshot.
+    } catch (error) {
+      console.error('Error saving monthly report:', error);
+      toast.error('Gagal menyimpan laporan bulanan');
+    }
+  };
+
   // SETTINGS CRUD
   const saveSettings = async (settingsData) => {
     try {
@@ -410,6 +432,8 @@ function AppContent() {
                 saveTransaction={saveTransaction}
                 deleteTransaction={deleteTransaction}
                 updateTransactionStatus={updateTransactionStatus}
+                monthlyReports={monthlyReports}
+                saveMonthlyReport={saveMonthlyReport}
                 currentUserData={
                   customUser ||
                   users.find(u => u.username === user.email.split('@')[0]) ||

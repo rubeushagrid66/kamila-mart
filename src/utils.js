@@ -22,6 +22,7 @@ export const MENU_OPTIONS = [
   { id: 'transactions', label: 'Transaksi', icon: 'ShoppingCart' },
   { id: 'products', label: 'Produk & Stok', icon: 'Package' },
   { id: 'finance', label: 'Manajemen Keuangan', icon: 'DollarSign' },
+  { id: 'profit_report', label: 'Laporan Keuntungan', icon: 'FileText' },
   { id: 'users', label: 'Manajemen User', icon: 'Users' },
   { id: 'settings', label: 'Pengaturan', icon: 'Settings' },
 ];
@@ -33,9 +34,9 @@ export const UI_RADIUS = {
 };
 
 // Utility Functions
-export const formatIDR = (amount) => 
-  new Intl.NumberFormat('id-ID', { 
-    style: 'currency', 
-    currency: 'IDR', 
-    minimumFractionDigits: 0 
+export const formatIDR = (amount) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
   }).format(amount);

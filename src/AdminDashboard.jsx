@@ -404,6 +404,196 @@ function FinanceView({ transactions, products }) {
   );
 }
 
+// --- PROFIT REPORT VIEW ---
+function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings }) {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [editingFormula, setEditingFormula] = useState(false);
+  const [tempFormula, setTempFormula] = useState({
+    marbotPercent: settings?.marbotPercent || 60,
+    internalPercent: settings?.internalPercent || 40
+  });
+
+  const years = [2024, 2025, 2026];
+  const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+  const stats = useMemo(() => {
+    return months.map((monthName, index) => {
+      const monthTx = transactions.filter(t => {
+        const d = (t.date instanceof Date) ? t.date : new Date(t.date);
+        return d.getFullYear() === selectedYear && d.getMonth() === index;
+      });
+
+      const successTx = monthTx.filter(t => t.paymentStatus === 'sukses');
+      let profit = 0;
+
+      successTx.forEach(tx => {
+        tx.items.forEach(item => {
+          const productInfo = products.find(p => p.id === item.id);
+          const cost = productInfo ? productInfo.cost : (item.price * 0.8);
+          profit += (item.price - cost) * item.qty;
+        });
+      });
+
+      const reportId = `${selectedYear}-${index}`;
+      const savedData = monthlyReports.find(r => r.id === reportId) || {};
+
+      return {
+        id: reportId,
+        monthName,
+        profit,
+        status: savedData.status || 'menunggu',
+        notes: savedData.notes || ''
+      };
+    });
+  }, [transactions, selectedYear, products, monthlyReports]);
+
+  const handleSaveFormula = () => {
+    const total = Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent);
+    if (total > 100) {
+      alert('Total persentase tidak boleh melebihi 100%!');
+      return;
+    }
+    saveSettings({
+      ...settings,
+      marbotPercent: Number(tempFormula.marbotPercent),
+      internalPercent: Number(tempFormula.internalPercent)
+    });
+    setEditingFormula(false);
+  };
+
+  const marbotP = settings?.marbotPercent || 60;
+  const internalP = settings?.internalPercent || 40;
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-white shadow-sm`}>
+        <div>
+          <h3 className="text-sm font-bold text-slate-800">Laporan Pembagian Keuntungan</h3>
+          <p className="text-xs text-slate-400">Pembagian profit bersih antara Marbot dan Internal</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
+            <Calendar size={14} className="text-slate-400" />
+            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-transparent text-xs font-bold text-slate-700 py-1.5 outline-none">
+              {years.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+          <button
+            onClick={() => {
+              setTempFormula({ marbotPercent: marbotP, internalPercent: internalP });
+              setEditingFormula(true);
+            }}
+            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-bold text-xs ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all`}
+          >
+            <Settings size={14} /> Atur Formula
+          </button>
+        </div>
+      </div>
+
+      <div className={`bg-white ${UI_RADIUS.outer} border border-white shadow-sm overflow-hidden`}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                <th className="px-6 py-4">Bulan</th>
+                <th className="px-6 py-4">Total Profit</th>
+                <th className="px-6 py-4">Marbot ({marbotP}%)</th>
+                <th className="px-6 py-4">Internal ({internalP}%)</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Catatan</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {stats.map((s) => (
+                <tr key={s.id} className="text-sm hover:bg-slate-50/30 transition-colors">
+                  <td className="px-6 py-5 font-bold text-slate-700">{s.monthName}</td>
+                  <td className="px-6 py-5 font-black text-slate-900">{formatIDR(s.profit)}</td>
+                  <td className="px-6 py-5 text-emerald-600 font-bold">{formatIDR(s.profit * (marbotP / 100))}</td>
+                  <td className="px-6 py-5 text-blue-600 font-bold">{formatIDR(s.profit * (internalP / 100))}</td>
+                  <td className="px-6 py-5">
+                    <select
+                      value={s.status}
+                      onChange={(e) => saveMonthlyReport(s.id, { status: e.target.value })}
+                      className={`text-[10px] font-bold uppercase p-2 px-3 rounded-lg border-0 outline-none cursor-pointer ${s.status === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+                    >
+                      <option value="menunggu">Menunggu</option>
+                      <option value="sukses">Selesai</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-5 min-w-[200px]">
+                    <input
+                      className="w-full bg-slate-50 p-2 rounded-lg border border-slate-100 text-xs outline-none focus:border-blue-300 transition-all font-medium"
+                      placeholder="Add note..."
+                      value={s.notes}
+                      onChange={(e) => saveMonthlyReport(s.id, { notes: e.target.value })}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {editingFormula && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className={`bg-white w-full max-w-md ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 p-8 space-y-6`}>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-black text-slate-900 text-lg tracking-tight">Atur Formula Pembagian</h3>
+              <button onClick={() => setEditingFormula(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={20} /></button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                  <span>Marbot (%)</span>
+                  <span className="text-emerald-600">{tempFormula.marbotPercent}%</span>
+                </div>
+                <input
+                  type="range" min="0" max="100" step="5"
+                  value={tempFormula.marbotPercent}
+                  onChange={(e) => setTempFormula({ ...tempFormula, marbotPercent: Number(e.target.value) })}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                  <span>Internal (%)</span>
+                  <span className="text-blue-600">{tempFormula.internalPercent}%</span>
+                </div>
+                <input
+                  type="range" min="0" max="100" step="5"
+                  value={tempFormula.internalPercent}
+                  onChange={(e) => setTempFormula({ ...tempFormula, internalPercent: Number(e.target.value) })}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+              </div>
+
+              <div className={`p-4 rounded-xl flex justify-between items-center ${Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-rose-50 border border-rose-100 text-rose-600' : 'bg-blue-50 border border-blue-100 text-blue-600'}`}>
+                <span className="text-xs font-bold uppercase">Total Alokasi</span>
+                <span className="font-black text-lg">{Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent)}%</span>
+              </div>
+
+              {Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 && (
+                <p className="text-[10px] text-rose-500 font-bold text-center animate-pulse">* Total tidak boleh melebihi 100%!</p>
+              )}
+            </div>
+
+            <button
+              onClick={handleSaveFormula}
+              disabled={Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100}
+              className={`w-full py-4 text-white font-black text-sm ${UI_RADIUS.inner} shadow-lg transition-all ${Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'}`}
+            >
+              Simpan Formula
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- TRANSACTION LIST ---
 function TransactionList({ transactions, onDetail, updateStatus }) {
   return (
@@ -738,7 +928,8 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 export default function AdminDashboard({
   adminTab, setAdminTab, products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, updateTransactionStatus, currentUserData
+  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, updateTransactionStatus,
+  monthlyReports, saveMonthlyReport, currentUserData
 }) {
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
@@ -882,6 +1073,17 @@ export default function AdminDashboard({
           )}
 
           {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
+
+          {adminTab === 'profit_report' && (
+            <ProfitReportView
+              transactions={transactions}
+              products={products}
+              monthlyReports={monthlyReports}
+              saveMonthlyReport={saveMonthlyReport}
+              settings={settings}
+              saveSettings={saveSettings}
+            />
+          )}
 
           {adminTab === 'transactions' && (
             <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 space-y-6`}>
