@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { auth, db } from './firebase-config';
 import Login from './Login';
 import Pemesanan from './Pemesanan';
@@ -26,6 +26,7 @@ function AppContent() {
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   // Fetch data with timeouts and logical split
   useEffect(() => {
@@ -56,31 +57,67 @@ function AppContent() {
       }
     };
 
-    const loadPrivateData = async () => {
-      try {
-        const usersSnap = await fetchWithTimeout(collection(db, 'users'));
-        if (mounted) setUsers(usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    const setupRealtimeTransactions = () => {
+      const q = query(collection(db, 'transactions'), orderBy('date', 'desc'));
+      return onSnapshot(q, (snapshot) => {
+        const txList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        if (mounted) setTransactions(txList);
 
-        const transactionsSnap = await fetchWithTimeout(collection(db, 'transactions'));
-        if (mounted) setTransactions(transactionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      } catch (error) {
-        console.error('Error private data:', error);
-        if (error.message === 'timeout' && mounted) {
-          toast.error('Gagal memuat dashboard. Periksa koneksi atau Firestore Database.');
+        if (!isFirstLoad) {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              const newTx = change.doc.data();
+              // Notify
+              toast.success(`Pesanan Baru dari ${newTx.customer || 'Pelanggan'}!`, {
+                duration: 5000,
+                icon: '🛒'
+              });
+
+              if (Notification.permission === "granted") {
+                new Notification("Pesanan Baru!", {
+                  body: `${newTx.customer} baru saja memesan Rp ${newTx.total?.toLocaleString('id-ID')}`,
+                  icon: "/favicon.ico"
+                });
+              }
+            }
+          });
         }
-      }
+        if (mounted) setIsFirstLoad(false);
+      }, (error) => {
+        console.error('Realtime error:', error);
+      });
     };
 
     const init = async () => {
       setLoading(true);
-      await loadPublicData(); // Load storefront items regardless of auth
+
+      // Request notification permission
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+
+      await loadPublicData();
 
       unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
           if (mounted) setUser(currentUser);
-          await loadPrivateData(); // Load private admin items
+
+          // Legacy load for products/users (static-ish)
+          const usersSnap = await getDocs(collection(db, 'users'));
+          if (mounted) setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+          // Setup real-time listener for transactions
+          const unsubTx = setupRealtimeTransactions();
+          const originalUnsub = unsubscribe;
+          unsubscribe = () => {
+            originalUnsub();
+            unsubTx();
+          };
         } else {
-          if (mounted) setUser(null);
+          if (mounted) {
+            setUser(null);
+            setIsFirstLoad(true);
+          }
         }
         if (mounted) setLoading(false);
       });
