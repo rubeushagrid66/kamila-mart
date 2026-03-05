@@ -28,62 +28,72 @@ function AppContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Monitor auth state
+  // Fetch data with timeouts and logical split
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        await fetchAllData();
-      } else {
-        setUser(null);
-        setLoading(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+    let mounted = true;
+    let unsubscribe = () => { };
 
-  // Fetch all data from Firebase
-  const fetchAllData = async () => {
-    try {
+    const fetchWithTimeout = async (queryReq, ms = 8000) => {
+      return Promise.race([
+        getDocs(queryReq),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+      ]);
+    };
+
+    const loadPublicData = async () => {
+      try {
+        const productsSnap = await fetchWithTimeout(collection(db, 'products'));
+        if (mounted) setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+        const settingsSnap = await fetchWithTimeout(collection(db, 'settings'));
+        if (mounted && settingsSnap.docs.length > 0) {
+          setSettings(settingsSnap.docs[0].data());
+        }
+      } catch (error) {
+        console.error('Error public data:', error);
+        if (error.message === 'timeout' && mounted) {
+          toast.error('Pengambilan data lambat. Apakah Firestore Database sudah di-Create di Firebase Console?', { duration: 6000 });
+        }
+      }
+    };
+
+    const loadPrivateData = async () => {
+      try {
+        const usersSnap = await fetchWithTimeout(collection(db, 'users'));
+        if (mounted) setUsers(usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+        const transactionsSnap = await fetchWithTimeout(collection(db, 'transactions'));
+        if (mounted) setTransactions(transactionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (error) {
+        console.error('Error private data:', error);
+        if (error.message === 'timeout' && mounted) {
+          toast.error('Gagal memuat dashboard. Periksa koneksi atau Firestore Database.');
+        }
+      }
+    };
+
+    const init = async () => {
       setLoading(true);
+      await loadPublicData(); // Load storefront items regardless of auth
 
-      // Fetch products
-      const productsSnap = await getDocs(collection(db, 'products'));
-      const productsData = productsSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setProducts(productsData);
+      unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        if (currentUser) {
+          if (mounted) setUser(currentUser);
+          await loadPrivateData(); // Load private admin items
+        } else {
+          if (mounted) setUser(null);
+        }
+        if (mounted) setLoading(false);
+      });
+    };
 
-      // Fetch users
-      const usersSnap = await getDocs(collection(db, 'users'));
-      const usersData = usersSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setUsers(usersData);
+    init();
 
-      // Fetch transactions
-      const transactionsSnap = await getDocs(collection(db, 'transactions'));
-      const transactionsData = transactionsSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setTransactions(transactionsData);
-
-      // Fetch settings
-      const settingsSnap = await getDocs(collection(db, 'settings'));
-      if (settingsSnap.docs.length > 0) {
-        setSettings(settingsSnap.docs[0].data());
-      }
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Failed to load data');
-      setLoading(false);
-    }
-  };
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
+  }, []);
 
   // PRODUCT CRUD
   const saveProduct = async (productData) => {
