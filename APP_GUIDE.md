@@ -50,3 +50,5 @@ Mengatur profil usaha, nomor WhatsApp admin, serta detail rekening bank untuk me
 - **WhatsApp Integration:** Tombol cepat untuk menghubungi admin.
 - **Metode Pembayaran:** Pilihan Bayar di Tempat (COD) atau Transfer Bank dengan detail instruksi otomatis.
 - **Real-time Availability:** Pembeli tidak bisa memesan barang melebihi stok yang tersedia.
+
+**Made with love by Naimy**
