@@ -1515,7 +1515,7 @@ export default function AdminDashboard({
                 <div className="relative">
                   <textarea
                     defaultValue={selectedTx.notes || ''}
-                    onBlur={(e) => updateStatus(selectedTx.id, 'notes', e.target.value)}
+                    onBlur={(e) => updateTransactionStatus(selectedTx.id, 'notes', e.target.value)}
                     placeholder="Tulis catatan di sini... (otomatis tersimpan saat keluar)"
                     className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-200 transition-all resize-none h-20 font-medium`}
                   />
