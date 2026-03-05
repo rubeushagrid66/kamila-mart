@@ -445,8 +445,8 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 // --- MAIN ADMIN LAYOUT ---
 export default function AdminDashboard({
   adminTab, setAdminTab, products, saveProduct, deleteProduct,
-  users, setUsers, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, updateTransactionStatus
+  users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
+  handleLogout, onCustomerView, transactions, updateTransactionStatus, currentUserData
 }) {
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
@@ -461,31 +461,23 @@ export default function AdminDashboard({
   };
 
   const handleUserSave = async (userData) => {
-    try {
-      if (editingUser) {
-        // Update existing user
-        setUsers(prev => prev.map(u => u.id === editingUser.id ? userData : u));
-      } else {
-        // Add new user
-        setUsers(prev => [...prev, userData]);
-      }
-      setEditingUser(null);
-      setIsAddingUser(false);
-    } catch (error) {
-      console.error('Error saving user:', error);
-      alert('Error saving user: ' + error.message);
-    }
+    await saveUser(userData);
+    setEditingUser(null);
+    setIsAddingUser(false);
   };
 
   const handleDeleteUser = (userId) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-      setUsers(prev => prev.filter(u => u.id !== userId));
-    }
+    deleteUser(userId);
   };
 
   const handleSettingsSave = () => {
     saveSettings(settings);
   };
+
+  // Filter menu based on permissions
+  const filteredMenuOptions = MENU_OPTIONS.filter(m =>
+    currentUserData?.permissions?.includes(m.id) || m.id === 'dashboard'
+  );
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#F1F5F9]">
@@ -495,7 +487,7 @@ export default function AdminDashboard({
           <h2 className="text-xl font-extrabold text-slate-900 tracking-tighter">Kamila Mart <span className="text-blue-600">Admin</span></h2>
         </div>
         <nav className="flex-1 space-y-1.5">
-          {MENU_OPTIONS.map(m => {
+          {filteredMenuOptions.map(m => {
             const iconMap = {
               'LayoutDashboard': LayoutDashboard,
               'ShoppingCart': ShoppingCart,

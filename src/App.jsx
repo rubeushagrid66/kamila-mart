@@ -312,6 +312,8 @@ function AppContent() {
                 deleteProduct={deleteProduct}
                 users={users}
                 setUsers={setUsers}
+                saveUser={saveUser}
+                deleteUser={deleteUser}
                 settings={settings}
                 setSettings={setSettings}
                 saveSettings={saveSettings}
@@ -323,6 +325,7 @@ function AppContent() {
                 saveTransaction={saveTransaction}
                 deleteTransaction={deleteTransaction}
                 updateTransactionStatus={updateTransactionStatus}
+                currentUserData={users.find(u => u.username === user.email.split('@')[0]) || { permissions: ['dashboard'] }}
               />
             ) : (
               <Navigate to="/login" replace />
