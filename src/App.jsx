@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from './firebase-config';
 import Login from './Login';
 import Pemesanan from './Pemesanan';
 import AdminDashboard from './AdminDashboard';
 import toast, { Toaster } from 'react-hot-toast';
 
-export default function App() {
+function AppContent() {
   const [user, setUser] = useState(null);
-  const [currentView, setCurrentView] = useState('store');
+  const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [adminTab, setAdminTab] = useState('dashboard');
@@ -32,7 +33,6 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        setCurrentView('admin');
         await fetchAllData();
       } else {
         setUser(null);
@@ -253,8 +253,8 @@ export default function App() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      setCurrentView('admin');
       toast.success('Login berhasil!');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Gagal login: Periksa username/email dan password');
@@ -265,9 +265,9 @@ export default function App() {
     try {
       await signOut(auth);
       setUser(null);
-      setCurrentView('store');
       setAdminTab('dashboard');
       toast.success('Logout berhasil!');
+      navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Gagal logout');
@@ -276,53 +276,7 @@ export default function App() {
 
   const onCustomerView = () => {
     setMobileMenuOpen(false);
-    setCurrentView('store');
-  };
-
-  const renderContent = () => {
-    if (currentView === 'store') {
-      return (
-        <Pemesanan
-          settings={settings} products={products} cart={cart}
-          setCart={setCart} showSuccess={showSuccess} setShowSuccess={setShowSuccess}
-          onAdminClick={() => setCurrentView('login')}
-          onNewTransaction={saveTransaction}
-        />
-      );
-    }
-
-    if (currentView === 'login') {
-      return <Login onLogin={handleLogin} onBack={() => setCurrentView('store')} />;
-    }
-
-    return (
-      <AdminDashboard
-        adminTab={adminTab}
-        setAdminTab={setAdminTab}
-        products={products}
-        saveProduct={saveProduct}
-        deleteProduct={deleteProduct}
-        users={users}
-        setUsers={(callback) => {
-          if (typeof callback === 'function') {
-            setUsers(callback);
-          } else {
-            setUsers(callback);
-          }
-        }}
-        settings={settings}
-        setSettings={setSettings}
-        saveSettings={saveSettings}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-        handleLogout={handleLogout}
-        onCustomerView={onCustomerView}
-        transactions={transactions}
-        saveTransaction={saveTransaction}
-        deleteTransaction={deleteTransaction}
-        updateTransactionStatus={updateTransactionStatus}
-      />
-    );
+    navigate('/');
   };
 
   if (loading) {
@@ -339,7 +293,63 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAFC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Toaster position="top-center" />
-      {renderContent()}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Pemesanan
+              settings={settings} products={products} cart={cart}
+              setCart={setCart} showSuccess={showSuccess} setShowSuccess={setShowSuccess}
+              onAdminClick={() => navigate('/login')}
+              onNewTransaction={saveTransaction}
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            user ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} onBack={() => navigate('/')} />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            user ? (
+              <AdminDashboard
+                adminTab={adminTab}
+                setAdminTab={setAdminTab}
+                products={products}
+                saveProduct={saveProduct}
+                deleteProduct={deleteProduct}
+                users={users}
+                setUsers={setUsers}
+                settings={settings}
+                setSettings={setSettings}
+                saveSettings={saveSettings}
+                mobileMenuOpen={mobileMenuOpen}
+                setMobileMenuOpen={setMobileMenuOpen}
+                handleLogout={handleLogout}
+                onCustomerView={onCustomerView}
+                transactions={transactions}
+                saveTransaction={saveTransaction}
+                deleteTransaction={deleteTransaction}
+                updateTransactionStatus={updateTransactionStatus}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
