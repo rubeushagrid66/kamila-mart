@@ -97,15 +97,17 @@ function AppContent() {
   // PRODUCT CRUD
   const saveProduct = async (productData) => {
     try {
-      if (productData.id) {
+      const { id, ...dataToSave } = productData;
+
+      if (id) {
         // Update existing
-        await updateDoc(doc(db, 'products', productData.id), productData);
-        setProducts(prev => prev.map(p => p.id === productData.id ? { id: productData.id, ...productData } : p));
+        await updateDoc(doc(db, 'products', id), dataToSave);
+        setProducts(prev => prev.map(p => p.id === id ? { id, ...dataToSave } : p));
         toast.success('Produk berhasil diperbarui!');
       } else {
         // Add new
-        const docRef = await addDoc(collection(db, 'products'), productData);
-        setProducts(prev => [...prev, { id: docRef.id, ...productData }]);
+        const docRef = await addDoc(collection(db, 'products'), dataToSave);
+        setProducts(prev => [...prev, { id: docRef.id, ...dataToSave }]);
         toast.success('Produk berhasil ditambahkan!');
       }
     } catch (error) {
