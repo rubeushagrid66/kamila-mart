@@ -208,7 +208,7 @@ function UserModal({ user, onClose, onSave }) {
           <div className="space-y-3 pt-4 border-t border-slate-100">
             <p className="text-[10px] font-bold text-slate-400 uppercase">Hak Akses Modul</p>
             <div className="grid grid-cols-2 gap-3">
-              {['dashboard', 'transactions', 'products', 'finance', 'settings', 'users'].map(perm => (
+              {['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'settings', 'users'].map(perm => (
                 <label key={perm} className="flex items-center gap-2 cursor-pointer group">
                   <input
                     type="checkbox"

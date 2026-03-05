@@ -78,42 +78,6 @@ function AppContent() {
       }
     };
 
-    const setupRealtimeTransactions = () => {
-      const q = query(collection(db, 'transactions'), orderBy('date', 'desc'));
-      return onSnapshot(q, (snapshot) => {
-        const txList = snapshot.docs.map(doc => {
-          const data = doc.data();
-          // Normalize Firestore Timestamps
-          const date = data.date?.toDate ? data.date.toDate() : new Date(data.date);
-          return { id: doc.id, ...data, date };
-        });
-        if (mounted) setTransactions(txList);
-
-        if (!isFirstLoad) {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-              const newTx = change.doc.data();
-              // Notify
-              toast.success(`Pesanan Baru dari ${newTx.customer || 'Pelanggan'}!`, {
-                duration: 5000,
-                icon: '🛒'
-              });
-
-              if (Notification.permission === "granted") {
-                new Notification("Pesanan Baru!", {
-                  body: `${newTx.customer} baru saja memesan Rp ${newTx.total?.toLocaleString('id-ID')}`,
-                  icon: "/favicon.ico"
-                });
-              }
-            }
-          });
-        }
-        if (mounted) setIsFirstLoad(false);
-      }, (error) => {
-        console.error('Realtime error:', error);
-      });
-    };
-
     const init = async () => {
       setLoading(true);
 
@@ -132,28 +96,13 @@ function AppContent() {
         console.error("Error fetching users for fallback:", err);
       }
 
+      // Setup Auth Listener
       unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
           if (mounted) {
             setUser(currentUser);
             setCustomUser(null);
           }
-
-          // Setup real-time listener for transactions
-          const unsubTx = setupRealtimeTransactions();
-
-          // Setup real-time listener for monthly reports
-          const unsubReports = onSnapshot(collection(db, 'monthly_reports'), (snapshot) => {
-            const reports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            if (mounted) setMonthlyReports(reports);
-          });
-
-          const originalUnsub = unsubscribe;
-          unsubscribe = () => {
-            unsubTx();
-            unsubReports();
-            originalUnsub();
-          };
         } else {
           if (mounted && !customUser) {
             setUser(null);
@@ -170,7 +119,65 @@ function AppContent() {
       mounted = false;
       unsubscribe();
     };
-  }, []);
+  }, [customUser]); // Added customUser dependency to properly handle logout/fallback state
+
+  // DATA SYNC EFFECT: Setup real-time listeners whenever a user is logged in
+  useEffect(() => {
+    if (!user) {
+      setTransactions([]);
+      setMonthlyReports([]);
+      return;
+    }
+
+    let mounted = true;
+
+    // --- Setup real-time listener for transactions ---
+    const qTx = query(collection(db, 'transactions'), orderBy('date', 'desc'));
+    const unsubTx = onSnapshot(qTx, (snapshot) => {
+      const txList = snapshot.docs.map(doc => {
+        const data = doc.data();
+        const date = data.date?.toDate ? data.date.toDate() : new Date(data.date);
+        return { id: doc.id, ...data, date };
+      });
+      if (mounted) setTransactions(txList);
+
+      if (!isFirstLoad) {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            const newTx = change.doc.data();
+            toast.success(`Pesanan Baru dari ${newTx.customer || 'Pelanggan'}!`, {
+              duration: 5000,
+              icon: '🛒'
+            });
+
+            if (Notification.permission === "granted") {
+              new Notification("Pesanan Baru!", {
+                body: `${newTx.customer} baru saja memesan Rp ${newTx.total?.toLocaleString('id-ID')}`,
+                icon: "/favicon.ico"
+              });
+            }
+          }
+        });
+      }
+      if (mounted) setIsFirstLoad(false);
+    }, (error) => {
+      console.error('Transactions sync error:', error);
+    });
+
+    // --- Setup real-time listener for monthly reports ---
+    const unsubReports = onSnapshot(collection(db, 'monthly_reports'), (snapshot) => {
+      const reports = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (mounted) setMonthlyReports(reports);
+    }, (error) => {
+      console.error('Reports sync error:', error);
+    });
+
+    return () => {
+      mounted = false;
+      unsubTx();
+      unsubReports();
+    };
+  }, [user]);
 
   // PRODUCT CRUD
   const saveProduct = async (productData) => {
