@@ -101,7 +101,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-2.5">
-            {products.filter(p => !p.isArchived).map(p => {
+            {products.filter(p => p.status === 'aktif' || (!p.status && !p.isArchived)).map(p => {
               const qty = cart.find(i => i.id === p.id)?.qty || 0;
               const isOutOfStock = p.stock <= 0;
               return (
