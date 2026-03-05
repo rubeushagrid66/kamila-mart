@@ -137,10 +137,11 @@ function UserModal({ user, onClose, onSave }) {
       return;
     }
 
-    onSave({
-      ...formData,
-      id: user?.id || Date.now().toString()
-    });
+    const dataToSave = { ...formData };
+    if (user?.id) dataToSave.id = user.id;
+    else delete dataToSave.id;
+
+    onSave(dataToSave);
   };
 
   const togglePermission = (perm) => {

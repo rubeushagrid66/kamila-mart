@@ -132,15 +132,16 @@ function AppContent() {
   // USER CRUD
   const saveUser = async (userData) => {
     try {
-      if (userData.id) {
+      const { id, ...dataToSave } = userData;
+      if (id) {
         // Update existing
-        await updateDoc(doc(db, 'users', userData.id), userData);
-        setUsers(prev => prev.map(u => u.id === userData.id ? { id: userData.id, ...userData } : u));
+        await updateDoc(doc(db, 'users', id), dataToSave);
+        setUsers(prev => prev.map(u => u.id === id ? { id, ...dataToSave } : u));
         toast.success('User berhasil diperbarui!');
       } else {
         // Add new
-        const docRef = await addDoc(collection(db, 'users'), userData);
-        setUsers(prev => [...prev, { id: docRef.id, ...userData }]);
+        const docRef = await addDoc(collection(db, 'users'), dataToSave);
+        setUsers(prev => [...prev, { id: docRef.id, ...dataToSave }]);
         toast.success('User berhasil ditambahkan!');
       }
     } catch (error) {
