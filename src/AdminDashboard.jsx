@@ -420,11 +420,12 @@ function FinanceView({ transactions, products }) {
 // --- PROFIT REPORT VIEW ---
 function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings }) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [editingFormula, setEditingFormula] = useState(false);
+  const [editingMonthFormula, setEditingMonthFormula] = useState(null);
   const [tempFormula, setTempFormula] = useState({
     marbotPercent: settings?.marbotPercent || 60,
     internalPercent: settings?.internalPercent || 40
   });
+  const [applyToAll, setApplyToAll] = useState(false);
 
   const years = [2024, 2025, 2026];
   const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -450,28 +451,57 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       const reportId = `${selectedYear}-${index}`;
       const savedData = monthlyReports.find(r => r.id === reportId) || {};
 
+      const mP = savedData.marbotPercent !== undefined ? savedData.marbotPercent : (settings?.marbotPercent || 60);
+      const iP = savedData.internalPercent !== undefined ? savedData.internalPercent : (settings?.internalPercent || 40);
+
       return {
         id: reportId,
         monthName,
         profit,
+        marbotPercent: mP,
+        internalPercent: iP,
         status: savedData.status || 'menunggu',
         notes: savedData.notes || ''
       };
     });
-  }, [transactions, selectedYear, products, monthlyReports]);
+  }, [transactions, selectedYear, products, monthlyReports, settings]);
 
-  const handleSaveFormula = () => {
+  const handleSaveFormula = async () => {
     const total = Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent);
     if (total > 100) {
       alert('Total persentase tidak boleh melebihi 100%!');
       return;
     }
-    saveSettings({
-      ...settings,
-      marbotPercent: Number(tempFormula.marbotPercent),
-      internalPercent: Number(tempFormula.internalPercent)
-    });
-    setEditingFormula(false);
+
+    if (editingMonthFormula) {
+      // Per Month Override
+      saveMonthlyReport(editingMonthFormula.id, {
+        marbotPercent: Number(tempFormula.marbotPercent),
+        internalPercent: Number(tempFormula.internalPercent)
+      });
+      setEditingMonthFormula(null);
+    } else {
+      // Master Formula
+      saveSettings({
+        ...settings,
+        marbotPercent: Number(tempFormula.marbotPercent),
+        internalPercent: Number(tempFormula.internalPercent)
+      });
+
+      if (applyToAll) {
+        // Apply to all months of all active years (simplified to existing reports or just logic)
+        // Usually, we iterate through months of current year at least
+        for (let i = 0; i < 12; i++) {
+          const mId = `${selectedYear}-${i}`;
+          saveMonthlyReport(mId, {
+            marbotPercent: Number(tempFormula.marbotPercent),
+            internalPercent: Number(tempFormula.internalPercent)
+          });
+        }
+      }
+      setEditingFormula(false);
+    }
+    setApplyToAll(false);
   };
 
   const marbotP = settings?.marbotPercent || 60;
@@ -510,8 +540,9 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
                 <th className="px-6 py-4">Bulan</th>
                 <th className="px-6 py-4">Total Profit</th>
-                <th className="px-6 py-4">Marbot ({marbotP}%)</th>
-                <th className="px-6 py-4">Internal ({internalP}%)</th>
+                <th className="px-6 py-4 text-center">Formula</th>
+                <th className="px-6 py-4">Marbot</th>
+                <th className="px-6 py-4">Internal</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Catatan</th>
               </tr>
@@ -521,8 +552,20 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 <tr key={s.id} className="text-sm hover:bg-slate-50/30 transition-colors">
                   <td className="px-6 py-5 font-bold text-slate-700">{s.monthName}</td>
                   <td className="px-6 py-5 font-black text-slate-900">{formatIDR(s.profit)}</td>
-                  <td className="px-6 py-5 text-emerald-600 font-bold">{formatIDR(s.profit * (marbotP / 100))}</td>
-                  <td className="px-6 py-5 text-blue-600 font-bold">{formatIDR(s.profit * (internalP / 100))}</td>
+                  <td className="px-6 py-5 text-center">
+                    <button
+                      onClick={() => {
+                        setTempFormula({ marbotPercent: s.marbotPercent, internalPercent: s.internalPercent });
+                        setEditingMonthFormula(s);
+                      }}
+                      className="group flex flex-col items-center justify-center p-2 hover:bg-slate-100 rounded-lg transition-all"
+                    >
+                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.internalPercent}</span>
+                      <Settings size={10} className="text-slate-300 group-hover:text-blue-500 mt-0.5" />
+                    </button>
+                  </td>
+                  <td className="px-6 py-5 text-emerald-600 font-bold">{formatIDR(s.profit * (s.marbotPercent / 100))}</td>
+                  <td className="px-6 py-5 text-blue-600 font-bold">{formatIDR(s.profit * (s.internalPercent / 100))}</td>
                   <td className="px-6 py-5">
                     <select
                       value={s.status}
@@ -548,12 +591,14 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         </div>
       </div>
 
-      {editingFormula && (
+      {(editingFormula || editingMonthFormula) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
           <div className={`bg-white w-full max-w-md ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 p-8 space-y-6`}>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-black text-slate-900 text-lg tracking-tight">Atur Formula Pembagian</h3>
-              <button onClick={() => setEditingFormula(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={20} /></button>
+              <h3 className="font-black text-slate-900 text-lg tracking-tight">
+                {editingMonthFormula ? `Set Formula: ${editingMonthFormula.monthName}` : 'Atur Formula Master'}
+              </h3>
+              <button onClick={() => { setEditingFormula(false); setEditingMonthFormula(null); }} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={20} /></button>
             </div>
 
             <div className="space-y-4">
@@ -590,6 +635,18 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 
               {Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 && (
                 <p className="text-[10px] text-rose-500 font-bold text-center animate-pulse">* Total tidak boleh melebihi 100%!</p>
+              )}
+
+              {!editingMonthFormula && (
+                <div onClick={() => setApplyToAll(!applyToAll)} className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${applyToAll ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-100'}`}>
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${applyToAll ? 'bg-amber-500 border-amber-500 text-white' : 'bg-white border-slate-200'}`}>
+                    {applyToAll && <CheckCircle2 size={12} />}
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-[10px] font-black uppercase tracking-widest ${applyToAll ? 'text-amber-700' : 'text-slate-500'}`}>Apply to All Months</p>
+                    <p className="text-[9px] text-slate-400 font-medium">Terapkan formula ini ke seluruh bulan di tahun {selectedYear}</p>
+                  </div>
+                </div>
               )}
             </div>
 
