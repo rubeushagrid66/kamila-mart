@@ -11,10 +11,12 @@ import Footer from './Footer';
 // --- MODAL PRODUK ---
 function ProductModal({ product, onClose, onSave }) {
   const [formData, setFormData] = useState(product || {
+    customId: '',
     name: '',
     cost: '',
     price: '',
-    stock: ''
+    stock: '',
+    isArchived: false
   });
 
   const handleSubmit = (e) => {
@@ -41,6 +43,17 @@ function ProductModal({ product, onClose, onSave }) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ID Produk</label>
+            <input
+              required
+              value={formData.customId}
+              onChange={(e) => setFormData({ ...formData, customId: e.target.value })}
+              placeholder="Contoh: ATK-001"
+              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm`}
+            />
+          </div>
+
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Produk</label>
             <input
@@ -1140,10 +1153,20 @@ export default function AdminDashboard({
                   <div key={p.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-bold text-slate-800 text-base">{p.name}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded leading-none">{p.customId || 'NO-ID'}</span>
+                          <p className={`font-bold text-slate-800 text-base ${p.isArchived ? 'line-through opacity-50' : ''}`}>{p.name}</p>
+                        </div>
                         <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold ${p.stock < 10 ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>{p.stock} Unit Tersedia</span>
                       </div>
                       <div className="flex gap-1">
+                        <button
+                          onClick={() => onSave({ ...p, isArchived: !p.isArchived })}
+                          className={`p-2.5 ${p.isArchived ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-400'} rounded-lg transition-colors`}
+                          title={p.isArchived ? "Pulihkan dari Arsip" : "Arsipkan Produk"}
+                        >
+                          <ImageIcon size={16} className={p.isArchived ? '' : 'opacity-50'} />
+                        </button>
                         <button
                           onClick={() => setEditingProduct(p)}
                           className="p-2.5 bg-slate-50 text-blue-600 rounded-lg"
@@ -1181,6 +1204,7 @@ export default function AdminDashboard({
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <th className="pb-4">ID</th>
                       <th className="pb-4">Produk</th>
                       <th className="pb-4">Harga Beli</th>
                       <th className="pb-4">Harga Jual</th>
@@ -1190,9 +1214,12 @@ export default function AdminDashboard({
                   </thead>
                   <tbody className="divide-y divide-slate-50">
                     {products.map(p => (
-                      <tr key={p.id} className="text-sm hover:bg-slate-50/50 group transition-colors">
+                      <tr key={p.id} className={`text-sm hover:bg-slate-50/50 group transition-colors ${p.isArchived ? 'bg-slate-50/50' : ''}`}>
                         <td className="py-4">
-                          <span className="font-bold text-slate-800">{p.name}</span>
+                          <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-1 rounded">{p.customId || 'NO-ID'}</span>
+                        </td>
+                        <td className="py-4">
+                          <span className={`font-bold text-slate-800 ${p.isArchived ? 'line-through opacity-50' : ''}`}>{p.name} {p.isArchived && <span className="ml-2 text-[9px] bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded uppercase tracking-tighter">Arsip</span>}</span>
                         </td>
                         <td className="py-4 text-slate-500 font-medium">{formatIDR(p.cost)}</td>
                         <td className="py-4 font-bold text-blue-600">{formatIDR(p.price)}</td>
@@ -1202,14 +1229,21 @@ export default function AdminDashboard({
                         <td className="py-4 text-right">
                           <div className="flex justify-end gap-1">
                             <button
+                              onClick={() => onSave({ ...p, isArchived: !p.isArchived })}
+                              className={`p-2 rounded-lg transition-all ${p.isArchived ? 'text-amber-600 bg-amber-50' : 'text-slate-300 hover:text-amber-500 hover:bg-white'}`}
+                              title={p.isArchived ? "Pulihkan" : "Arsipkan"}
+                            >
+                              <ImageIcon size={16} />
+                            </button>
+                            <button
                               onClick={() => setEditingProduct(p)}
-                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
+                              className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
                             >
                               <Edit size={16} />
                             </button>
                             <button
                               onClick={() => deleteProduct(p.id)}
-                              className="p-2 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-all"
+                              className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"
                             >
                               <Trash2 size={16} />
                             </button>

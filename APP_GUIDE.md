@@ -24,6 +24,8 @@ Melihat performa toko secara keseluruhan dalam satu tampilan cepat.
 - **Ekspor CSV:** Mengunduh laporan transaksi per periode ke dalam format Excel/CSV.
 
 ### 3. Produk & Manajemen Stok
+- **ID Produk**: Setiap produk kini memiliki ID unik yang dapat diatur secara manual (misal: ATK-001) untuk mempermudah referensi.
+- **Fitur Arsip**: Produk yang sudah tidak dijual dapat diarsipkan. Produk ini akan hilang dari halaman Pemesanan pembeli, namun data sejarah transaksi dan perhitungan keuangan tetap akurat menggunakan referensi ID Produk tersebut.
 - **Stok Otomatis:** Jumlah stok produk akan berkurang secara otomatis setiap kali ada pesanan baru.
 - **Proteksi Penjualan:** Produk yang stoknya mencapai 0 (nol) akan otomatis ditandai "Stok Habis" dan tidak bisa dipesan oleh pembeli.
 - **Katalog Produk:** Menambah, mengubah, atau menghapus produk tanpa perlu unggah gambar (fokus pada data teks).
