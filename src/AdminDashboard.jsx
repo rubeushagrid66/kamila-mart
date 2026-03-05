@@ -2,8 +2,8 @@ import React, { useState, useMemo, useRef } from 'react';
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User,
   Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
-  ArrowUpRight, ArrowDownRight, Camera, Image as ImageIcon, Trash2, Phone,
-  Plus, Download, FileText
+  ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
+  Plus, Download, FileText, Archive, EyeOff
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS } from './utils';
 import Footer from './Footer';
@@ -1162,10 +1162,10 @@ export default function AdminDashboard({
                       <div className="flex gap-1">
                         <button
                           onClick={() => onSave({ ...p, isArchived: !p.isArchived })}
-                          className={`p-2.5 ${p.isArchived ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-400'} rounded-lg transition-colors`}
+                          className={`p-2.5 ${p.isArchived ? 'bg-amber-100 text-amber-600' : 'bg-slate-50 text-slate-400 hover:text-amber-500'} rounded-lg transition-colors`}
                           title={p.isArchived ? "Pulihkan dari Arsip" : "Arsipkan Produk"}
                         >
-                          <ImageIcon size={16} className={p.isArchived ? '' : 'opacity-50'} />
+                          {p.isArchived ? <Archive size={16} /> : <EyeOff size={16} />}
                         </button>
                         <button
                           onClick={() => setEditingProduct(p)}
@@ -1233,7 +1233,7 @@ export default function AdminDashboard({
                               className={`p-2 rounded-lg transition-all ${p.isArchived ? 'text-amber-600 bg-amber-50' : 'text-slate-300 hover:text-amber-500 hover:bg-white'}`}
                               title={p.isArchived ? "Pulihkan" : "Arsipkan"}
                             >
-                              <ImageIcon size={16} />
+                              {p.isArchived ? <Archive size={16} /> : <EyeOff size={16} />}
                             </button>
                             <button
                               onClick={() => setEditingProduct(p)}
