@@ -6,8 +6,8 @@
 
 ## 🌐 Halaman Aplikasi
 - **Tampilan Pembeli:** [https://kamilamart.vercel.app](https://kamilamart.vercel.app)
-- **Halaman Login:** [https://kamilamart.vercel.app/login](https://kamilamart.vercel.app/login)
-- **Tampilan Dashboard:** [https://kamilamart.vercel.app/dashboard](https://kamilamart.vercel.app/dashboard)
+- **Halaman Login Admin:** [https://kamilamart.vercel.app/login](https://kamilamart.vercel.app/login)
+- **Tampilan Dashboard Admin:** [https://kamilamart.vercel.app/dashboard](https://kamilamart.vercel.app/dashboard)
 
 ---
 
