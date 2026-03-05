@@ -59,13 +59,27 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
           <CheckCircle2 size={40} />
         </div>
         <h1 className="text-xl font-bold text-slate-900 mb-2">Pesanan Terkirim!</h1>
-        <p className="text-slate-500 text-sm mb-8 max-w-xs leading-relaxed">Pesanan Anda telah berhasil dikirim. Kurir kami akan segera memproses pengiriman.</p>
-        <button
-          onClick={handleResetApp}
-          className={`bg-blue-600 text-white w-full max-w-xs py-4 ${UI_RADIUS.inner} font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition-all`}
-        >
-          Selesai & Kembali Belanja
-        </button>
+        <p className="text-slate-500 text-sm mb-8 max-w-xs leading-relaxed">Pesanan Anda telah berhasil dikirim. {customerInfo.paymentMethod === 'transfer' ? 'Silakan kirim bukti transfer Anda melalui WhatsApp.' : 'Kurir kami akan segera memproses pengiriman.'}</p>
+
+        <div className="w-full max-w-xs space-y-3">
+          {customerInfo.paymentMethod === 'transfer' && settings?.adminPhone && (
+            <a
+              href={`https://wa.me/${settings.adminPhone.replace(/[^0-9]/g, '')}?text=Halo%20Admin%20${encodeURIComponent(settings?.martName || 'Kamila Mart')},%20saya%20sudah%20transfer%20pembayaran%20untuk%20pesanan%20atas%20nama%20${encodeURIComponent(customerInfo.name)}%20sebesar%20${encodeURIComponent(formatIDR(total))}.%20Berikut%20bukti%20transfernya.`}
+              target="_blank"
+              rel="noreferrer"
+              className={`bg-emerald-600 text-white w-full py-4 ${UI_RADIUS.inner} font-bold shadow-lg shadow-emerald-500/10 active:scale-95 transition-all flex items-center justify-center gap-2`}
+            >
+              <Phone size={18} /> Kirim Bukti Transfer
+            </a>
+          )}
+
+          <button
+            onClick={handleResetApp}
+            className={`bg-blue-600 text-white w-full py-4 ${UI_RADIUS.inner} font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition-all`}
+          >
+            Selesai & Kembali Belanja
+          </button>
+        </div>
       </div>
     );
   }
