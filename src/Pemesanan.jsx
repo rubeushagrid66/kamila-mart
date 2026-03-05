@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Truck, Minus, Plus, Send, Wallet, CreditCard, CheckCircle2, Lock, Info } from 'lucide-react';
+import { Package, Truck, Minus, Plus, Send, Wallet, CreditCard, CheckCircle2, Lock, Info, Phone } from 'lucide-react';
 import { formatIDR, UI_RADIUS } from './utils';
 
 export default function Pemesanan({ settings, products, cart, setCart, showSuccess, setShowSuccess, onAdminClick, onNewTransaction }) {
@@ -66,12 +66,25 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
     <div className="max-w-xl mx-auto bg-[#F8FAFC] min-h-screen flex flex-col relative shadow-2xl">
       <header className="flex justify-between items-center px-5 py-4 sticky top-0 bg-white/70 backdrop-blur-xl border-b border-slate-100 z-20">
         <div>
-          <h1 className="text-lg font-bold text-slate-900 tracking-tight">{settings.martName}</h1>
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight">{settings?.martName || 'Kamila Mart'}</h1>
           <p className="text-slate-400 text-[10px] font-semibold flex items-center gap-1 uppercase tracking-widest">Layanan harian rumah tangga</p>
         </div>
-        <button onClick={onAdminClick} className={`p-2.5 bg-slate-50 text-slate-300 hover:text-blue-500 ${UI_RADIUS.inner} transition-colors`}>
-          <Lock size={16} />
-        </button>
+        <div className="flex items-center gap-3">
+          {settings?.adminPhone && (
+            <a
+              href={`https://wa.me/${settings.adminPhone.replace(/[^0-9]/g, '')}?text=Halo%20Admin%20${encodeURIComponent(settings?.martName || 'Kamila Mart')}`}
+              target="_blank"
+              rel="noreferrer"
+              className={`p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 ${UI_RADIUS.inner} transition-colors flex items-center gap-2`}
+            >
+              <Phone size={16} />
+              <span className="text-xs font-bold hidden sm:block">Admin</span>
+            </a>
+          )}
+          <button onClick={onAdminClick} className={`p-2.5 bg-slate-50 text-slate-300 hover:text-blue-500 ${UI_RADIUS.inner} transition-colors`}>
+            <Lock size={16} />
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 px-5 py-4 pb-32 space-y-6">
@@ -184,9 +197,9 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                   <span className="text-[10px] font-bold text-blue-900 uppercase tracking-tight">Detail Rekening</span>
                 </div>
                 <div className={`p-3 bg-white ${UI_RADIUS.inner} border border-blue-100 shadow-sm space-y-1`}>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase">{settings.bankName}</p>
-                  <p className="font-bold text-slate-800 text-sm tracking-tight">{settings.bankAccountNumber}</p>
-                  <p className="text-xs text-slate-500">a/n {settings.bankAccountName}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">{settings?.bankName || 'Bank'}</p>
+                  <p className="font-bold text-slate-800 text-sm tracking-tight">{settings?.bankAccountNumber || '-'}</p>
+                  <p className="text-xs text-slate-500">a/n {settings?.bankAccountName || '-'}</p>
                 </div>
               </div>
             )}

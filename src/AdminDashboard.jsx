@@ -445,7 +445,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 // --- MAIN ADMIN LAYOUT ---
 export default function AdminDashboard({
   adminTab, setAdminTab, products, saveProduct, deleteProduct,
-  users, setUsers, settings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
+  users, setUsers, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
   handleLogout, onCustomerView, transactions, updateTransactionStatus
 }) {
   const [selectedTx, setSelectedTx] = useState(null);
@@ -679,11 +679,11 @@ export default function AdminDashboard({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Toko</label>
-                    <input value={settings.martName} onChange={(e) => setSettings({ ...settings, martName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                    <input value={settings?.martName || ''} onChange={(e) => setSettings({ ...settings, martName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp Admin</label>
-                    <input value={settings.adminPhone} onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                    <input value={settings?.adminPhone || ''} onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                   </div>
                 </div>
                 <div className="pt-6 border-t border-slate-50">
@@ -691,15 +691,15 @@ export default function AdminDashboard({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Bank</label>
-                      <input value={settings.bankName} onChange={(e) => setSettings({ ...settings, bankName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                      <input value={settings?.bankName || ''} onChange={(e) => setSettings({ ...settings, bankName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Atas Nama</label>
-                      <input value={settings.bankAccountName} onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                      <input value={settings?.bankAccountName || ''} onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nomor Rekening</label>
-                      <input value={settings.bankAccountNumber} onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                      <input value={settings?.bankAccountNumber || ''} onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                     </div>
                   </div>
                 </div>
