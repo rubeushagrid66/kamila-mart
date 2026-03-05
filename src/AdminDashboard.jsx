@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { 
-  LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, 
-  Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart, 
+import {
+  LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User,
+  Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Image as ImageIcon, Trash2, Phone,
   Plus
 } from 'lucide-react';
@@ -14,21 +14,8 @@ function ProductModal({ product, onClose, onSave }) {
     name: '',
     cost: '',
     price: '',
-    stock: '',
-    image: ''
+    stock: ''
   });
-  const fileInputRef = useRef(null);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -52,58 +39,16 @@ function ProductModal({ product, onClose, onSave }) {
           <h3 className="font-bold text-slate-900">{product ? 'Edit Produk' : 'Tambah Produk Baru'}</h3>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Upload Foto */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Foto Produk</label>
-            <div className="flex gap-4 items-center">
-              <div 
-                onClick={() => fileInputRef.current?.click()}
-                className={`w-24 h-24 ${UI_RADIUS.inner} border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all overflow-hidden relative group`}
-              >
-                {formData.image ? (
-                  <>
-                    <img src={formData.image} className="w-full h-full object-cover" alt="Preview" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                      <Camera size={20} />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <Camera size={24} className="text-slate-300 mb-1" />
-                    <span className="text-[10px] text-slate-400 font-bold">Upload</span>
-                  </>
-                )}
-              </div>
-              <div className="flex-1 space-y-2">
-                <button 
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`w-full py-2 px-4 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 flex items-center justify-center gap-2 hover:bg-slate-50`}
-                >
-                  <ImageIcon size={14} /> Ambil dari Galeri
-                </button>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileChange} 
-                  accept="image/*" 
-                  className="hidden" 
-                />
-                <p className="text-[10px] text-slate-400 italic">Rekomendasi ukuran 1:1 atau persegi.</p>
-              </div>
-            </div>
-          </div>
 
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Produk</label>
-            <input 
+            <input
               required
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              placeholder="Contoh: Aqua Galon 19L" 
-              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Contoh: Aqua Galon 19L"
+              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
             />
           </div>
 
@@ -112,12 +57,12 @@ function ProductModal({ product, onClose, onSave }) {
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Harga Beli (Modal)</label>
               <div className="relative">
                 <span className="absolute left-3 top-3.5 text-slate-400 text-xs font-bold">Rp</span>
-                <input 
+                <input
                   required
                   type="number"
                   value={formData.cost}
-                  onChange={(e) => setFormData({...formData, cost: e.target.value})}
-                  className={`w-full p-3.5 pl-10 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm`} 
+                  onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+                  className={`w-full p-3.5 pl-10 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm`}
                 />
               </div>
             </div>
@@ -125,12 +70,12 @@ function ProductModal({ product, onClose, onSave }) {
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Harga Jual</label>
               <div className="relative">
                 <span className="absolute left-3 top-3.5 text-slate-400 text-xs font-bold">Rp</span>
-                <input 
+                <input
                   required
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  className={`w-full p-3.5 pl-10 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm text-blue-600`} 
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  className={`w-full p-3.5 pl-10 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm text-blue-600`}
                 />
               </div>
             </div>
@@ -138,25 +83,25 @@ function ProductModal({ product, onClose, onSave }) {
 
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stok Tersedia</label>
-            <input 
+            <input
               required
               type="number"
               value={formData.stock}
-              onChange={(e) => setFormData({...formData, stock: e.target.value})}
-              placeholder="0" 
-              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+              onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+              placeholder="0"
+              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
             />
           </div>
 
           <div className="pt-4 flex gap-3">
-            <button 
+            <button
               type="button"
               onClick={onClose}
               className={`flex-1 py-3.5 bg-slate-100 text-slate-600 ${UI_RADIUS.inner} font-bold text-sm hover:bg-slate-200 transition-all`}
             >
               Batal
             </button>
-            <button 
+            <button
               type="submit"
               className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
             >
@@ -214,47 +159,47 @@ function UserModal({ user, onClose, onSave }) {
           <h3 className="font-bold text-slate-900">{user ? 'Edit User' : 'Tambah User Baru'}</h3>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
-            <input 
+            <input
               value={formData.name}
               onChange={(e) => {
-                setFormData({...formData, name: e.target.value});
-                setErrors({...errors, name: ''});
+                setFormData({ ...formData, name: e.target.value });
+                setErrors({ ...errors, name: '' });
               }}
-              placeholder="Nama Lengkap" 
-              className={`w-full p-3.5 bg-slate-50 border ${errors.name ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+              placeholder="Nama Lengkap"
+              className={`w-full p-3.5 bg-slate-50 border ${errors.name ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
             />
             {errors.name && <p className="text-xs text-red-600 ml-1">{errors.name}</p>}
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Username</label>
-            <input 
+            <input
               value={formData.username}
               onChange={(e) => {
-                setFormData({...formData, username: e.target.value});
-                setErrors({...errors, username: ''});
+                setFormData({ ...formData, username: e.target.value });
+                setErrors({ ...errors, username: '' });
               }}
-              placeholder="Username" 
-              className={`w-full p-3.5 bg-slate-50 border ${errors.username ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+              placeholder="Username"
+              className={`w-full p-3.5 bg-slate-50 border ${errors.username ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
             />
             {errors.username && <p className="text-xs text-red-600 ml-1">{errors.username}</p>}
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Password</label>
-            <input 
+            <input
               type="password"
               value={formData.password}
               onChange={(e) => {
-                setFormData({...formData, password: e.target.value});
-                setErrors({...errors, password: ''});
+                setFormData({ ...formData, password: e.target.value });
+                setErrors({ ...errors, password: '' });
               }}
-              placeholder="Password" 
-              className={`w-full p-3.5 bg-slate-50 border ${errors.password ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`} 
+              placeholder="Password"
+              className={`w-full p-3.5 bg-slate-50 border ${errors.password ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
             />
             {errors.password && <p className="text-xs text-red-600 ml-1">{errors.password}</p>}
           </div>
@@ -264,11 +209,11 @@ function UserModal({ user, onClose, onSave }) {
             <div className="grid grid-cols-2 gap-3">
               {['dashboard', 'transactions', 'products', 'finance', 'settings', 'users'].map(perm => (
                 <label key={perm} className="flex items-center gap-2 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={formData.permissions.includes(perm)}
                     onChange={() => togglePermission(perm)}
-                    className="w-4 h-4 accent-blue-600 rounded" 
+                    className="w-4 h-4 accent-blue-600 rounded"
                   />
                   <span className="text-xs text-slate-600 font-medium group-hover:text-blue-600 transition-colors capitalize">{perm}</span>
                 </label>
@@ -277,14 +222,14 @@ function UserModal({ user, onClose, onSave }) {
           </div>
 
           <div className="pt-4 flex gap-3">
-            <button 
+            <button
               type="button"
               onClick={onClose}
               className={`flex-1 py-3.5 bg-slate-100 text-slate-600 ${UI_RADIUS.inner} font-bold text-sm hover:bg-slate-200 transition-all`}
             >
               Batal
             </button>
-            <button 
+            <button
               type="submit"
               className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
             >
@@ -315,7 +260,7 @@ function FinanceView({ transactions, products }) {
 
       let profit = 0;
       let revenue = 0;
-      
+
       successTx.forEach(tx => {
         revenue += tx.total;
         tx.items.forEach(item => {
@@ -453,8 +398,8 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
                 </div>
               </td>
               <td className="py-4">
-                <select 
-                  value={t.paymentStatus} 
+                <select
+                  value={t.paymentStatus}
                   onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
                   className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.paymentStatus === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
                 >
@@ -463,8 +408,8 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
                 </select>
               </td>
               <td className="py-4">
-                <select 
-                  value={t.shippingStatus} 
+                <select
+                  value={t.shippingStatus}
                   onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
                   className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.shippingStatus === 'sukses' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
                 >
@@ -498,10 +443,10 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 }
 
 // --- MAIN ADMIN LAYOUT ---
-export default function AdminDashboard({ 
+export default function AdminDashboard({
   adminTab, setAdminTab, products, saveProduct, deleteProduct,
-  users, setUsers, settings, saveSettings, mobileMenuOpen, setMobileMenuOpen, 
-  handleLogout, onCustomerView, transactions, updateTransactionStatus 
+  users, setUsers, settings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
+  handleLogout, onCustomerView, transactions, updateTransactionStatus
 }) {
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
@@ -561,9 +506,9 @@ export default function AdminDashboard({
             };
             const IconComponent = iconMap[m.icon];
             return (
-              <button 
-                key={m.id} 
-                onClick={() => { setAdminTab(m.id); setMobileMenuOpen(false); }} 
+              <button
+                key={m.id}
+                onClick={() => { setAdminTab(m.id); setMobileMenuOpen(false); }}
                 className={`w-full flex items-center gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-semibold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
               >
                 <IconComponent size={18} /> {m.label}
@@ -612,7 +557,7 @@ export default function AdminDashboard({
             <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 overflow-hidden`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-slate-800 text-sm">Inventaris Barang</h3>
-                <button 
+                <button
                   onClick={() => setIsAddingProduct(true)}
                   className={`px-4 py-2 bg-blue-600 text-white text-xs font-bold ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all`}
                 >
@@ -634,10 +579,7 @@ export default function AdminDashboard({
                     {products.map(p => (
                       <tr key={p.id} className="text-sm hover:bg-slate-50/50 group transition-colors">
                         <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <img src={p.image || 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=100'} className={`w-10 h-10 ${UI_RADIUS.inner} object-cover bg-slate-100`} />
-                            <span className="font-bold text-slate-800">{p.name}</span>
-                          </div>
+                          <span className="font-bold text-slate-800">{p.name}</span>
                         </td>
                         <td className="py-4 text-slate-500 font-medium">{formatIDR(p.cost)}</td>
                         <td className="py-4 font-bold text-blue-600">{formatIDR(p.price)}</td>
@@ -646,13 +588,13 @@ export default function AdminDashboard({
                         </td>
                         <td className="py-4 text-right">
                           <div className="flex justify-end gap-1">
-                            <button 
+                            <button
                               onClick={() => setEditingProduct(p)}
                               className="p-2 text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
                             >
                               <Edit size={16} />
                             </button>
-                            <button 
+                            <button
                               onClick={() => deleteProduct(p.id)}
                               className="p-2 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-all"
                             >
@@ -673,14 +615,14 @@ export default function AdminDashboard({
               <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm`}>
                 <div className="flex justify-between items-center mb-8">
                   <h3 className="font-bold text-slate-800 text-sm">Kelola Akses Admin ({users.length} User)</h3>
-                  <button 
+                  <button
                     onClick={() => setIsAddingUser(true)}
                     className={`px-4 py-2 bg-blue-600 text-white text-xs font-bold ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
                   >
                     <Plus size={16} /> Tambah User
                   </button>
                 </div>
-                
+
                 {users.length === 0 ? (
                   <p className="text-slate-400 text-xs py-8 text-center">Belum ada user. Klik tombol "Tambah User" untuk membuat user baru.</p>
                 ) : (
@@ -694,7 +636,7 @@ export default function AdminDashboard({
                             <p className="text-[10px] text-slate-400 font-medium truncate">@{u.username}</p>
                           </div>
                         </div>
-                        
+
                         {/* Permissions display */}
                         <div className="mb-4 pb-4 border-t border-slate-100 pt-3">
                           <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">Akses:</p>
@@ -707,16 +649,16 @@ export default function AdminDashboard({
                             )}
                           </div>
                         </div>
-                        
+
                         {/* Action buttons */}
                         <div className="flex gap-2 mt-auto">
-                          <button 
+                          <button
                             onClick={() => setEditingUser(u)}
                             className="flex-1 p-2 text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all text-xs font-bold flex items-center justify-center gap-1"
                           >
                             <Edit size={14} /> Edit
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteUser(u.id)}
                             className="flex-1 p-2 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all text-xs font-bold flex items-center justify-center gap-1"
                           >
@@ -737,11 +679,11 @@ export default function AdminDashboard({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Toko</label>
-                    <input value={settings.martName} onChange={(e) => setSettings({...settings, martName: e.target.value})} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                    <input value={settings.martName} onChange={(e) => setSettings({ ...settings, martName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp Admin</label>
-                    <input value={settings.adminPhone} onChange={(e) => setSettings({...settings, adminPhone: e.target.value})} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                    <input value={settings.adminPhone} onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                   </div>
                 </div>
                 <div className="pt-6 border-t border-slate-50">
@@ -749,19 +691,19 @@ export default function AdminDashboard({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Bank</label>
-                      <input value={settings.bankName} onChange={(e) => setSettings({...settings, bankName: e.target.value})} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                      <input value={settings.bankName} onChange={(e) => setSettings({ ...settings, bankName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Atas Nama</label>
-                      <input value={settings.bankAccountName} onChange={(e) => setSettings({...settings, bankAccountName: e.target.value})} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                      <input value={settings.bankAccountName} onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nomor Rekening</label>
-                      <input value={settings.bankAccountNumber} onChange={(e) => setSettings({...settings, bankAccountNumber: e.target.value})} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
+                      <input value={settings.bankAccountNumber} onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
                     </div>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={handleSettingsSave}
                   className={`w-full py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
                 >
@@ -778,8 +720,8 @@ export default function AdminDashboard({
 
       {/* Modal CRUD Produk */}
       {(isAddingProduct || editingProduct) && (
-        <ProductModal 
-          product={editingProduct} 
+        <ProductModal
+          product={editingProduct}
           onClose={() => { setEditingProduct(null); setIsAddingProduct(false); }}
           onSave={handleProductSave}
         />
@@ -787,8 +729,8 @@ export default function AdminDashboard({
 
       {/* Modal CRUD User */}
       {(isAddingUser || editingUser) && (
-        <UserModal 
-          user={editingUser} 
+        <UserModal
+          user={editingUser}
           onClose={() => { setEditingUser(null); setIsAddingUser(false); }}
           onSave={handleUserSave}
         />

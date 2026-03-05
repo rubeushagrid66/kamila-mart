@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from './firebase-config';
+import { auth, db } from './firebase-config';
 import Login from './Login';
 import Pemesanan from './Pemesanan';
 import AdminDashboard from './AdminDashboard';
@@ -98,37 +97,15 @@ function AppContent() {
   // PRODUCT CRUD
   const saveProduct = async (productData) => {
     try {
-      let imageUrl = productData.image;
-
-      // If image is base64, upload to Firebase Storage
-      if (productData.image && productData.image.startsWith('data:')) {
-        try {
-          const response = await fetch(productData.image);
-          const blob = await response.blob();
-          const imageRef = ref(storage, `products/${productData.id || Date.now()}-${productData.name}`);
-          const uploadTask = await uploadBytes(imageRef, blob);
-          imageUrl = await getDownloadURL(uploadTask.ref);
-        } catch (error) {
-          console.error('Error uploading image:', error);
-          toast.error('Failed to upload image');
-          return;
-        }
-      }
-
-      const productWithUrl = {
-        ...productData,
-        image: imageUrl
-      };
-
       if (productData.id) {
         // Update existing
-        await updateDoc(doc(db, 'products', productData.id), productWithUrl);
-        setProducts(prev => prev.map(p => p.id === productData.id ? { id: productData.id, ...productWithUrl } : p));
+        await updateDoc(doc(db, 'products', productData.id), productData);
+        setProducts(prev => prev.map(p => p.id === productData.id ? { id: productData.id, ...productData } : p));
         toast.success('Produk berhasil diperbarui!');
       } else {
         // Add new
-        const docRef = await addDoc(collection(db, 'products'), productWithUrl);
-        setProducts(prev => [...prev, { id: docRef.id, ...productWithUrl }]);
+        const docRef = await addDoc(collection(db, 'products'), productData);
+        setProducts(prev => [...prev, { id: docRef.id, ...productData }]);
         toast.success('Produk berhasil ditambahkan!');
       }
     } catch (error) {

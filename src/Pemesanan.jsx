@@ -52,8 +52,8 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
         </div>
         <h1 className="text-xl font-bold text-slate-900 mb-2">Pesanan Terkirim!</h1>
         <p className="text-slate-500 text-sm mb-8 max-w-xs leading-relaxed">Pesanan Anda telah berhasil dikirim. Kurir kami akan segera memproses pengiriman.</p>
-        <button 
-          onClick={handleResetApp} 
+        <button
+          onClick={handleResetApp}
           className={`bg-blue-600 text-white w-full max-w-xs py-4 ${UI_RADIUS.inner} font-bold shadow-lg shadow-blue-500/10 active:scale-95 transition-all`}
         >
           Selesai & Kembali Belanja
@@ -86,29 +86,24 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
             {products.map(p => {
               const qty = cart.find(i => i.id === p.id)?.qty || 0;
               return (
-                <div 
-                  key={p.id} 
+                <div
+                  key={p.id}
                   className={`p-3 bg-white ${UI_RADIUS.outer} border transition-all flex items-center gap-4 ${qty > 0 ? 'border-blue-200 ring-2 ring-blue-50' : 'border-white shadow-sm hover:shadow-md'}`}
                 >
-                  <img 
-                    src={p.image || 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=200'} 
-                    className={`w-14 h-14 ${UI_RADIUS.inner} object-cover shrink-0 bg-slate-50 shadow-inner`} 
-                    alt={p.name} 
-                  />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-800 text-sm truncate">{p.name}</h3>
                     <p className="text-blue-600 font-bold text-sm mt-0.5">{formatIDR(p.price)}</p>
                   </div>
                   <div className={`flex items-center bg-slate-50 ${UI_RADIUS.inner} border border-slate-100 p-0.5`}>
-                    <button 
-                      onClick={() => handleAddToCart(p, -1)} 
+                    <button
+                      onClick={() => handleAddToCart(p, -1)}
                       className={`p-2 text-slate-400 hover:text-red-500 hover:bg-white ${UI_RADIUS.inner} transition-all`}
                     >
                       <Minus size={14} />
                     </button>
                     <span className="w-8 text-center text-sm font-bold text-slate-800 tracking-tighter">{qty}</span>
-                    <button 
-                      onClick={() => handleAddToCart(p, 1)} 
+                    <button
+                      onClick={() => handleAddToCart(p, 1)}
                       className={`p-2 text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all`}
                     >
                       <Plus size={14} />
@@ -132,47 +127,47 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Nama</span>
-                  <input 
-                    placeholder="Nama Anda" 
-                    value={customerInfo.name} 
-                    onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})} 
-                    className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-medium text-sm`} 
+                  <input
+                    placeholder="Nama Anda"
+                    value={customerInfo.name}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                    className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-medium text-sm`}
                   />
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">WhatsApp</span>
-                  <input 
-                    placeholder="08xx..." 
-                    type="tel" 
-                    value={customerInfo.phone} 
-                    onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})} 
-                    className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-medium text-sm`} 
+                  <input
+                    placeholder="08xx..."
+                    type="tel"
+                    value={customerInfo.phone}
+                    onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                    className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-medium text-sm`}
                   />
                 </div>
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Alamat</span>
-                <textarea 
-                  placeholder="Detail alamat..." 
-                  rows="2" 
-                  value={customerInfo.address} 
-                  onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})} 
-                  className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-medium text-sm resize-none`} 
+                <textarea
+                  placeholder="Detail alamat..."
+                  rows="2"
+                  value={customerInfo.address}
+                  onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+                  className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-medium text-sm resize-none`}
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2.5 pt-1">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Metode Pembayaran</p>
               <div className="grid grid-cols-2 gap-2.5">
-                <button 
-                  onClick={() => setCustomerInfo({...customerInfo, paymentMethod: 'cod'})} 
+                <button
+                  onClick={() => setCustomerInfo({ ...customerInfo, paymentMethod: 'cod' })}
                   className={`flex items-center justify-center gap-2 p-3 ${UI_RADIUS.inner} font-bold text-xs border transition-all ${customerInfo.paymentMethod === 'cod' ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-white text-slate-500 border-slate-100'}`}
                 >
                   <Wallet size={14} /> Bayar di Tempat
                 </button>
-                <button 
-                  onClick={() => setCustomerInfo({...customerInfo, paymentMethod: 'transfer'})} 
+                <button
+                  onClick={() => setCustomerInfo({ ...customerInfo, paymentMethod: 'transfer' })}
                   className={`flex items-center justify-center gap-2 p-3 ${UI_RADIUS.inner} font-bold text-xs border transition-all ${customerInfo.paymentMethod === 'transfer' ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-white text-slate-500 border-slate-100'}`}
                 >
                   <CreditCard size={14} /> Transfer Bank
@@ -206,9 +201,9 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Total Bayar</p>
             <p className="text-base font-bold text-slate-900 truncate">{formatIDR(total)}</p>
           </div>
-          <button 
-            onClick={handleOrderSubmit} 
-            disabled={cart.length === 0} 
+          <button
+            onClick={handleOrderSubmit}
+            disabled={cart.length === 0}
             className={`flex-1 max-w-[150px] py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-40`}
           >
             <Send size={14} /> Pesan
