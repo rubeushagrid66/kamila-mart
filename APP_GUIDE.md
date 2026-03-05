@@ -1,7 +1,8 @@
 # Panduan Aplikasi Kamila Mart
 
 **Nama Platform:** Kamila Mart
-**Deskripsi:** Platform manajemen operasional mart terintegrasi untuk memantau transaksi, stok barang secara otomatis, dan pembagian keuntungan yang transparan.
+
+**Deskripsi:** Platform manajemen operasional Kamila mart yang terintegrasi untuk memantau transaksi, stok barang secara otomatis, dan pembagian keuntungan yang transparan.
 
 ## 🌐 Halaman Aplikasi
 - **Tampilan Pembeli:** [https://kamilamart.vercel.app](https://kamilamart.vercel.app)
@@ -36,16 +37,16 @@ Melihat performa toko secara keseluruhan dalam satu tampilan cepat.
 Melihat rekap total omzet dan statistik keuangan dari bulan ke bulan.
 
 ### 6. Pengaturan Pengguna (Hak Akses)
-- **Multi-user:** Menambah akun admin baru dengan kredensial unik.
-- **Hak Akses Moduler:** Admin utama dapat menentukan modul mana saja yang bisa diakses oleh setiap staf (misal: staf gudang hanya bisa akses Produk, staf kasir hanya bisa akses Transaksi).
+- **Multi-user:** Menambah akun admin baru.
+- **Hak Akses Moduler:** Admin utama dapat menentukan modul mana saja yang bisa diakses oleh setiap staf (misal: Muklis hanya bisa akses Produk dan Transaksi).
 
 ### 7. Pengaturan Toko
-Mengatur profil mart, nomor WhatsApp admin, serta detail rekening bank untuk metode pembayaran transfer.
+Mengatur profil usaha, nomor WhatsApp admin, serta detail rekening bank untuk metode pembayaran transfer.
 
 ---
 
 ## 🛒 Fitur Halaman Pemesanan (Customer)
-- **Antarmuka Responsif:** Belanja nyaman melalui HP maupun Desktop.
-- **WhatsApp Integration:** Tombol cepat untuk menghubungi admin mart.
+- **UI yang Responsif:** Belanja nyaman melalui HP maupun Desktop.
+- **WhatsApp Integration:** Tombol cepat untuk menghubungi admin.
 - **Metode Pembayaran:** Pilihan Bayar di Tempat (COD) atau Transfer Bank dengan detail instruksi otomatis.
 - **Real-time Availability:** Pembeli tidak bisa memesan barang melebihi stok yang tersedia.
