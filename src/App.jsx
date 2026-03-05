@@ -416,7 +416,6 @@ function AppContent() {
             <Pemesanan
               settings={settings} products={products} cart={cart}
               setCart={setCart} showSuccess={showSuccess} setShowSuccess={setShowSuccess}
-              onAdminClick={() => navigate('/login')}
               onNewTransaction={saveTransaction}
             />
           }

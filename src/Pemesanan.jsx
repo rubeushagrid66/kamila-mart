@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Package, Truck, Minus, Plus, Send, Wallet, CreditCard, CheckCircle2, Lock, Info, Phone } from 'lucide-react';
+import { Package, Truck, Minus, Plus, Send, Wallet, CreditCard, CheckCircle2, Info, Phone } from 'lucide-react';
 import { formatIDR, UI_RADIUS } from './utils';
 
-export default function Pemesanan({ settings, products, cart, setCart, showSuccess, setShowSuccess, onAdminClick, onNewTransaction }) {
+export default function Pemesanan({ settings, products, cart, setCart, showSuccess, setShowSuccess, onNewTransaction }) {
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', address: '', paymentMethod: 'cod' });
 
   const handleAddToCart = (product, change) => {
@@ -89,9 +89,6 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
               <span className="text-xs font-bold hidden sm:block">Admin</span>
             </a>
           )}
-          <button onClick={onAdminClick} className={`p-2.5 bg-slate-50 text-slate-300 hover:text-blue-500 ${UI_RADIUS.inner} transition-colors`}>
-            <Lock size={16} />
-          </button>
         </div>
       </header>
 
