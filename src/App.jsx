@@ -7,10 +7,21 @@ import Login from './Login';
 import Pemesanan from './Pemesanan';
 import AdminDashboard from './AdminDashboard';
 import toast, { Toaster } from 'react-hot-toast';
-
 function AppContent() {
   const [user, setUser] = useState(null);
+  const [customUser, setCustomUser] = useState(() => {
+    const saved = localStorage.getItem('kamila_custom_user');
+    return saved ? JSON.parse(saved) : null;
+  });
   const navigate = useNavigate();
+
+  // Initial mock user if customUser exists
+  useEffect(() => {
+    if (customUser && !user) {
+      setUser({ email: `${customUser.username}@kamilamart.com` });
+    }
+  }, []);
+
   const [cart, setCart] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [adminTab, setAdminTab] = useState('dashboard');
@@ -27,6 +38,15 @@ function AppContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  // Sync customUser with localStorage
+  useEffect(() => {
+    if (customUser) {
+      localStorage.setItem('kamila_custom_user', JSON.stringify(customUser));
+    } else {
+      localStorage.removeItem('kamila_custom_user');
+    }
+  }, [customUser]);
 
   // Fetch data with timeouts and logical split
   useEffect(() => {
@@ -105,7 +125,10 @@ function AppContent() {
 
       unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
-          if (mounted) setUser(currentUser);
+          if (mounted) {
+            setUser(currentUser);
+            setCustomUser(null);
+          }
 
           // Legacy load for products/users (static-ish)
           const usersSnap = await getDocs(collection(db, 'users'));
@@ -119,7 +142,7 @@ function AppContent() {
             unsubTx();
           };
         } else {
-          if (mounted) {
+          if (mounted && !customUser) {
             setUser(null);
             setIsFirstLoad(true);
           }
@@ -275,21 +298,35 @@ function AppContent() {
   const handleLogin = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
-    let email = fd.get('username');
+    const usernameInput = fd.get('username');
     const password = fd.get('password');
 
+    let email = usernameInput;
     // Add domain if they only typed username (since Firebase requires email)
     if (email && !email.includes('@')) {
       email = `${email}@kamilamart.com`;
     }
 
     try {
+      // 1. Try Firebase Auth first
       await signInWithEmailAndPassword(auth, email, password);
-      toast.success('Login berhasil!');
+      toast.success('Login berhasil (Firebase)!');
+      setCustomUser(null);
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Gagal login: Periksa username/email dan password');
+    } catch (firebaseError) {
+      console.warn('Firebase login failed, trying Firestore fallback...', firebaseError.code);
+
+      // 2. Fallback to Firestore users collection
+      const foundUser = users.find(u => u.username === usernameInput && u.password === password);
+
+      if (foundUser) {
+        setCustomUser(foundUser);
+        setUser({ email: `${foundUser.username}@kamilamart.com` }); // Mock user object for routing
+        toast.success(`Login berhasil sebagai ${foundUser.name}!`);
+        navigate('/dashboard');
+      } else {
+        toast.error('Gagal login: Username atau Password salah');
+      }
     }
   };
 
@@ -297,6 +334,7 @@ function AppContent() {
     try {
       await signOut(auth);
       setUser(null);
+      setCustomUser(null);
       setAdminTab('dashboard');
       toast.success('Logout berhasil!');
       navigate('/');
@@ -369,6 +407,7 @@ function AppContent() {
                 deleteTransaction={deleteTransaction}
                 updateTransactionStatus={updateTransactionStatus}
                 currentUserData={
+                  customUser ||
                   users.find(u => u.username === user.email.split('@')[0]) ||
                   (user.email.split('@')[0] === 'admin'
                     ? { name: 'Super Admin', permissions: ['dashboard', 'transactions', 'products', 'finance', 'users', 'settings'] }
