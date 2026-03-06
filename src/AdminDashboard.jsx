@@ -830,57 +830,56 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
         )}
       </div>
 
-      {/* Desktop view: Table matching spreadsheet */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[1500px]">
+        <table className="w-full text-left min-w-[1500px]">
           <thead>
-            <tr className={`border-b border-slate-100 ${UI_TEXT.label} bg-slate-50/50`}>
-              <th className="py-4 px-3 text-center border">No</th>
-              <th className="py-4 px-3 border">Tanggal pesanan</th>
-              <th className="py-4 px-3 text-center border">Bulan</th>
-              <th className="py-4 px-3 text-center border">Tahun</th>
-              <th className="py-4 px-3 border">Nomor Rumah</th>
-              <th className="py-4 px-3 border">Kode Barang</th>
-              <th className="py-4 px-3 border">Nama Barang</th>
-              <th className="py-4 px-3 text-center border">Jumlah</th>
-              <th className="py-4 px-3 border">Harga Modal</th>
-              <th className="py-4 px-3 border">Total Harga Modal</th>
-              <th className="py-4 px-3 border">Harga Jual</th>
-              <th className="py-4 px-3 border">Total Harga Jual</th>
-              <th className="py-4 px-3 border">Cara Pembayaran</th>
-              <th className="py-4 px-3 border">Catatan</th>
-              <th className="py-4 px-3 border">Profit</th>
-              <th className="py-4 px-3 text-center border">Aksi</th>
+            <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+              <th className="py-4 px-4 text-center">No</th>
+              <th className="py-4 px-4">Tanggal pesanan</th>
+              <th className="py-4 px-4 text-center">Bulan</th>
+              <th className="py-4 px-4 text-center">Tahun</th>
+              <th className="py-4 px-4">Nomor Rumah</th>
+              <th className="py-4 px-4">Kode Barang</th>
+              <th className="py-4 px-4">Nama Barang</th>
+              <th className="py-4 px-4 text-center">Jumlah</th>
+              <th className="py-4 px-4 text-right">Harga Modal</th>
+              <th className="py-4 px-4 text-right">Total Modal</th>
+              <th className="py-4 px-4 text-right text-blue-600/70">Harga Jual</th>
+              <th className="py-4 px-4 text-right text-blue-600">Total Jual</th>
+              <th className="py-4 px-4">Metode</th>
+              <th className="py-4 px-4">Catatan</th>
+              <th className="py-4 px-4 text-right">Profit</th>
+              <th className="py-4 px-4 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
             {flattenedItems.map((item, i) => (
-              <tr key={`${item.txId}-${i}`} className="text-[11px] hover:bg-slate-50/50 transition-colors">
-                <td className="py-3 px-3 text-center border font-medium text-slate-500">{item.no}</td>
-                <td className="py-3 px-3 border whitespace-nowrap">{item.tanggalPesanan}</td>
-                <td className="py-3 px-3 text-center border">{item.bulan}</td>
-                <td className="py-3 px-3 text-center border">{item.tahun}</td>
-                <td className="py-3 px-3 border font-bold text-slate-700">{item.nomorRumah}</td>
-                <td className="py-3 px-3 border font-mono text-[10px]">{item.kodeBarang}</td>
-                <td className="py-3 px-3 border font-medium">{item.namaBarang}</td>
-                <td className="py-3 px-3 text-center border font-bold">{item.jumlah}</td>
-                <td className="py-3 px-3 border">{formatIDR(item.hargaModal)}</td>
-                <td className="py-3 px-3 border font-medium">{formatIDR(item.totalHargaModal)}</td>
-                <td className="py-3 px-3 border text-blue-600 font-medium">{formatIDR(item.hargaJual)}</td>
-                <td className="py-3 px-3 border font-black text-blue-700">{formatIDR(item.totalHargaJual)}</td>
-                <td className="py-3 px-3 border">
-                  <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}>
+              <tr key={`${item.txId}-${i}`} className="text-[12px] hover:bg-slate-50/50 transition-colors group">
+                <td className="py-4 px-4 text-center text-slate-400 font-medium">{item.no}</td>
+                <td className="py-4 px-4 whitespace-nowrap font-medium text-slate-600">{item.tanggalPesanan}</td>
+                <td className="py-4 px-4 text-center font-bold text-slate-500">{item.bulan}</td>
+                <td className="py-4 px-4 text-center font-bold text-slate-500">{item.tahun}</td>
+                <td className="py-4 px-4 font-extrabold text-slate-900">{item.nomorRumah}</td>
+                <td className="py-4 px-4 font-mono text-[10px] text-slate-500">{item.kodeBarang}</td>
+                <td className="py-4 px-4 font-bold text-slate-800">{item.namaBarang}</td>
+                <td className="py-4 px-4 text-center font-black text-blue-600">{item.jumlah}</td>
+                <td className="py-4 px-4 text-right text-slate-500">{formatIDR(item.hargaModal)}</td>
+                <td className="py-4 px-4 text-right font-bold text-slate-600">{formatIDR(item.totalHargaModal)}</td>
+                <td className="py-4 px-4 text-right font-bold text-blue-600/70">{formatIDR(item.hargaJual)}</td>
+                <td className="py-4 px-4 text-right font-black text-blue-600">{formatIDR(item.totalHargaJual)}</td>
+                <td className="py-4 px-4">
+                  <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     {item.caraPembayaran}
                   </span>
                 </td>
-                <td className="py-3 px-3 border text-slate-400 italic max-w-[150px] truncate">{item.catatan}</td>
-                <td className="py-3 px-3 border font-black text-emerald-600">{formatIDR(item.profit)}</td>
-                <td className="py-3 px-3 text-center border">
+                <td className="py-4 px-4 text-slate-400 italic max-w-[150px] truncate font-medium">{item.catatan}</td>
+                <td className="py-4 px-4 text-right font-black text-emerald-600 text-sm">{formatIDR(item.profit)}</td>
+                <td className="py-4 px-4 text-center">
                   <button
                     onClick={() => onDetail(item.originalTx)}
-                    className={`p-1.5 text-slate-300 hover:text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all`}
+                    className={`p-2 text-slate-300 hover:text-blue-600 rounded-lg hover:bg-white transition-all`}
                   >
-                    <Eye size={14} />
+                    <Eye size={16} />
                   </button>
                 </td>
               </tr>
@@ -923,8 +922,10 @@ function TransactionModal({ onClose, onSave, products }) {
       items: [...prev.items, {
         id: product.id,
         name: product.name,
+        cost: product.cost,
         price: product.price,
-        qty: quantity
+        qty: quantity,
+        profit: (product.price - product.cost) * quantity
       }]
     }));
     setSelectedProduct('');
@@ -1024,18 +1025,38 @@ function TransactionModal({ onClose, onSave, products }) {
               </button>
             </div>
 
-            <div className="space-y-2">
-              {formData.items.map((item, idx) => (
-                <div key={idx} className={`flex justify-between items-center p-3 bg-slate-50 ${UI_RADIUS.inner} text-sm`}>
-                  <div className="flex-1">
-                    <span className="font-bold text-slate-800">{item.qty}x</span> {item.name}
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-bold text-blue-600">{formatIDR(item.price * item.qty)}</span>
-                    <button type="button" onClick={() => removeItem(idx)} className="text-slate-300 hover:text-red-500"><X size={16} /></button>
-                  </div>
-                </div>
-              ))}
+            <div className="bg-slate-50 border border-slate-100 overflow-hidden md:rounded-xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-[11px]">
+                  <thead className="bg-white border-b border-slate-100 text-slate-400 font-bold uppercase tracking-tighter">
+                    <tr>
+                      <th className="py-3 px-4">Nama Barang</th>
+                      <th className="py-3 px-2 text-center">Qty</th>
+                      <th className="py-3 px-2 text-right">Modal</th>
+                      <th className="py-3 px-2 text-right">Jual</th>
+                      <th className="py-3 px-2 text-right">Profit</th>
+                      <th className="py-3 px-4 text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {formData.items.map((item, idx) => (
+                      <tr key={idx} className="bg-white/50">
+                        <td className="py-3 px-4 font-bold text-slate-700">{item.name}</td>
+                        <td className="py-3 px-2 text-center font-black text-blue-600">{item.qty}</td>
+                        <td className="py-3 px-2 text-right text-slate-400">{formatIDR(item.cost * item.qty)}</td>
+                        <td className="py-3 px-2 text-right font-bold text-slate-900">{formatIDR(item.price * item.qty)}</td>
+                        <td className="py-3 px-2 text-right font-bold text-emerald-600">{formatIDR(item.profit)}</td>
+                        <td className="py-3 px-4 text-center text-rose-500">
+                          <button type="button" onClick={() => removeItem(idx)} className="p-1 hover:bg-rose-50 rounded"><Trash2 size={14} /></button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {formData.items.length === 0 && (
+                <div className="py-8 text-center text-slate-400 italic text-xs">Belum ada item ditambahkan</div>
+              )}
             </div>
           </div>
 
