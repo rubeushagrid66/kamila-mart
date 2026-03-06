@@ -315,6 +315,20 @@ function FinanceView({ transactions, products, selectedYear }) {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
+        <div className="flex gap-2">
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
+            <Calendar size={16} className="ml-2 text-slate-400" />
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="bg-transparent text-sm font-bold text-slate-700 p-2 outline-none"
+            >
+              {years.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className={`p-8 bg-slate-900 text-white ${UI_RADIUS.outer} shadow-xl relative overflow-hidden`}>
@@ -524,6 +538,16 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
         <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
+            <Calendar size={14} className="text-slate-400" />
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="bg-transparent text-xs font-bold text-slate-700 py-1.5 outline-none"
+            >
+              {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
           <button
             onClick={() => {
               setTempFormula({ marbotPercent: marbotP, musholaPercent: musholaP, internalPercent: internalP });
@@ -1358,25 +1382,7 @@ export default function AdminDashboard({
           <header className="mb-12">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                  <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {(adminTab === 'transactions' || adminTab === 'dashboard') && `(${filteredTransactions.length})`}</h2>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={selectedMonth}
-                      onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                      className="bg-transparent text-[10px] font-black uppercase text-blue-600 border-none outline-none focus:ring-0 cursor-pointer"
-                    >
-                      {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                    </select>
-                    <select
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(Number(e.target.value))}
-                      className="bg-transparent text-[10px] font-black uppercase text-blue-600 border-none outline-none focus:ring-0 cursor-pointer"
-                    >
-                      {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
-                    </select>
-                  </div>
-                </div>
+                <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {(adminTab === 'transactions' || adminTab === 'dashboard') && `(${filteredTransactions.length})`}</h2>
                 <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
               </div>
               <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
@@ -1426,7 +1432,20 @@ export default function AdminDashboard({
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div className="flex flex-wrap items-center gap-3">
-                  {/* Global filter moved to header */}
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                  >
+                    {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                  </select>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                  >
+                    {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
                 </div>
 
                 <div className="flex gap-2 w-full sm:w-auto">
