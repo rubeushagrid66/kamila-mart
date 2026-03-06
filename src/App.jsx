@@ -191,21 +191,26 @@ function AppContent() {
   const saveProduct = async (productData) => {
     try {
       const { id, ...dataToSave } = productData;
+      const targetId = id || doc(collection(db, 'products')).id;
 
-      if (id) {
-        // Update existing
-        await updateDoc(doc(db, 'products', id), dataToSave);
-        setProducts(prev => prev.map(p => p.id === id ? { id, ...dataToSave } : p));
-        toast.success('Produk berhasil diperbarui!');
-      } else {
-        // Add new
-        const docRef = await addDoc(collection(db, 'products'), dataToSave);
-        setProducts(prev => [...prev, { id: docRef.id, ...dataToSave }]);
-        toast.success('Produk berhasil ditambahkan!');
-      }
+      await setDoc(doc(db, 'products', targetId), dataToSave, { merge: true });
+
+      setProducts(prev => {
+        const index = prev.findIndex(p => p.id === targetId);
+        if (index > -1) {
+          const newProducts = [...prev];
+          newProducts[index] = { id: targetId, ...dataToSave };
+          return newProducts;
+        }
+        return [...prev, { id: targetId, ...dataToSave }];
+      });
+
+      toast.success('Produk berhasil disimpan!');
+      return targetId;
     } catch (error) {
       console.error('Error saving product:', error);
       toast.error('Gagal menyimpan produk');
+      throw error;
     }
   };
 
@@ -259,22 +264,15 @@ function AppContent() {
   // TRANSACTION CRUD
   const saveTransaction = async (transactionData) => {
     try {
-      const idStr = transactionData.id ? transactionData.id.toString() : null;
-      const dataToSave = { ...transactionData };
-      if (idStr) dataToSave.id = idStr;
+      const { id, ...dataToSave } = transactionData;
+      const isNew = !id || !transactions.some(t => t.id === id.toString());
+      const targetId = id ? id.toString() : doc(collection(db, 'transactions')).id;
 
-      if (idStr && transactions.some(t => t.id === idStr)) {
-        // Update existing
-        await updateDoc(doc(db, 'transactions', idStr), dataToSave);
-        setTransactions(prev => prev.map(t => t.id === idStr ? dataToSave : t));
-        toast.success('Transaksi berhasil diperbarui!');
-      } else {
-        // Add new
-        delete dataToSave.id; // Let Firebase generate
-        const docRef = await addDoc(collection(db, 'transactions'), dataToSave);
+      await setDoc(doc(db, 'transactions', targetId), dataToSave, { merge: true });
 
+      if (isNew) {
         // --- REDUCE STOCK ---
-        const stockUpdates = dataToSave.items.map(async (item) => {
+        const stockUpdates = (dataToSave.items || []).map(async (item) => {
           if (item.id) {
             const productRef = doc(db, 'products', item.id.toString());
             await updateDoc(productRef, {
@@ -284,13 +282,24 @@ function AppContent() {
         });
         await Promise.all(stockUpdates);
         // --------------------
-
-        setTransactions(prev => [...prev, { id: docRef.id, ...dataToSave }]);
-        toast.success('Pesanan berhasil dibuat!');
       }
+
+      setTransactions(prev => {
+        const index = prev.findIndex(t => t.id === targetId);
+        if (index > -1) {
+          const newTx = [...prev];
+          newTx[index] = { id: targetId, ...dataToSave };
+          return newTx;
+        }
+        return [...prev, { id: targetId, ...dataToSave }];
+      });
+
+      toast.success(isNew ? 'Pesanan berhasil dibuat!' : 'Transaksi berhasil diperbarui!');
+      return targetId;
     } catch (error) {
       console.error('Error saving transaction:', error);
       toast.error('Gagal menyimpan transaksi');
+      throw error;
     }
   };
 

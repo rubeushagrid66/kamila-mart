@@ -1234,95 +1234,106 @@ export default function AdminDashboard({
     const reader = new FileReader();
     reader.onload = async (event) => {
       const text = event.target.result;
-      const lines = text.split('\n');
-      const headers = lines[0].split(',');
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+      if (lines.length < 2) return;
 
-      const createdProducts = { ...products.reduce((acc, p) => ({ ...acc, [p.name.toLowerCase()]: p }), {}) };
-      const newProductsToSave = [];
+      const rawHeaders = lines[0].split(',').map(h => h.trim().toLowerCase());
 
-      const newTransactions = [];
+      // Header mapping
+      const headerMap = {
+        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date',
+        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer',
+        'whatsapp': 'phone', 'phone': 'phone', 'wa': 'phone', 'no': 'phone',
+        'alamat': 'address', 'address': 'address',
+        'items': 'items', 'barang': 'items', 'produk': 'items',
+        'total': 'total', 'harga': 'total', 'price': 'total',
+        'metode': 'method', 'method': 'method', 'pembayaran': 'method',
+        'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes'
+      };
+
+      const mappedHeaders = rawHeaders.map(h => headerMap[h] || h);
+
+      const parseDate = (dateStr) => {
+        if (!dateStr) return new Date();
+        // Handle DD/MM/YYYY
+        const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        if (dmy) return new Date(dmy[3], dmy[2] - 1, dmy[1]);
+        // Handle YYYY-MM-DD
+        const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+        if (ymd) return new Date(ymd[1], ymd[2] - 1, ymd[3]);
+        // Fallback to native
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? new Date() : d;
+      };
+
+      const existingProducts = [...products];
+      let importedCount = 0;
+      let newProductCount = 0;
 
       for (const line of lines.slice(1)) {
-        if (!line.trim()) continue;
-        const values = line.split(',');
-        const t = {};
-        headers.forEach((h, i) => {
-          const key = h.trim().toLowerCase().replace(' ', '');
-          let val = values[i]?.replace(/"/g, '').trim();
-          if (key === 'total' || key === 'harga' || key === 'price') val = Number(val) || 0;
-          t[key] = val;
-        });
+        const values = line.split(',').map(v => v.replace(/^"|"$/g, '').trim());
+        const rawRow = {};
+        mappedHeaders.forEach((h, i) => { rawRow[h] = values[i]; });
 
-        const itemStr = t.items || "";
-        const parsedItems = itemStr.split(';').map(s => {
-          const parts = s.trim().split('x ');
-          const qty = Number(parts[0]) || 1;
-          const name = parts.slice(1).join('x ').trim();
-          return { qty, name };
-        }).filter(i => i.name);
-
+        const date = parseDate(rawRow.date);
         const transactionItems = [];
         let calculatedTotal = 0;
 
-        for (const item of parsedItems) {
-          let product = createdProducts[item.name.toLowerCase()];
+        const itemParts = (rawRow.items || "").split(';').map(s => s.trim()).filter(s => s);
+
+        for (const itemPart of itemParts) {
+          // Format: "2x Product Name" or just "Product Name"
+          const match = itemPart.match(/^(\d+)[xX]\s*(.+)$/);
+          const qty = match ? Number(match[1]) : 1;
+          const name = match ? match[2].trim() : itemPart.trim();
+
+          let product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
 
           if (!product) {
-            // Create new product if it doesn't exist
+            // Auto-create product
             const newProduct = {
-              id: Date.now() + Math.random().toString(36).substr(2, 9),
-              customId: `NEW-${Math.floor(1000 + Math.random() * 9000)}`,
-              name: item.name,
+              name: name,
               category: 'Imported',
-              price: t.harga || t.price || 0, // Fallback to transaction price if available
-              cost: (t.harga || t.price || 0) * 0.8, // Estimate cost at 80% if not known
+              price: Number(rawRow.total) / (itemParts.length || 1) / qty || 10000,
+              cost: (Number(rawRow.total) / (itemParts.length || 1) / qty || 10000) * 0.8,
               stock: 100,
-              image: ''
+              image: '',
+              customId: `NEW-${Math.floor(1000 + Math.random() * 9000)}`
             };
-            newProductsToSave.push(newProduct);
-            createdProducts[item.name.toLowerCase()] = newProduct;
-            product = newProduct;
+            const savedId = await saveProduct(newProduct);
+            product = { id: savedId, ...newProduct };
+            existingProducts.push(product);
+            newProductCount++;
           }
-
-          const itemTotal = product.price * item.qty;
-          calculatedTotal += itemTotal;
 
           transactionItems.push({
             id: product.id,
             name: product.name,
-            cost: product.cost,
+            qty: qty,
             price: product.price,
-            qty: item.qty,
-            profit: (product.price - product.cost) * item.qty
+            cost: product.cost,
+            profit: (product.price - product.cost) * qty
           });
+          calculatedTotal += product.price * qty;
         }
 
-        newTransactions.push({
-          id: Date.now() + Math.random().toString(36).substr(2, 9),
-          date: t.tanggal ? new Date(t.tanggal).toISOString() : new Date().toISOString(),
-          time: t.tanggal || new Date().toLocaleString(),
-          customer: t.pelanggan || 'Imported Customer',
-          phone: t.whatsapp || '',
-          address: t.alamat || '',
+        const transaction = {
+          date: date.toISOString(),
+          time: date.toLocaleString('id-ID'),
+          customer: rawRow.customer || 'Imported Customer',
+          phone: rawRow.phone || '',
+          address: rawRow.address || '',
           items: transactionItems,
-          total: t.total || calculatedTotal,
-          method: (t.metode || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
-          notes: t.catatan || ''
-        });
+          total: Number(rawRow.total) || calculatedTotal,
+          method: (rawRow.method || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
+          notes: rawRow.notes || 'Imported from CSV'
+        };
+
+        await saveTransaction(transaction);
+        importedCount++;
       }
 
-      if (newProductsToSave.length > 0) {
-        for (const p of newProductsToSave) {
-          await saveProduct(p);
-        }
-      }
-
-      if (newTransactions.length > 0) {
-        for (const tx of newTransactions) {
-          await saveTransaction(tx);
-        }
-        toast.success(`Berhasil mengimpor ${newTransactions.length} transaksi dan ${newProductsToSave.length} produk baru!`);
-      }
+      toast.success(`Berhasil mengimpor ${importedCount} transaksi dan ${newProductCount} produk baru!`);
     };
     reader.readAsText(file);
     e.target.value = '';
