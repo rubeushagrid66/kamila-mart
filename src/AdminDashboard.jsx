@@ -722,8 +722,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete })
       // Ensure t.items is an array before iterating
       const items = Array.isArray(t.items) ? t.items : [];
 
-      items.forEach(item => {
-        const prod = products?.find(p => p.id === item.id || p.name?.toLowerCase() === item.name?.toLowerCase());
+      if (items.length === 0) {
         result.push({
           txId: t.id,
           no: globalIdx++,
@@ -731,17 +730,38 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete })
           bulan: bulan,
           tahun: tahun,
           nomorRumah: t.address || '-',
-          kodeBarang: prod?.customId || '-',
-          namaBarang: item.name || 'Unknown Item',
-          jumlah: item.qty || 0,
-          hargaJual: item.price || 0,
-          totalHargaJual: (item.price || 0) * (item.qty || 0),
+          kodeBarang: '-',
+          namaBarang: '(Tanpa Item)',
+          jumlah: 0,
+          hargaJual: 0,
+          totalHargaJual: t.total || 0,
           caraPembayaran: (t.method === 'transfer' ? 'Transfer' : 'Cash'),
           catatan: t.notes || '-',
-          profit: item.profit || 0,
+          profit: 0,
           originalTx: t
         });
-      });
+      } else {
+        items.forEach(item => {
+          const prod = products?.find(p => p.id === item.id || p.name?.toLowerCase() === item.name?.toLowerCase());
+          result.push({
+            txId: t.id,
+            no: globalIdx++,
+            tanggalPesanan: t.time || (isNaN(d.getTime()) ? '-' : d.toLocaleString()),
+            bulan: bulan,
+            tahun: tahun,
+            nomorRumah: t.address || '-',
+            kodeBarang: prod?.customId || '-',
+            namaBarang: item.name || 'Unknown Item',
+            jumlah: item.qty || 0,
+            hargaJual: item.price || 0,
+            totalHargaJual: (item.price || 0) * (item.qty || 0),
+            caraPembayaran: (t.method === 'transfer' ? 'Transfer' : 'Cash'),
+            catatan: t.notes || '-',
+            profit: item.profit || 0,
+            originalTx: t
+          });
+        });
+      }
     });
     return result;
   }, [transactions, products]);
@@ -1240,29 +1260,34 @@ export default function AdminDashboard({
       const lines = text.split('\n').map(l => l.trim()).filter(l => l);
       if (lines.length < 2) return;
 
-      const rawHeaders = lines[0].split(',').map(h => h.trim().toLowerCase());
+      // Detect delimiter: simple check for ',' vs ';' in the first line
+      const commaCount = (lines[0].match(/,/g) || []).length;
+      const semiCount = (lines[0].match(/;/g) || []).length;
+      const delimiter = semiCount > commaCount ? ';' : ',';
+
+      const rawHeaders = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
 
       // Header mapping
       const headerMap = {
-        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date',
-        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer',
-        'whatsapp': 'phone', 'phone': 'phone', 'wa': 'phone', 'no': 'phone',
-        'alamat': 'address', 'address': 'address',
-        'items': 'items', 'barang': 'items', 'produk': 'items',
-        'total': 'total', 'harga': 'total', 'price': 'total',
-        'metode': 'method', 'method': 'method', 'pembayaran': 'method',
-        'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes'
+        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date', 'waktu': 'date',
+        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer', 'nama pelanggan': 'customer',
+        'whatsapp': 'phone', 'phone': 'phone', 'wa': 'phone', 'no': 'phone', 'telepon': 'phone', 'no hp': 'phone',
+        'alamat': 'address', 'address': 'address', 'rumah': 'address',
+        'items': 'items', 'barang': 'items', 'produk': 'items', 'nama produk': 'items', 'nama barang': 'items', 'pesanan': 'items',
+        'total': 'total', 'harga': 'total', 'price': 'total', 'total harga': 'total',
+        'metode': 'method', 'method': 'method', 'pembayaran': 'method', 'cara bayar': 'method',
+        'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes', 'memo': 'notes'
       };
 
       const mappedHeaders = rawHeaders.map(h => headerMap[h] || h);
 
       const parseDate = (dateStr) => {
         if (!dateStr) return new Date();
-        // Handle DD/MM/YYYY
-        const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+        // Handle DD/MM/YYYY or D/M/YYYY
+        const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
         if (dmy) return new Date(dmy[3], dmy[2] - 1, dmy[1]);
         // Handle YYYY-MM-DD
-        const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+        const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
         if (ymd) return new Date(ymd[1], ymd[2] - 1, ymd[3]);
         // Fallback to native
         const d = new Date(dateStr);
@@ -1275,7 +1300,9 @@ export default function AdminDashboard({
       let skippedReasons = [];
 
       for (const line of lines.slice(1)) {
-        const values = line.split(',').map(v => v.replace(/^"|"$/g, '').trim());
+        const values = line.split(delimiter).map(v => v.replace(/^"|"$/g, '').trim());
+        if (values.length < 2) continue; // Skip empty lines or malformed rows
+
         const rawRow = {};
         mappedHeaders.forEach((h, i) => { rawRow[h] = values[i]; });
 
@@ -1285,14 +1312,16 @@ export default function AdminDashboard({
         let hasMissingProduct = false;
         let missingProducts = [];
 
-        const itemParts = (rawRow.items || "").split(/[;,]/).map(s => s.trim()).filter(s => s);
+        // Support semicolon, comma, or pipe as item separators
+        const itemParts = (rawRow.items || "").split(/[|;,]/).map(s => s.trim()).filter(s => s);
 
         for (const itemPart of itemParts) {
-          const match = itemPart.match(/^(\d+)[xX]\s*(.+)$/);
+          // Regex to catch "2 x Product" or "2x Product" or "2 Product"
+          const match = itemPart.match(/^(\d+)\s*[xX]?\s*(.+)$/);
           const qty = match ? Number(match[1]) : 1;
-          const name = match ? match[2].trim() : itemPart.trim();
+          const name = (match ? match[2] : itemPart).trim();
 
-          let product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
+          const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
 
           if (!product) {
             hasMissingProduct = true;
@@ -1311,9 +1340,10 @@ export default function AdminDashboard({
           calculatedTotal += product.price * qty;
         }
 
-        if (hasMissingProduct) {
+        // If no items were parsed at all, skip the row
+        if (transactionItems.length === 0) {
           skippedCount++;
-          skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: Produk tidak ditemukan (${missingProducts.join(', ')})`);
+          skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: ${hasMissingProduct ? 'Produk tidak ditemukan' : 'Item kosong'}`);
           continue;
         }
 
@@ -1340,7 +1370,7 @@ export default function AdminDashboard({
             {skippedReasons.slice(0, 3).map((r, i) => <div key={i}>{r}</div>)}
             {skippedCount > 3 && <div>...dan {skippedCount - 3} lainnya</div>}
           </span>
-        ), { duration: 6000, icon: '⚠️' });
+        ), { duration: 8000, icon: '⚠️' });
       } else {
         toast.success(`Berhasil mengimpor ${importedCount} transaksi!`);
       }
