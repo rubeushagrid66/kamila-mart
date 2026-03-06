@@ -316,8 +316,8 @@ function FinanceView({ transactions, products }) {
   }), { profit: 0, revenue: 0, success: 0 });
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-white shadow-sm`}>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
         <div>
           <h3 className="text-sm font-bold text-slate-800">Laporan Keuangan Tahunan</h3>
           <p className="text-xs text-slate-400">Ringkasan laba bersih dari pembayaran sukses</p>
@@ -338,17 +338,17 @@ function FinanceView({ transactions, products }) {
           </div>
           <DollarSign size={80} className="absolute -bottom-4 -right-4 text-white/5" />
         </div>
-        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-white shadow-sm`}>
+        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-emerald-600">Omzet Berhasil</p>
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{formatIDR(yearlyTotal.revenue)}</p>
         </div>
-        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-white shadow-sm`}>
+        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Transaksi Selesai</p>
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.success} Pesanan</p>
         </div>
       </div>
 
-      <div className={`bg-white ${UI_RADIUS.outer} border border-white shadow-sm overflow-hidden`}>
+      <div className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden`}>
         <div className="p-6 border-b border-slate-50 flex items-center gap-2">
           <PieChart size={18} className="text-blue-600" />
           <h4 className="text-sm font-bold text-slate-800">Rincian Laba Rugi Bulanan</h4>
@@ -530,8 +530,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const internalP = settings?.internalPercent || 40;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-white shadow-sm`}>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
         <div>
           <h3 className="text-sm font-bold text-slate-800">Laporan Pembagian Keuntungan</h3>
           <p className="text-xs text-slate-400">Pembagian profit bersih antara Marbot, Mushola, dan Internal</p>
@@ -555,7 +555,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         </div>
       </div>
 
-      <div className={`bg-white ${UI_RADIUS.outer} border border-white shadow-sm overflow-hidden`}>
+      <div className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -1387,7 +1387,7 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'transactions' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h2 className={UI_TEXT.h2}>Riwayat Transaksi</h2>
@@ -1430,7 +1430,7 @@ export default function AdminDashboard({
               </select>
             </div>
 
-            <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-50 shadow-sm`}>
+            <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
               <TransactionList
                 updateStatus={updateTransactionStatus}
                 transactions={filteredTransactions.slice(0, visibleTransactions)}
@@ -1447,7 +1447,7 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'products' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h2 className={UI_TEXT.h2}>Inventaris Produk</h2>
@@ -1547,7 +1547,7 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'users' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h2 className={UI_TEXT.h2}>Manajemen User</h2>
@@ -1558,40 +1558,79 @@ export default function AdminDashboard({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {users.map(u => (
-                <div key={u.id} className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-lg transition-all`}>
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-5">
-                      <div className={`w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20`}>
-                        <Users size={24} />
+            <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                      <th className="py-4 px-6">No</th>
+                      <th className="py-4 px-6">Nama</th>
+                      <th className="py-4 px-6">Username</th>
+                      <th className="py-4 px-6">Hak Akses</th>
+                      <th className="py-4 px-6 text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {users.map((u, idx) => (
+                      <tr key={u.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
+                        <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
+                        <td className="py-4 px-6 font-bold text-slate-900">{u.name}</td>
+                        <td className="py-4 px-6 font-mono text-[11px] text-slate-500">@{u.username}</td>
+                        <td className="py-4 px-6">
+                          <div className="flex flex-wrap gap-1">
+                            {u.permissions.map(p => (
+                              <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-4 px-6 text-center">
+                          <div className="flex justify-center gap-2">
+                            <button onClick={() => setEditingUser(u)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
+                            <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y divide-slate-50">
+                {users.map(u => (
+                  <div key={u.id} className="p-5 flex flex-col gap-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                          <Users size={18} />
+                        </div>
+                        <div>
+                          <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{u.name}</h3>
+                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-slate-900 leading-tight mb-0.5">{u.name}</h3>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                      <div className="flex gap-1">
+                        <button onClick={() => setEditingUser(u)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
+                        <button onClick={() => handleDeleteUser(u.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Permissions:</span>
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="space-y-2 pt-4 border-t border-slate-50">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
+                      <div className="flex flex-wrap gap-1">
                         {u.permissions.map(p => (
-                          <span key={p} className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black uppercase tracking-tight">{p.replace('_', ' ')}</span>
+                          <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
                         ))}
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2 mt-8 pt-6 border-t border-slate-50">
-                    <button onClick={() => setEditingUser(u)} className="flex-1 py-3 bg-slate-50 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition-all">Edit</button>
-                    <button onClick={() => handleDeleteUser(u.id)} className="p-3 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100 transition-all"><Trash2 size={16} /></button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {adminTab === 'settings' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h2 className={UI_TEXT.h2}>Pengaturan Mart</h2>
