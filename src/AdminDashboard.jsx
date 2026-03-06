@@ -710,7 +710,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete })
       return dateB - dateA;
     });
 
-    sortedTx.forEach(t => {
+    (sortedTx || []).forEach(t => {
       const d = t.date instanceof Date ? t.date : new Date(t.date);
       const day = d.getDate().toString().padStart(2, '0');
       const month = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -719,20 +719,23 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete })
       const bulan = d.toLocaleString('id-ID', { month: 'long' });
       const tahun = d.getFullYear();
 
-      t.items?.forEach(item => {
-        const prod = products?.find(p => p.id === item.id || p.name === item.name);
+      // Ensure t.items is an array before iterating
+      const items = Array.isArray(t.items) ? t.items : [];
+
+      items.forEach(item => {
+        const prod = products?.find(p => p.id === item.id || p.name?.toLowerCase() === item.name?.toLowerCase());
         result.push({
           txId: t.id,
           no: globalIdx++,
-          tanggalPesanan: t.time || d.toLocaleString(),
+          tanggalPesanan: t.time || (isNaN(d.getTime()) ? '-' : d.toLocaleString()),
           bulan: bulan,
           tahun: tahun,
           nomorRumah: t.address || '-',
           kodeBarang: prod?.customId || '-',
-          namaBarang: item.name,
-          jumlah: item.qty,
-          hargaJual: item.price,
-          totalHargaJual: item.price * item.qty,
+          namaBarang: item.name || 'Unknown Item',
+          jumlah: item.qty || 0,
+          hargaJual: item.price || 0,
+          totalHargaJual: (item.price || 0) * (item.qty || 0),
           caraPembayaran: (t.method === 'transfer' ? 'Transfer' : 'Cash'),
           catatan: t.notes || '-',
           profit: item.profit || 0,
@@ -1282,7 +1285,7 @@ export default function AdminDashboard({
         let hasMissingProduct = false;
         let missingProducts = [];
 
-        const itemParts = (rawRow.items || "").split(';').map(s => s.trim()).filter(s => s);
+        const itemParts = (rawRow.items || "").split(/[;,]/).map(s => s.trim()).filter(s => s);
 
         for (const itemPart of itemParts) {
           const match = itemPart.match(/^(\d+)[xX]\s*(.+)$/);
