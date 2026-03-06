@@ -14,7 +14,10 @@ export const INITIAL_SETTINGS = {
   adminPhone: '6281936617426',
   bankName: 'BCA',
   bankAccountName: 'Kamila Mart Admin',
-  bankAccountNumber: '1234567890'
+  bankAccountNumber: '1234567890',
+  marbotPercent: 60,
+  musholaPercent: 0,
+  internalPercent: 40
 };
 
 export const MENU_OPTIONS = [
@@ -31,6 +34,30 @@ export const UI_RADIUS = {
   outer: 'rounded-2xl',
   inner: 'rounded-xl',
   full: 'rounded-full'
+};
+
+export const UI_SPACING = {
+  page: 'p-6 md:p-14',
+  section: 'space-y-8',
+  card: 'p-8',
+  gap: 'gap-6'
+};
+
+export const UI_TEXT = {
+  h1: 'text-2xl md:text-3xl font-black text-slate-900 tracking-tighter',
+  h2: 'text-xl font-extrabold text-slate-900 tracking-tight',
+  h3: 'text-base font-bold text-slate-800',
+  body: 'text-sm text-slate-600 font-medium',
+  label: 'text-[10px] font-bold text-slate-400 uppercase tracking-widest',
+  caption: 'text-xs text-slate-500'
+};
+
+export const UI_BUTTON = {
+  base: 'px-6 py-3.5 font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2',
+  primary: 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 disabled:opacity-50',
+  secondary: 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm',
+  danger: 'bg-rose-50 text-rose-600 hover:bg-rose-100',
+  ghost: 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-900'
 };
 
 // Utility Functions

@@ -6,7 +6,7 @@ import {
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
   Plus, Download, FileText, Archive, EyeOff, CheckCircle2
 } from 'lucide-react';
-import { formatIDR, UI_RADIUS, MENU_OPTIONS } from './utils';
+import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
 import Footer from './Footer';
 
 // --- MODAL PRODUK ---
@@ -36,82 +36,82 @@ function ProductModal({ product, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className={`bg-white w-full max-w-lg ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300`}>
         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
           <h3 className="font-bold text-slate-900">{product ? 'Edit Produk' : 'Tambah Produk Baru'}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"><X size={20} /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ID Produk</label>
+        <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[85vh] overflow-y-auto">
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>ID Produk</label>
             <input
               required
               value={formData.customId}
               onChange={(e) => setFormData({ ...formData, customId: e.target.value })}
               placeholder="Contoh: ATK-001"
-              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm`}
+              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Produk</label>
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Nama Produk</label>
             <input
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Contoh: Aqua Galon 19L"
-              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
+              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Harga Beli (Modal)</label>
+            <div className="space-y-2">
+              <label className={UI_TEXT.label}>Harga Beli (Modal)</label>
               <div className="relative">
-                <span className="absolute left-3 top-3.5 text-slate-400 text-xs font-bold">Rp</span>
+                <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
                 <input
                   required
                   type="number"
                   value={formData.cost}
                   onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                  className={`w-full p-3.5 pl-10 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm`}
+                  className={`w-full p-4 pl-12 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
                 />
               </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Harga Jual</label>
+            <div className="space-y-2">
+              <label className={UI_TEXT.label}>Harga Jual</label>
               <div className="relative">
-                <span className="absolute left-3 top-3.5 text-slate-400 text-xs font-bold">Rp</span>
+                <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
                 <input
                   required
                   type="number"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className={`w-full p-3.5 pl-10 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm text-blue-600`}
+                  className={`w-full p-4 pl-12 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-black text-sm text-blue-600`}
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stok Tersedia</label>
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Stok Tersedia</label>
             <input
               required
               type="number"
               value={formData.stock}
               onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
               placeholder="0"
-              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
+              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Status Produk</label>
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Status Produk</label>
             <select
               value={formData.status || 'aktif'}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className={`w-full p-3.5 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-sm`}
+              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             >
               <option value="aktif">Aktif (Tampil)</option>
               <option value="tidak_aktif">Tidak Aktif (Sembunyi)</option>
@@ -178,44 +178,44 @@ function UserModal({ user, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className={`bg-white w-full max-w-lg ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto`}>
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className={`bg-white w-full max-w-lg ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300`}>
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white z-10">
           <h3 className="font-bold text-slate-900">{user ? 'Edit User' : 'Tambah User Baru'}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"><X size={20} /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Lengkap</label>
+        <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Nama Lengkap</label>
             <input
               value={formData.name}
               onChange={(e) => {
                 setFormData({ ...formData, name: e.target.value });
                 setErrors({ ...errors, name: '' });
               }}
-              placeholder="Nama Lengkap"
-              className={`w-full p-3.5 bg-slate-50 border ${errors.name ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
+              placeholder="Masukkan nama lengkap"
+              className={`w-full p-4 bg-slate-50 border ${errors.name ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
-            {errors.name && <p className="text-xs text-red-600 ml-1">{errors.name}</p>}
+            {errors.name && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.name}</p>}
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Username</label>
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Username</label>
             <input
               value={formData.username}
               onChange={(e) => {
                 setFormData({ ...formData, username: e.target.value });
                 setErrors({ ...errors, username: '' });
               }}
-              placeholder="Username"
-              className={`w-full p-3.5 bg-slate-50 border ${errors.username ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
+              placeholder="Username akun"
+              className={`w-full p-4 bg-slate-50 border ${errors.username ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
-            {errors.username && <p className="text-xs text-red-600 ml-1">{errors.username}</p>}
+            {errors.username && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.username}</p>}
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Password</label>
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Password</label>
             <input
               type="password"
               value={formData.password}
@@ -223,41 +223,32 @@ function UserModal({ user, onClose, onSave }) {
                 setFormData({ ...formData, password: e.target.value });
                 setErrors({ ...errors, password: '' });
               }}
-              placeholder="Password"
-              className={`w-full p-3.5 bg-slate-50 border ${errors.password ? 'border-red-300' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-sm`}
+              placeholder="Password akun"
+              className={`w-full p-4 bg-slate-50 border ${errors.password ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
-            {errors.password && <p className="text-xs text-red-600 ml-1">{errors.password}</p>}
+            {errors.password && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.password}</p>}
           </div>
 
-          <div className="space-y-3 pt-4 border-t border-slate-100">
-            <p className="text-[10px] font-bold text-slate-400 uppercase">Hak Akses Modul</p>
+          <div className="space-y-4 pt-4 border-t border-slate-50">
+            <p className={UI_TEXT.label}>Hak Akses Modul</p>
             <div className="grid grid-cols-2 gap-3">
               {['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'settings', 'users'].map(perm => (
-                <label key={perm} className="flex items-center gap-2 cursor-pointer group">
+                <label key={perm} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(perm) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-100'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
                   <input
                     type="checkbox"
                     checked={formData.permissions.includes(perm)}
                     onChange={() => togglePermission(perm)}
                     className="w-4 h-4 accent-blue-600 rounded"
                   />
-                  <span className="text-xs text-slate-600 font-medium group-hover:text-blue-600 transition-colors capitalize">{perm}</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-tight ${formData.permissions.includes(perm) ? 'text-blue-600' : 'text-slate-500'}`}>{perm.replace('_', ' ')}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="pt-4 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`flex-1 py-3.5 bg-slate-100 text-slate-600 ${UI_RADIUS.inner} font-bold text-sm hover:bg-slate-200 transition-all`}
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
-            >
+          <div className="pt-6 flex gap-3">
+            <button type="button" onClick={onClose} className="flex-1 py-4 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-xl transition-all">Batal</button>
+            <button type="submit" className={`${UI_BUTTON.base} ${UI_BUTTON.primary} flex-[2] py-4 ${UI_RADIUS.inner}`}>
               {user ? 'Update User' : 'Simpan User'}
             </button>
           </div>
@@ -435,6 +426,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const [editingFormula, setEditingFormula] = useState(false);
   const [tempFormula, setTempFormula] = useState({
     marbotPercent: settings?.marbotPercent || 60,
+    musholaPercent: settings?.musholaPercent || 0,
     internalPercent: settings?.internalPercent || 40
   });
   const [applyToAll, setApplyToAll] = useState(false);
@@ -461,9 +453,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       });
 
       const reportId = `${selectedYear}-${index}`;
-      const savedData = monthlyReports.find(r => r.id === reportId) || {};
+      const savedData = monthlyReports?.find(r => r.id === reportId) || {};
 
       const mP = savedData.marbotPercent !== undefined ? savedData.marbotPercent : (settings?.marbotPercent || 60);
+      const msP = savedData.musholaPercent !== undefined ? savedData.musholaPercent : (settings?.musholaPercent || 0);
       const iP = savedData.internalPercent !== undefined ? savedData.internalPercent : (settings?.internalPercent || 40);
 
       return {
@@ -471,6 +464,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         monthName,
         profit,
         marbotPercent: mP,
+        musholaPercent: msP,
         internalPercent: iP,
         status: savedData.status || 'menunggu',
         notes: savedData.notes || ''
@@ -479,7 +473,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   }, [transactions, selectedYear, products, monthlyReports, settings]);
 
   const handleSaveFormula = async () => {
-    const total = Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent);
+    const total = Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent);
     if (total > 100) {
       alert('Total persentase tidak boleh melebihi 100%!');
       return;
@@ -489,6 +483,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       // Per Month Override
       saveMonthlyReport(editingMonthFormula.id, {
         marbotPercent: Number(tempFormula.marbotPercent),
+        musholaPercent: Number(tempFormula.musholaPercent),
         internalPercent: Number(tempFormula.internalPercent)
       });
       setEditingMonthFormula(null);
@@ -497,6 +492,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       saveSettings({
         ...settings,
         marbotPercent: Number(tempFormula.marbotPercent),
+        musholaPercent: Number(tempFormula.musholaPercent),
         internalPercent: Number(tempFormula.internalPercent)
       });
 
@@ -507,6 +503,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
           const mId = `${selectedYear}-${i}`;
           saveMonthlyReport(mId, {
             marbotPercent: Number(tempFormula.marbotPercent),
+            musholaPercent: Number(tempFormula.musholaPercent),
             internalPercent: Number(tempFormula.internalPercent)
           });
         }
@@ -517,6 +514,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   };
 
   const marbotP = settings?.marbotPercent || 60;
+  const musholaP = settings?.musholaPercent || 0;
   const internalP = settings?.internalPercent || 40;
 
   return (
@@ -524,7 +522,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-white shadow-sm`}>
         <div>
           <h3 className="text-sm font-bold text-slate-800">Laporan Pembagian Keuntungan</h3>
-          <p className="text-xs text-slate-400">Pembagian profit bersih antara Marbot dan Internal</p>
+          <p className="text-xs text-slate-400">Pembagian profit bersih antara Marbot, Mushola, dan Internal</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
@@ -535,7 +533,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
           </div>
           <button
             onClick={() => {
-              setTempFormula({ marbotPercent: marbotP, internalPercent: internalP });
+              setTempFormula({ marbotPercent: marbotP, musholaPercent: musholaP, internalPercent: internalP });
               setEditingFormula(true);
             }}
             className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-bold text-xs ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all`}
@@ -554,6 +552,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 <th className="px-6 py-4">Total Profit</th>
                 <th className="px-6 py-4 text-center">Formula</th>
                 <th className="px-6 py-4">Marbot</th>
+                <th className="px-6 py-4">Mushola</th>
                 <th className="px-6 py-4">Internal</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Catatan</th>
@@ -567,16 +566,17 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   <td className="px-6 py-5 text-center">
                     <button
                       onClick={() => {
-                        setTempFormula({ marbotPercent: s.marbotPercent, internalPercent: s.internalPercent });
+                        setTempFormula({ marbotPercent: s.marbotPercent, musholaPercent: s.musholaPercent, internalPercent: s.internalPercent });
                         setEditingMonthFormula(s);
                       }}
                       className="group flex flex-col items-center justify-center p-2 hover:bg-slate-100 rounded-lg transition-all"
                     >
-                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.internalPercent}</span>
+                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.musholaPercent}:{s.internalPercent}</span>
                       <Settings size={10} className="text-slate-300 group-hover:text-blue-500 mt-0.5" />
                     </button>
                   </td>
                   <td className="px-6 py-5 text-emerald-600 font-bold">{formatIDR(s.profit * (s.marbotPercent / 100))}</td>
+                  <td className="px-6 py-5 text-amber-600 font-bold">{formatIDR(s.profit * (s.musholaPercent / 100))}</td>
                   <td className="px-6 py-5 text-blue-600 font-bold">{formatIDR(s.profit * (s.internalPercent / 100))}</td>
                   <td className="px-6 py-5">
                     <select
@@ -629,6 +629,19 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                  <span>Mushola (%)</span>
+                  <span className="text-amber-600">{tempFormula.musholaPercent}%</span>
+                </div>
+                <input
+                  type="range" min="0" max="100" step="5"
+                  value={tempFormula.musholaPercent}
+                  onChange={(e) => setTempFormula({ ...tempFormula, musholaPercent: Number(e.target.value) })}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Internal (%)</span>
                   <span className="text-blue-600">{tempFormula.internalPercent}%</span>
                 </div>
@@ -640,12 +653,12 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 />
               </div>
 
-              <div className={`p-4 rounded-xl flex justify-between items-center ${Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-rose-50 border border-rose-100 text-rose-600' : 'bg-blue-50 border border-blue-100 text-blue-600'}`}>
+              <div className={`p-4 rounded-xl flex justify-between items-center ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-rose-50 border border-rose-100 text-rose-600' : 'bg-blue-50 border border-blue-100 text-blue-600'}`}>
                 <span className="text-xs font-bold uppercase">Total Alokasi</span>
-                <span className="font-black text-lg">{Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent)}%</span>
+                <span className="font-black text-lg">{Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent)}%</span>
               </div>
 
-              {Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 && (
+              {Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 && (
                 <p className="text-[10px] text-rose-500 font-bold text-center animate-pulse">* Total tidak boleh melebihi 100%!</p>
               )}
 
@@ -664,8 +677,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 
             <button
               onClick={handleSaveFormula}
-              disabled={Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100}
-              className={`w-full py-4 text-white font-black text-sm ${UI_RADIUS.inner} shadow-lg transition-all ${Number(tempFormula.marbotPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'}`}
+              disabled={Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100}
+              className={`w-full py-4 text-white font-black text-sm ${UI_RADIUS.inner} shadow-lg transition-all ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'}`}
             >
               Simpan Formula
             </button>
@@ -686,50 +699,53 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
           <div key={t.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.time}</p>
+                <p className={UI_TEXT.label}>{t.time}</p>
                 <p className="font-bold text-slate-800 text-base mt-1">{t.customer}</p>
-                <p className="text-xs text-slate-500 font-medium">{t.phone}</p>
               </div>
-              <button onClick={() => onDetail(t)} className="p-2.5 bg-slate-50 text-blue-600 rounded-lg"><Eye size={18} /></button>
+              <button
+                onClick={() => onDetail(t)}
+                className={`p-2.5 bg-slate-50 text-blue-600 ${UI_RADIUS.inner} active:scale-95 transition-all`}
+              >
+                <Eye size={18} />
+              </button>
             </div>
 
-            <div className="flex justify-between items-center bg-slate-50/50 p-3 rounded-lg border border-slate-50">
+            <div className={`flex justify-between items-center bg-slate-50/50 p-3 ${UI_RADIUS.inner} border border-slate-50`}>
               <div className="flex flex-col">
                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-tighter">Total</span>
                 <span className="text-blue-600 font-black text-lg">{formatIDR(t.total)}</span>
               </div>
-              <span className="px-2 py-1 bg-white border border-slate-100 rounded text-[10px] font-bold text-slate-500 uppercase">{t.items.length} Item</span>
+              <span className={`px-2 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[10px] font-bold text-slate-500 uppercase`}>{t.items.length} Item</span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase">Pembayaran</label>
+                <label className={UI_TEXT.label}>Bayar</label>
                 <select
                   value={t.paymentStatus}
                   onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
-                  className={`w-full text-[10px] font-bold uppercase p-2 rounded border-0 outline-none cursor-pointer ${t.paymentStatus === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+                  className={`w-full text-[10px] font-bold uppercase p-2 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.paymentStatus === 'lunas' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
                 >
-                  <option value="menunggu">Menunggu</option>
-                  <option value="sukses">Sukses</option>
+                  <option value="menunggu">Unpaid</option>
+                  <option value="lunas">Lunas</option>
                 </select>
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase">Pengiriman</label>
+                <label className={UI_TEXT.label}>Kirim</label>
                 <select
                   value={t.shippingStatus}
                   onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
-                  className={`w-full text-[10px] font-bold uppercase p-2 rounded border-0 outline-none cursor-pointer ${t.shippingStatus === 'sukses' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
+                  className={`w-full text-[10px] font-bold uppercase p-2 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.shippingStatus === 'dikirim' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
                 >
-                  <option value="menunggu">Menunggu</option>
+                  <option value="menunggu">Pending</option>
                   <option value="dikirim">Dikirim</option>
-                  <option value="sukses">Sampai</option>
                 </select>
               </div>
             </div>
           </div>
         ))}
         {transactions.length === 0 && (
-          <div className="text-center py-10 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+          <div className={`text-center py-10 bg-slate-50/50 ${UI_RADIUS.inner} border border-dashed border-slate-200`}>
             <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
           </div>
         )}
@@ -739,7 +755,7 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <tr className={`border-b border-slate-100 ${UI_TEXT.label}`}>
               <th className="pb-4 px-2">Tanggal</th>
               <th className="pb-4 px-2">Pelanggan</th>
               <th className="pb-4 px-2">Detail</th>
@@ -751,7 +767,7 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
           <tbody className="divide-y divide-slate-50">
             {transactions.map(t => (
               <tr key={t.id} className="text-sm group hover:bg-slate-50/50 transition-colors">
-                <td className="py-4 px-2 text-slate-400 font-medium text-[11px] whitespace-nowrap">{t.time}</td>
+                <td className={`py-4 px-2 text-slate-400 font-medium text-[11px] whitespace-nowrap`}>{t.time}</td>
                 <td className="py-4 px-2">
                   <div className="space-y-0.5 min-w-[120px]">
                     <p className="font-bold text-slate-800 tracking-tight">{t.customer}</p>
@@ -768,25 +784,29 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
                   <select
                     value={t.paymentStatus}
                     onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
-                    className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.paymentStatus === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+                    className={`text-[10px] font-bold uppercase p-1.5 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.paymentStatus === 'lunas' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
                   >
-                    <option value="menunggu">Menunggu</option>
-                    <option value="sukses">Sukses</option>
+                    <option value="menunggu">Unpaid</option>
+                    <option value="lunas">Lunas</option>
                   </select>
                 </td>
                 <td className="py-4 px-2">
                   <select
                     value={t.shippingStatus}
                     onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
-                    className={`text-[10px] font-bold uppercase p-1.5 rounded border-0 outline-none cursor-pointer ${t.shippingStatus === 'sukses' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'}`}
+                    className={`text-[10px] font-bold uppercase p-1.5 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.shippingStatus === 'dikirim' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
                   >
-                    <option value="menunggu">Menunggu</option>
+                    <option value="menunggu">Pending</option>
                     <option value="dikirim">Dikirim</option>
-                    <option value="sukses">Sampai</option>
                   </select>
                 </td>
                 <td className="py-4 px-2 text-right">
-                  <button onClick={() => onDetail(t)} className="p-2 text-slate-300 hover:text-blue-600 transition-colors"><Eye size={18} /></button>
+                  <button
+                    onClick={() => onDetail(t)}
+                    className={`p-2 text-slate-300 hover:text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all`}
+                  >
+                    <Eye size={18} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -996,11 +1016,13 @@ function TransactionModal({ onClose, onSave, products }) {
 // --- STAT CARD ---
 function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }) {
   return (
-    <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm flex items-center gap-6 hover:shadow-md transition-all`}>
-      <div className={`p-5 ${color} ${UI_RADIUS.inner} shrink-0`}><Icon size={22} /></div>
-      <div>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">{label}</p>
-        <p className="text-2xl font-black text-slate-900 tracking-tighter">{val}</p>
+    <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-white shadow-sm flex items-center gap-5 transition-all hover:shadow-md group`}>
+      <div className={`w-14 h-14 ${color} ${UI_RADIUS.inner} flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform`}>
+        <Icon size={24} />
+      </div>
+      <div className="min-w-0">
+        <p className={`${UI_TEXT.label} mb-1 opacity-70`}>{label}</p>
+        <p className="text-2xl font-black text-slate-900 tracking-tight">{val}</p>
       </div>
     </div>
   );
@@ -1104,11 +1126,12 @@ export default function AdminDashboard({
   }, [transactions, selectedMonth, selectedYear]);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#F1F5F9]">
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-slate-200 p-8 transform transition-transform duration-500 md:translate-x-0 flex flex-col ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-slate-100 p-8 transform transition-transform duration-500 md:translate-x-0 flex flex-col ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="mb-12">
-          <h2 className="text-xl font-extrabold text-slate-900 tracking-tighter">Kamila Mart <span className="text-blue-600">Admin</span></h2>
+          <h1 className={UI_TEXT.h1}>{settings.martName || 'Mart Admin'}</h1>
+          <p className={UI_TEXT.caption}>Welcome back, <span className="text-blue-600 font-bold">{currentUserData?.name || 'Admin'}</span></p>
         </div>
         <nav className="flex-1 space-y-1.5">
           {filteredMenuOptions.map(m => {
@@ -1118,7 +1141,7 @@ export default function AdminDashboard({
               'Package': Package,
               'DollarSign': DollarSign,
               'FileText': FileText,
-              'Users': User,
+              'Users': Users,
               'Settings': Settings
             };
             const IconComponent = iconMap[m.icon];
@@ -1126,362 +1149,313 @@ export default function AdminDashboard({
               <button
                 key={m.id}
                 onClick={() => { setAdminTab(m.id); setMobileMenuOpen(false); }}
-                className={`w-full flex items-center gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-semibold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
+                className={`w-full flex items-center gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-bold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
               >
-                <IconComponent size={18} /> {m.label}
+                <IconComponent size={20} /> {m.label}
               </button>
             );
           })}
         </nav>
-        <div className="pt-8 mt-8 border-t border-slate-100 space-y-2">
-          <button onClick={onCustomerView} className={`w-full flex items-center justify-center gap-2.5 px-5 py-4 ${UI_RADIUS.inner} text-slate-900 bg-slate-100 font-bold text-xs transition border border-transparent hover:border-slate-200`}><ShoppingCart size={16} /> Tampilan Toko</button>
-          <button onClick={handleLogout} className={`w-full flex items-center justify-center gap-2.5 px-5 py-4 ${UI_RADIUS.inner} text-rose-500 hover:bg-rose-50 font-bold text-xs transition`}><LogOut size={16} /> Logout</button>
+        <div className="pt-8 mt-8 border-t border-slate-50 space-y-3">
+          <button onClick={onCustomerView} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} w-full`}><Eye size={18} /> View Store</button>
+          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2.5 px-5 py-4 text-rose-500 hover:bg-rose-50 font-bold text-xs transition active:scale-95"><LogOut size={18} /> Logout</button>
         </div>
       </aside>
 
-      {mobileMenuOpen && <div className="fixed inset-0 bg-slate-900/20 z-30 md:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
+      {mobileMenuOpen && <div className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
 
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
-        <div className="flex-1">
-          <header className="flex items-center justify-between mb-12">
-            <h2 className="text-2xl font-bold text-slate-900 capitalize tracking-tight">{MENU_OPTIONS.find(m => m.id === adminTab)?.label}</h2>
-            <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
-          </header>
+        <header className="flex items-center justify-between mb-12">
+          <div>
+            <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label}</h2>
+            <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
+          </div>
+          <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
+        </header>
 
-          {adminTab === 'dashboard' && (
-            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <StatCard label="Produk Aktif" val={products.filter(p => (p.status === 'aktif' || (!p.status && !p.isArchived))).length} icon={Package} />
-                <StatCard label="Total User" val={users.length} icon={User} />
-                <StatCard label="Total Pesanan" val={transactions.length} icon={TrendingUp} color="bg-emerald-50 text-emerald-600" />
-              </div>
-              <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm`}>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm"><ShoppingCart size={16} className="text-blue-600" /> Pesanan Terbaru</h3>
-                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 text-xs font-bold hover:underline">Lihat Selengkapnya</button>
+        {adminTab === 'dashboard' && (
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <StatCard label="Total Transaksi" val={transactions.length} icon={ShoppingCart} />
+              <StatCard label="Total Produk" val={products.length} icon={Package} color="bg-emerald-50 text-emerald-600" />
+              <StatCard label="Total User" val={users.length} icon={Users} color="bg-amber-50 text-amber-600" />
+              <StatCard label="Total Penjualan" val={formatIDR(transactions.reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
+                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline">Lihat Selengkapnya</button>
                 </div>
-                {transactions.length === 0 ? (
-                  <p className="text-slate-400 text-xs py-8 text-center">Belum ada transaksi.</p>
-                ) : (
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-50 shadow-sm`}>
                   <TransactionList
-                    transactions={[...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
-                    onDetail={setSelectedTx}
                     updateStatus={updateTransactionStatus}
+                    transactions={transactions.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                    onDetail={setSelectedTx}
                   />
-                )}
-              </div>
-            </div>
-          )}
-
-          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
-
-          {adminTab === 'profit_report' && (
-            <ProfitReportView
-              transactions={transactions}
-              products={products}
-              monthlyReports={monthlyReports}
-              saveMonthlyReport={saveMonthlyReport}
-              settings={settings}
-              saveSettings={saveSettings}
-            />
-          )}
-
-          {adminTab === 'transactions' && (
-            <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 space-y-6`}>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-50 pb-6">
-                <div className="flex items-center gap-3">
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                    className="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 outline-none"
-                  >
-                    {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                  </select>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className="p-2.5 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 outline-none"
-                  >
-                    {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
-                  </select>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleExportCSV}
-                    className={`px-5 py-2.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold ${UI_RADIUS.inner} shadow-sm active:scale-95 transition-all flex items-center gap-2 hover:bg-slate-50`}
-                  >
-                    <Download size={16} /> Ekspor CSV
-                  </button>
-                  <button
-                    onClick={() => setIsAddingTransaction(true)}
-                    className={`px-5 py-2.5 bg-blue-600 text-white text-xs font-black ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
-                  >
-                    <Plus size={16} /> Tambah Transaksi
-                  </button>
                 </div>
               </div>
-              <TransactionList transactions={filteredTransactions.slice(0, visibleTransactions)} onDetail={setSelectedTx} updateStatus={updateTransactionStatus} />
-              {filteredTransactions.length > visibleTransactions && (
-                <div className="flex justify-center pt-6">
-                  <button
-                    onClick={() => setVisibleTransactions(prev => prev + 20)}
-                    className={`px-8 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest ${UI_RADIUS.inner} hover:bg-slate-100 active:scale-95 transition-all shadow-sm`}
-                  >
-                    Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
-          {adminTab === 'products' && (
-            <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm animate-in fade-in duration-500 overflow-hidden`}>
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-slate-800 text-sm">Inventaris Barang</h3>
-                <button
-                  onClick={() => setIsAddingProduct(true)}
-                  className={`px-4 py-2 bg-blue-600 text-white text-xs font-bold ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all`}
-                >
-                  + Tambah Produk
-                </button>
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:hidden">
-                {products.slice(0, visibleProducts).map(p => (
-                  <div key={p.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded leading-none">{p.customId || 'NO-ID'}</span>
-                          <p className={`font-bold text-slate-800 text-base ${(p.status === 'tidak_aktif' || (!p.status && p.isArchived)) ? 'line-through opacity-50' : ''}`}>{p.name}</p>
-                        </div>
-                        <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold ${p.stock < 10 ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>{p.stock} Unit Tersedia</span>
-                      </div>
-                      <div className="flex gap-1">
-                        <select
-                          value={p.status || (p.isArchived ? 'tidak_aktif' : 'aktif')}
-                          onChange={(e) => saveProduct({ ...p, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
-                          className={`text-[10px] font-bold uppercase p-2 px-1.5 rounded-lg border-0 outline-none cursor-pointer transition-colors ${(p.status === 'aktif' || (!p.status && !p.isArchived)) ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
-                        >
-                          <option value="aktif">Aktif</option>
-                          <option value="tidak_aktif">Tidak Aktif</option>
-                        </select>
-                        <button
-                          onClick={() => setEditingProduct(p)}
-                          className="p-2.5 bg-slate-50 text-blue-600 rounded-lg"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => deleteProduct(p.id)}
-                          className="p-2.5 bg-slate-50 text-rose-600 rounded-lg"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+              <div className="space-y-6">
+                <h2 className={UI_TEXT.h2}>Update Cepat</h2>
+                <div className={`bg-slate-900 ${UI_RADIUS.outer} p-8 text-white relative overflow-hidden group`}>
+                  <div className="relative z-10 space-y-6">
+                    <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center">
+                      <Package size={24} className="text-blue-400" />
                     </div>
-                    <div className="grid grid-cols-2 gap-3 bg-slate-50/50 p-3 rounded-lg border border-slate-50">
-                      <div className="flex flex-col">
-                        <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Harga Jual</span>
-                        <span className="text-blue-600 font-black text-base">{formatIDR(p.price)}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Harga Beli</span>
-                        <span className="text-slate-600 font-bold text-base">{formatIDR(p.cost)}</span>
-                      </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-1">Tambah Produk</h3>
+                      <p className="text-slate-400 text-xs leading-relaxed">Kelola inventaris dan stok mart Anda dengan mudah.</p>
                     </div>
-                  </div>
-                ))}
-                {products.length === 0 && (
-                  <div className="text-center py-10 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                    <p className="text-slate-400 text-xs font-medium">Belum ada produk</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      <th className="pb-4">ID</th>
-                      <th className="pb-4">Produk</th>
-                      <th className="pb-4">Harga Beli</th>
-                      <th className="pb-4">Harga Jual</th>
-                      <th className="pb-4">Stok</th>
-                      <th className="pb-4 text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {products.slice(0, visibleProducts).map(p => (
-                      <tr key={p.id} className={`text-sm hover:bg-slate-50/50 group transition-colors ${(p.status === 'tidak_aktif' || (!p.status && p.isArchived)) ? 'bg-slate-50/50' : ''}`}>
-                        <td className="py-4">
-                          <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-1 rounded">{p.customId || 'NO-ID'}</span>
-                        </td>
-                        <td className="py-4">
-                          <span className={`font-bold text-slate-800 ${(p.status === 'tidak_aktif' || (!p.status && p.isArchived)) ? 'line-through opacity-50' : ''}`}>{p.name} {(p.status === 'tidak_aktif' || (!p.status && p.isArchived)) && <span className="ml-2 text-[9px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded uppercase tracking-tighter">Tidak Aktif</span>}</span>
-                        </td>
-                        <td className="py-4 text-slate-500 font-medium">{formatIDR(p.cost)}</td>
-                        <td className="py-4 font-bold text-blue-600">{formatIDR(p.price)}</td>
-                        <td className="py-4">
-                          <span className={`px-2 py-1 rounded text-[10px] font-bold ${p.stock < 10 ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>{p.stock} Unit</span>
-                        </td>
-                        <td className="py-4 text-right">
-                          <div className="flex justify-end gap-1">
-                            <select
-                              value={p.status || (p.isArchived ? 'tidak_aktif' : 'aktif')}
-                              onChange={(e) => saveProduct({ ...p, status: e.target.value, isArchived: e.target.value === 'tidak_aktif' })}
-                              className={`text-[10px] font-bold uppercase p-1.5 px-2 rounded-lg border-0 outline-none cursor-pointer transition-colors ${(p.status === 'aktif' || (!p.status && !p.isArchived)) ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}
-                            >
-                              <option value="aktif">Aktif</option>
-                              <option value="tidak_aktif">Tidak Aktif</option>
-                            </select>
-                            <button
-                              onClick={() => setEditingProduct(p)}
-                              className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"
-                            >
-                              <Edit size={16} />
-                            </button>
-                            <button
-                              onClick={() => deleteProduct(p.id)}
-                              className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {products.length > visibleProducts && (
-                <div className="flex justify-center pt-8">
-                  <button
-                    onClick={() => setVisibleProducts(prev => prev + 20)}
-                    className={`px-8 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest ${UI_RADIUS.inner} hover:bg-slate-100 active:scale-95 transition-all shadow-sm`}
-                  >
-                    Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
-          {adminTab === 'users' && (
-            <div className="animate-in fade-in duration-500 space-y-6">
-              <div className={`bg-white p-8 ${UI_RADIUS.outer} border border-white shadow-sm`}>
-                <div className="flex justify-between items-center mb-8">
-                  <h3 className="font-bold text-slate-800 text-sm">Kelola Akses Admin ({users.length} User)</h3>
-                  <button
-                    onClick={() => setIsAddingUser(true)}
-                    className={`px-4 py-2 bg-blue-600 text-white text-xs font-bold ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2`}
-                  >
-                    <Plus size={16} /> Tambah User
-                  </button>
-                </div>
-
-                {users.length === 0 ? (
-                  <p className="text-slate-400 text-xs py-8 text-center">Belum ada user. Klik tombol "Tambah User" untuk membuat user baru.</p>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {users.slice(0, visibleUsers).map(u => (
-                      <div key={u.id} className={`p-5 border border-slate-100 ${UI_RADIUS.inner} bg-slate-50/50 flex flex-col`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`w-10 h-10 bg-white shadow-sm ${UI_RADIUS.inner} flex items-center justify-center text-slate-400 shrink-0`}><User size={20} /></div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-bold text-slate-800 text-sm truncate">{u.name}</p>
-                            <p className="text-[10px] text-slate-400 font-medium truncate">@{u.username}</p>
-                          </div>
-                        </div>
-
-                        {/* Permissions display */}
-                        <div className="mb-4 pb-4 border-t border-slate-100 pt-3">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">Akses:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {u.permissions && u.permissions.slice(0, 3).map(perm => (
-                              <span key={perm} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold uppercase">{perm}</span>
-                            ))}
-                            {u.permissions && u.permissions.length > 3 && (
-                              <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[8px] font-bold">+{u.permissions.length - 3}</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Action buttons */}
-                        <div className="flex gap-2 mt-auto">
-                          <button
-                            onClick={() => setEditingUser(u)}
-                            className="flex-1 p-2 text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all text-xs font-bold flex items-center justify-center gap-1"
-                          >
-                            <Edit size={14} /> Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(u.id)}
-                            className="flex-1 p-2 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all text-xs font-bold flex items-center justify-center gap-1"
-                          >
-                            <Trash2 size={14} /> Hapus
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {users.length > visibleUsers && (
-                  <div className="flex justify-center pt-8">
-                    <button
-                      onClick={() => setVisibleUsers(prev => prev + 20)}
-                      className={`px-8 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest ${UI_RADIUS.inner} hover:bg-slate-100 active:scale-95 transition-all shadow-sm`}
-                    >
-                      Muat Lebih Banyak ({users.length - visibleUsers} Tersisa)
+                    <button onClick={() => { setIsAddingProduct(true); setAdminTab('products'); }} className="w-full py-4 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                      <Plus size={18} /> Produk Baru
                     </button>
                   </div>
-                )}
+                  <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-700"></div>
+                </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {adminTab === 'settings' && (
-            <div className="animate-in fade-in duration-500 max-w-3xl">
-              <div className={`bg-white p-10 ${UI_RADIUS.outer} border border-white shadow-sm space-y-8`}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Toko</label>
-                    <input value={settings?.martName || ''} onChange={(e) => setSettings({ ...settings, martName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp Admin</label>
-                    <input value={settings?.adminPhone || ''} onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
-                  </div>
-                </div>
-                <div className="pt-6 border-t border-slate-50">
-                  <h4 className="font-bold text-slate-800 text-sm mb-6 flex items-center gap-2"><CreditCard size={18} className="text-blue-600" /> Informasi Rekening Bank</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Bank</label>
-                      <input value={settings?.bankName || ''} onChange={(e) => setSettings({ ...settings, bankName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Atas Nama</label>
-                      <input value={settings?.bankAccountName || ''} onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nomor Rekening</label>
-                      <input value={settings?.bankAccountNumber || ''} onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })} className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-slate-800`} />
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={handleSettingsSave}
-                  className={`w-full py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
-                >
-                  Simpan Pengaturan
+        {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
+
+        {adminTab === 'profit_report' && (
+          <ProfitReportView
+            transactions={transactions}
+            products={products}
+            monthlyReports={monthlyReports}
+            saveMonthlyReport={saveMonthlyReport}
+            settings={settings}
+            saveSettings={saveSettings}
+          />
+        )}
+
+        {adminTab === 'transactions' && (
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className={UI_TEXT.h2}>Riwayat Transaksi</h2>
+                <p className={UI_TEXT.caption}>Kelola semua pesanan masuk dari pelanggan.</p>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
+                  <Download size={18} /> Export
+                </button>
+                <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
+                  <Plus size={18} /> Tambah
                 </button>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <Footer />
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+              >
+                {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
+              </select>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+              >
+                {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
+            </div>
+
+            <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-50 shadow-sm`}>
+              <TransactionList
+                updateStatus={updateTransactionStatus}
+                transactions={filteredTransactions.slice(0, visibleTransactions)}
+                onDetail={setSelectedTx}
+              />
+              {filteredTransactions.length > visibleTransactions && (
+                <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-8 py-4 bg-slate-50 text-slate-500 font-bold text-xs ${UI_RADIUS.inner} hover:bg-slate-100 transition-all`}>
+                  Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {adminTab === 'products' && (
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className={UI_TEXT.h2}>Inventaris Produk</h2>
+                <p className={UI_TEXT.caption}>Kelola stok dan harga barang di mart.</p>
+              </div>
+              <button onClick={() => setIsAddingProduct(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
+                <Plus size={18} /> Tambah Produk
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.slice(0, visibleProducts).map(p => (
+                <div key={p.id} className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:border-blue-100 transition-all duration-300`}>
+                  <div className="aspect-square relative overflow-hidden bg-slate-50">
+                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                      <div className="flex gap-2 w-full">
+                        <button onClick={() => setEditingProduct(p)} className="flex-1 py-3 bg-white text-slate-900 rounded-lg font-bold text-xs shadow-lg hover:bg-blue-600 hover:text-white transition-all">Edit</button>
+                        <button onClick={() => deleteProduct(p.id)} className="p-3 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all shadow-lg"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-slate-900 text-sm truncate mb-0.5">{p.name}</h3>
+                        <span className={`${UI_TEXT.caption} inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 rounded-full font-bold uppercase text-[9px]`}>SKU-{p.id}</span>
+                      </div>
+                      <p className="font-black text-blue-600 text-sm">{formatIDR(p.price)}</p>
+                    </div>
+                    <div className="flex items-center justify-between text-xs pt-4 border-t border-slate-50">
+                      <div className="flex items-center gap-1.5 text-slate-400 font-medium">
+                        <Archive size={14} /> Stok: <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-400 font-medium">
+                        <DollarSign size={14} /> Modal: <span className="font-bold text-slate-900">{formatIDR(p.cost)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {products.length > visibleProducts && (
+              <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+                Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
+              </button>
+            )}
+          </div>
+        )}
+
+        {adminTab === 'users' && (
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className={UI_TEXT.h2}>Manajemen User</h2>
+                <p className={UI_TEXT.caption}>Kelola akses dan akun administrator mart.</p>
+              </div>
+              <button onClick={() => setIsAddingUser(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
+                <Plus size={18} /> User Baru
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {users.map(u => (
+                <div key={u.id} className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-lg transition-all`}>
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-5">
+                      <div className={`w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20`}>
+                        <Users size={24} />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-900 leading-tight mb-0.5">{u.name}</h3>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Permissions:</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {u.permissions.map(p => (
+                          <span key={p} className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black uppercase tracking-tight">{p.replace('_', ' ')}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-8 pt-6 border-t border-slate-50">
+                    <button onClick={() => setEditingUser(u)} className="flex-1 py-3 bg-slate-50 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-100 transition-all">Edit</button>
+                    <button onClick={() => handleDeleteUser(u.id)} className="p-3 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100 transition-all"><Trash2 size={16} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {adminTab === 'settings' && (
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className={UI_TEXT.h2}>Pengaturan Mart</h2>
+                <p className={UI_TEXT.caption}>Konfigurasi informasi toko dan pembayaran.</p>
+              </div>
+              <button onClick={handleSettingsSave} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
+                <Download size={18} /> Simpan Perubahan
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Archive size={18} /></div>
+                    Identitas Toko
+                  </h3>
+                  <div className="space-y-5">
+                    <div className="space-y-1.5">
+                      <label className={UI_TEXT.label}>Nama Mart</label>
+                      <input
+                        value={settings.martName}
+                        onChange={(e) => setSettings({ ...settings, martName: e.target.value })}
+                        className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI_TEXT.label}>WhatsApp Admin</label>
+                      <input
+                        value={settings.adminPhone}
+                        onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })}
+                        className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><DollarSign size={18} /></div>
+                    Informasi Pembayaran (Transfer Bank)
+                  </h3>
+                  <div className="space-y-5">
+                    <div className="space-y-1.5">
+                      <label className={UI_TEXT.label}>Nama Bank</label>
+                      <input
+                        value={settings.bankName}
+                        onChange={(e) => setSettings({ ...settings, bankName: e.target.value })}
+                        className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className={UI_TEXT.label}>No. Rekening</label>
+                        <input
+                          value={settings.bankAccountNumber}
+                          onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })}
+                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI_TEXT.label}>Atas Nama</label>
+                        <input
+                          value={settings.bankAccountName}
+                          onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })}
+                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Modal CRUD Produk */}
@@ -1518,33 +1492,33 @@ export default function AdminDashboard({
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
               <div>
                 <h3 className="font-extrabold text-slate-900">Detail Pesanan</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{selectedTx.time}</p>
+                <p className={UI_TEXT.caption}>{selectedTx.time}</p>
               </div>
-              <button onClick={() => setSelectedTx(null)} className="p-2 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-lg"><X size={20} /></button>
+              <button onClick={() => setSelectedTx(null)} className="p-2 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-lg transition-colors"><X size={20} /></button>
             </div>
             <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Pemesan</label>
+                  <label className={UI_TEXT.label}>Pemesan</label>
                   <p className="font-bold text-slate-800">{selectedTx.customer}</p>
-                  <p className="text-xs text-slate-500 flex items-center gap-1 mt-1"><Phone size={10} /> {selectedTx.phone}</p>
+                  <p className="text-xs text-slate-500 flex items-center gap-1 mt-1 font-medium"><Phone size={12} /> {selectedTx.phone}</p>
                 </div>
                 <div>
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Alamat</label>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{selectedTx.address}</p>
+                  <label className={UI_TEXT.label}>Alamat</label>
+                  <p className="text-xs text-slate-600 leading-relaxed font-semibold">{selectedTx.address}</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Metode Pembayaran</label>
+                <label className={UI_TEXT.label}>Metode Pembayaran</label>
                 <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 capitalize">
-                  <CreditCard size={12} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat'}
+                  <CreditCard size={14} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat'}
                 </p>
               </div>
 
               <div>
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Item Dipesan</label>
-                <div className="space-y-2">
+                <label className={UI_TEXT.label}>Item Dipesan</label>
+                <div className="space-y-2 mt-3">
                   {selectedTx.items.map((item, idx) => (
                     <div key={idx} className="flex justify-between items-center text-sm py-3 border-b border-slate-50 last:border-0">
                       <span className="font-medium text-slate-700">{item.qty}x {item.name}</span>
@@ -1555,25 +1529,25 @@ export default function AdminDashboard({
               </div>
 
               <div>
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Catatan Internal</label>
-                <div className="relative">
+                <label className={UI_TEXT.label}>Catatan Internal</label>
+                <div className="relative mt-2">
                   <textarea
                     defaultValue={selectedTx.notes || ''}
                     onBlur={(e) => updateTransactionStatus(selectedTx.id, 'notes', e.target.value)}
-                    placeholder="Tulis catatan di sini... (otomatis tersimpan saat keluar)"
-                    className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-200 transition-all resize-none h-20 font-medium`}
+                    placeholder="Tulis catatan di sini... (otomatis tersimpan)"
+                    className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 transition-all resize-none h-24 font-medium`}
                   />
                   <FileText size={14} className="absolute right-3 bottom-3 text-slate-300" />
                 </div>
               </div>
 
-              <div className={`p-4 bg-slate-50 ${UI_RADIUS.inner} flex justify-between items-center`}>
+              <div className={`p-5 bg-blue-50/50 ${UI_RADIUS.inner} border border-blue-50 flex justify-between items-center`}>
                 <span className="font-bold text-slate-500 text-xs">Total Pembayaran</span>
-                <span className="text-xl font-black text-blue-600 tracking-tighter">{formatIDR(selectedTx.total)}</span>
+                <span className="text-xl font-black text-blue-600 tracking-tight">{formatIDR(selectedTx.total)}</span>
               </div>
             </div>
             <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
-              <button onClick={() => setSelectedTx(null)} className={`px-6 py-2.5 font-bold text-slate-600 text-xs hover:bg-slate-100 rounded-lg`}>Tutup</button>
+              <button onClick={() => setSelectedTx(null)} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner}`}>Tutup</button>
             </div>
           </div>
         </div>
