@@ -389,7 +389,7 @@ function FinanceView({ transactions, products }) {
 
         {/* Desktop View: Table */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 <th className="px-6 py-4">Bulan</th>
@@ -551,7 +551,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 
       <div className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden`}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[1200px]">
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
                 <th className="px-6 py-4">Bulan</th>
@@ -1308,16 +1308,18 @@ export default function AdminDashboard({
       {mobileMenuOpen && <div className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
 
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
-        <header className="flex items-center justify-between mb-12">
-          <div>
-            <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'transactions' && `(${transactions.length})`}</h2>
-            <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
+        <header className="mb-12">
+          <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex items-center justify-between">
+            <div>
+              <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'transactions' && `(${transactions.length})`}</h2>
+              <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
+            </div>
+            <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
           </div>
-          <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
         </header>
 
         {adminTab === 'dashboard' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
               <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
@@ -1422,7 +1424,7 @@ export default function AdminDashboard({
             <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse min-w-[1000px]">
                   <thead>
                     <tr className={`border-b border-slate-50 ${UI_TEXT.label} bg-slate-50/50`}>
                       <th className="py-4 px-6 border-b">No</th>
@@ -1517,7 +1519,7 @@ export default function AdminDashboard({
 
             <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
               <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                       <th className="py-4 px-6">No</th>
