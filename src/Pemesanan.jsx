@@ -71,7 +71,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
               href={`https://wa.me/${settings.adminPhone.replace(/[^0-9]/g, '')}?text=Halo%20Admin%20${encodeURIComponent(settings?.martName || 'Kamila Mart')},%20saya%20sudah%20transfer%20pembayaran%20untuk%20pesanan%20atas%20nama%20${encodeURIComponent(customerInfo.name)}%20sebesar%20${encodeURIComponent(formatIDR(total))}.%20Berikut%20bukti%20transfernya.`}
               target="_blank"
               rel="noreferrer"
-              className={`${UI_BUTTON.base} ${UI_BUTTON.primary} bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20 ${UI_RADIUS.inner} w-full py-4.5`}
+              className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full py-4.5`}
             >
               <Phone size={20} /> Kirim Bukti Transfer
             </a>
@@ -101,7 +101,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
               href={`https://wa.me/${settings.adminPhone.replace(/[^0-9]/g, '')}?text=Halo%20Admin%20${encodeURIComponent(settings?.martName || 'Kamila Mart')}`}
               target="_blank"
               rel="noreferrer"
-              className={`p-3 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 ${UI_RADIUS.inner} transition-all active:scale-95`}
+              className={`p-3 bg-blue-50 text-blue-600 hover:bg-blue-100 ${UI_RADIUS.inner} transition-all active:scale-95`}
             >
               <Phone size={20} />
             </a>
@@ -125,8 +125,8 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                   key={p.id}
                   className={`p-4 bg-white ${UI_RADIUS.outer} border transition-all duration-300 flex items-center gap-4 ${qty > 0 ? 'border-blue-500 shadow-lg shadow-blue-500/5 scale-[1.02]' : 'border-slate-100 shadow-sm'} ${isOutOfStock ? 'opacity-60 grayscale' : ''}`}
                 >
-                  <div className={`w-16 h-16 bg-slate-50 ${UI_RADIUS.inner} overflow-hidden flex-shrink-0 border border-slate-50`}>
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                  <div className={`w-12 h-12 bg-blue-50 text-blue-600 ${UI_RADIUS.inner} flex-shrink-0 flex items-center justify-center border border-blue-50`}>
+                    <Package size={20} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-900 text-sm truncate mb-1">{p.name}</h3>
@@ -251,7 +251,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
           <button
             onClick={handleOrderSubmit}
             disabled={cart.length === 0}
-            className={`${UI_BUTTON.base} ${UI_BUTTON.primary} bg-blue-500 hover:bg-blue-400 text-slate-900 font-black px-10 py-4.5 ${UI_RADIUS.inner} shadow-blue-500/20 disabled:opacity-30 disabled:grayscale`}
+            className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} px-10 py-4.5 disabled:opacity-30 disabled:grayscale`}
           >
             <Send size={18} /> PESAN
           </button>

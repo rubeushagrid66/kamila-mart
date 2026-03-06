@@ -316,17 +316,15 @@ function FinanceView({ transactions, products }) {
   }), { profit: 0, revenue: 0, success: 0 });
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto">
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-        <div>
-          <h3 className="text-sm font-bold text-slate-800">Laporan Keuangan Tahunan</h3>
-          <p className="text-xs text-slate-400">Ringkasan laba bersih dari pembayaran sukses</p>
-        </div>
-        <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
-          <Calendar size={16} className="ml-2 text-slate-400" />
-          <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-transparent text-sm font-bold text-slate-700 p-2 outline-none">
-            {years.map(y => <option key={y} value={y}>{y}</option>)}
-          </select>
+        <div className="flex gap-2">
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
+            <Calendar size={16} className="ml-2 text-slate-400" />
+            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-transparent text-sm font-bold text-slate-700 p-2 outline-none">
+              {years.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -530,13 +528,9 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const internalP = settings?.internalPercent || 40;
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto">
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-        <div>
-          <h3 className="text-sm font-bold text-slate-800">Laporan Pembagian Keuntungan</h3>
-          <p className="text-xs text-slate-400">Pembagian profit bersih antara Marbot, Mushola, dan Internal</p>
-        </div>
-        <div className="flex items-center gap-3">
+        <div className="flex gap-2 w-full sm:w-auto">
           <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
             <Calendar size={14} className="text-slate-400" />
             <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-transparent text-xs font-bold text-slate-700 py-1.5 outline-none">
@@ -1387,12 +1381,8 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'transactions' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h2 className={UI_TEXT.h2}>Riwayat Transaksi</h2>
-                <p className={UI_TEXT.caption}>Kelola semua pesanan masuk dari pelanggan.</p>
-              </div>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
               <div className="flex gap-2 w-full sm:w-auto">
                 <input
                   type="file"
@@ -1447,12 +1437,8 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'products' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h2 className={UI_TEXT.h2}>Inventaris Produk</h2>
-                <p className={UI_TEXT.caption}>Kelola stok dan harga barang di mart.</p>
-              </div>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
               <button onClick={() => setIsAddingProduct(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
                 <Plus size={18} /> Tambah Produk
               </button>
@@ -1547,12 +1533,8 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'users' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h2 className={UI_TEXT.h2}>Manajemen User</h2>
-                <p className={UI_TEXT.caption}>Kelola akses dan akun administrator mart.</p>
-              </div>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
               <button onClick={() => setIsAddingUser(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
                 <Plus size={18} /> User Baru
               </button>
@@ -1630,12 +1612,8 @@ export default function AdminDashboard({
         )}
 
         {adminTab === 'settings' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <h2 className={UI_TEXT.h2}>Pengaturan Mart</h2>
-                <p className={UI_TEXT.caption}>Konfigurasi informasi toko dan pembayaran.</p>
-              </div>
+          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
+            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
               <button onClick={handleSettingsSave} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
                 <Download size={18} /> Simpan Perubahan
               </button>
