@@ -714,35 +714,26 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
       const month = (d.getMonth() + 1).toString().padStart(2, '0');
       const year = d.getFullYear();
       const tanggalPesanan = `${day}/${month}/${year}`;
-      const bulan = d.getMonth() + 1;
+      const bulan = d.toLocaleString('id-ID', { month: 'long' });
       const tahun = d.getFullYear();
 
-      t.items.forEach(item => {
-        const productInfo = products?.find(p => p.id === item.id) || {};
-        const hargaModal = productInfo.cost || 0;
-        const totalHargaModal = hargaModal * item.qty;
-        const hargaJual = item.price || 0;
-        const totalHargaJual = hargaJual * item.qty;
-        const profit = totalHargaJual - totalHargaModal;
-
+      t.items?.forEach(item => {
+        const prod = products?.find(p => p.id === item.id || p.name === item.name);
         result.push({
-          no: globalIdx++,
-          tanggalPesanan,
-          bulan,
-          tahun,
-          nomorRumah: t.address || t.customer, // Map from address as requested
-          kodeBarang: productInfo.customId || '-',
+          txId: t.id,
+          no: counter++,
+          tanggalPesanan: t.time || d.toLocaleString(),
+          bulan: bulan,
+          tahun: tahun,
+          nomorRumah: t.address || '-',
+          kodeBarang: prod?.customId || '-',
           namaBarang: item.name,
           jumlah: item.qty,
-          hargaModal,
-          totalHargaModal,
-          hargaJual,
-          totalHargaJual,
-          caraPembayaran: t.method === 'transfer' ? 'Transfer' : 'Cash',
+          hargaJual: item.price,
+          totalHargaJual: item.price * item.qty,
+          caraPembayaran: (t.method === 'transfer' ? 'Transfer' : 'Cash'),
           catatan: t.notes || '-',
-          profit,
-          // Extra info for actions
-          txId: t.id,
+          profit: item.profit || 0,
           paymentStatus: t.paymentStatus,
           shippingStatus: t.shippingStatus,
           originalTx: t
@@ -855,12 +846,33 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
                   </span>
                 </td>
                 <td className="py-4 px-4 text-center">
-                  <button
-                    onClick={() => onDetail(item.originalTx)}
-                    className={`p-2 text-slate-300 hover:text-blue-600 rounded-lg hover:bg-white transition-all`}
-                  >
-                    <Eye size={16} />
-                  </button>
+                  <div className="flex items-center justify-center gap-1">
+                    <button
+                      onClick={() => onDetail(item.originalTx)}
+                      className={`p-2 text-slate-300 hover:text-blue-600 rounded-lg hover:bg-white transition-all`}
+                      title="Lihat Detail"
+                    >
+                      <Eye size={16} />
+                    </button>
+                    {onEdit && (
+                      <button
+                        onClick={() => onEdit(item.originalTx)}
+                        className={`p-2 text-slate-300 hover:text-amber-600 rounded-lg hover:bg-white transition-all`}
+                        title="Edit Transaksi"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(item.originalTx.id)}
+                        className={`p-2 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-white transition-all`}
+                        title="Hapus Transaksi"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -876,9 +888,18 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
   );
 }
 
-// --- TRANSACTION MODAL ---
-function TransactionModal({ onClose, onSave, products }) {
-  const [formData, setFormData] = useState({
+// --- MODAL TRANSAKSI ---
+function TransactionModal({ products, onClose, onSave, transaction = null, saveProduct }) {
+  const [formData, setFormData] = useState(transaction ? {
+    ...transaction,
+    items: transaction.items || [],
+    // Ensure date is in ISO string format for datetime-local input
+    date: transaction.date ? new Date(transaction.date).toISOString() : new Date().toISOString(),
+    // Ensure paymentStatus and shippingStatus are present for existing transactions
+    paymentStatus: transaction.paymentStatus || 'menunggu',
+    shippingStatus: transaction.shippingStatus || 'menunggu',
+    notes: transaction.notes || '' // Ensure notes is present
+  } : {
     customer: '',
     phone: '',
     address: '',
@@ -886,7 +907,8 @@ function TransactionModal({ onClose, onSave, products }) {
     method: 'cod',
     date: new Date().toISOString(),
     paymentStatus: 'menunggu',
-    shippingStatus: 'menunggu'
+    shippingStatus: 'menunggu',
+    notes: ''
   });
 
   const [selectedProduct, setSelectedProduct] = useState('');
@@ -897,17 +919,33 @@ function TransactionModal({ onClose, onSave, products }) {
     const product = products.find(p => p.id === selectedProduct);
     if (!product) return;
 
-    setFormData(prev => ({
-      ...prev,
-      items: [...prev.items, {
-        id: product.id,
-        name: product.name,
-        cost: product.cost,
-        price: product.price,
-        qty: quantity,
-        profit: (product.price - product.cost) * quantity
-      }]
-    }));
+    // Check if item already exists in formData.items
+    const existingItemIndex = formData.items.findIndex(item => item.id === product.id);
+
+    if (existingItemIndex > -1) {
+      // If exists, update quantity
+      setFormData(prev => ({
+        ...prev,
+        items: prev.items.map((item, idx) =>
+          idx === existingItemIndex
+            ? { ...item, qty: item.qty + quantity, profit: (product.price - product.cost) * (item.qty + quantity) }
+            : item
+        )
+      }));
+    } else {
+      // If not, add new item
+      setFormData(prev => ({
+        ...prev,
+        items: [...prev.items, {
+          id: product.id,
+          name: product.name,
+          cost: product.cost,
+          price: product.price,
+          qty: quantity,
+          profit: (product.price - product.cost) * quantity
+        }]
+      }));
+    }
     setSelectedProduct('');
     setQuantity(1);
   };
@@ -939,7 +977,7 @@ function TransactionModal({ onClose, onSave, products }) {
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className={`bg-white w-full max-w-2xl ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto`}>
         <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
-          <h3 className="font-bold text-slate-900">Tambah Transaksi Manual</h3>
+          <h3 className="font-bold text-slate-900">{transaction ? 'Edit Transaksi' : 'Tambah Transaksi Manual'}</h3>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
         </div>
 
@@ -1126,6 +1164,7 @@ export default function AdminDashboard({
   const [visibleProducts, setVisibleProducts] = useState(20);
   const [visibleUsers, setVisibleUsers] = useState(20);
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleProductSave = (productData) => {
@@ -1143,6 +1182,13 @@ export default function AdminDashboard({
   const handleTransactionSave = async (transactionData) => {
     await saveTransaction(transactionData);
     setIsAddingTransaction(false);
+    setEditingTransaction(null);
+  };
+
+  const handleDeleteTransaction = async (txId) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+      await deleteTransaction(txId);
+    }
   };
 
   const handleDeleteUser = (userId) => {
@@ -1199,53 +1245,102 @@ export default function AdminDashboard({
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const text = event.target.result;
       const lines = text.split('\n');
       const headers = lines[0].split(',');
 
-      const newTransactions = lines.slice(1).filter(line => line.trim()).map(line => {
+      const createdProducts = { ...products.reduce((acc, p) => ({ ...acc, [p.name.toLowerCase()]: p }), {}) };
+      const newProductsToSave = [];
+
+      const newTransactions = [];
+
+      for (const line of lines.slice(1)) {
+        if (!line.trim()) continue;
         const values = line.split(',');
         const t = {};
         headers.forEach((h, i) => {
           const key = h.trim().toLowerCase().replace(' ', '');
           let val = values[i]?.replace(/"/g, '').trim();
-
           if (key === 'total' || key === 'harga' || key === 'price') val = Number(val) || 0;
-          if (key === 'items') {
-            // Very simple parser for items like "2x Aqua, 1x Gas"
-            val = val.split(';').map(itemStr => {
-              const [qty, ...nameParts] = itemStr.trim().split('x ');
-              return { qty: Number(qty) || 1, name: nameParts.join('x ').trim(), price: 0 }; // Price will be updated from products later if needed
-            });
-          }
           t[key] = val;
         });
 
-        return {
+        const itemStr = t.items || "";
+        const parsedItems = itemStr.split(';').map(s => {
+          const parts = s.trim().split('x ');
+          const qty = Number(parts[0]) || 1;
+          const name = parts.slice(1).join('x ').trim();
+          return { qty, name };
+        }).filter(i => i.name);
+
+        const transactionItems = [];
+        let calculatedTotal = 0;
+
+        for (const item of parsedItems) {
+          let product = createdProducts[item.name.toLowerCase()];
+
+          if (!product) {
+            // Create new product if it doesn't exist
+            const newProduct = {
+              id: Date.now() + Math.random().toString(36).substr(2, 9),
+              customId: `NEW-${Math.floor(1000 + Math.random() * 9000)}`,
+              name: item.name,
+              category: 'Imported',
+              price: t.harga || t.price || 0, // Fallback to transaction price if available
+              cost: (t.harga || t.price || 0) * 0.8, // Estimate cost at 80% if not known
+              stock: 100,
+              image: ''
+            };
+            newProductsToSave.push(newProduct);
+            createdProducts[item.name.toLowerCase()] = newProduct;
+            product = newProduct;
+          }
+
+          const itemTotal = product.price * item.qty;
+          calculatedTotal += itemTotal;
+
+          transactionItems.push({
+            id: product.id,
+            name: product.name,
+            cost: product.cost,
+            price: product.price,
+            qty: item.qty,
+            profit: (product.price - product.cost) * item.qty
+          });
+        }
+
+        newTransactions.push({
           id: Date.now() + Math.random().toString(36).substr(2, 9),
           date: t.tanggal ? new Date(t.tanggal).toISOString() : new Date().toISOString(),
           time: t.tanggal || new Date().toLocaleString(),
           customer: t.pelanggan || 'Imported Customer',
           phone: t.whatsapp || '',
           address: t.alamat || '',
-          items: t.items || [],
-          total: t.total || 0,
-          method: (t.metode || '').toLowerCase().includes('transfer') ? 'transfer' : 'cash',
+          items: transactionItems,
+          total: t.total || calculatedTotal,
+          method: (t.metode || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
           paymentStatus: t.statusbayar || 'menunggu',
           shippingStatus: t.statuskirim || 'menunggu',
           notes: t.catatan || ''
-        };
-      });
+        });
+      }
+
+      if (newProductsToSave.length > 0) {
+        for (const p of newProductsToSave) {
+          await saveProduct(p);
+        }
+      }
 
       if (newTransactions.length > 0) {
-        newTransactions.forEach(tx => saveTransaction(tx));
-        alert(`Berhasil mengimpor ${newTransactions.length} transaksi!`);
+        for (const tx of newTransactions) {
+          await saveTransaction(tx);
+        }
+        toast.success(`Berhasil mengimpor ${newTransactions.length} transaksi dan ${newProductsToSave.length} produk baru!`);
       }
     };
     reader.readAsText(file);
-    e.target.value = ''; // Reset input
+    e.target.value = '';
   };
 
   const filteredTransactions = useMemo(() => {
@@ -1352,7 +1447,24 @@ export default function AdminDashboard({
 
           {adminTab === 'transactions' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
-              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                  >
+                    {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                  </select>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                  >
+                    {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+
                 <div className="flex gap-2 w-full sm:w-auto">
                   <input
                     type="file"
@@ -1361,33 +1473,16 @@ export default function AdminDashboard({
                     accept=".csv"
                     className="hidden"
                   />
-                  <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none text-blue-600 border-blue-100 hover:bg-blue-50`}>
+                  <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none text-blue-600 border-blue-100 hover:bg-blue-50 py-2.5 h-[42px]`}>
                     <Download size={18} className="rotate-180" /> Import
                   </button>
-                  <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
+                  <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none py-2.5 h-[42px]`}>
                     <Download size={18} /> Export
                   </button>
-                  <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
+                  <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} flex-1 sm:flex-none py-2.5 h-[42px]`}>
                     <Plus size={18} /> Tambah
                   </button>
                 </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 mb-6">
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                  className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
-                >
-                  {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                </select>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
-                >
-                  {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
               </div>
 
               <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
@@ -1396,6 +1491,8 @@ export default function AdminDashboard({
                   transactions={filteredTransactions.slice(0, visibleTransactions)}
                   products={products}
                   onDetail={setSelectedTx}
+                  onEdit={setEditingTransaction}
+                  onDelete={handleDeleteTransaction}
                 />
               </div>
               {filteredTransactions.length > visibleTransactions && (
@@ -1695,12 +1792,14 @@ export default function AdminDashboard({
         />
       )}
 
-      {/* Manual Transaction Modal */}
-      {isAddingTransaction && (
+      {/* Modal CRUD Transaksi */}
+      {(isAddingTransaction || editingTransaction) && (
         <TransactionModal
-          onClose={() => setIsAddingTransaction(false)}
-          onSave={handleTransactionSave}
+          transaction={editingTransaction}
           products={products}
+          onClose={() => { setEditingTransaction(null); setIsAddingTransaction(false); }}
+          onSave={handleTransactionSave}
+          saveProduct={saveProduct}
         />
       )}
 
