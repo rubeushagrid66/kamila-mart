@@ -831,13 +831,10 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
               <th className="py-4 px-4 text-center">No</th>
               <th className="py-4 px-4">Tanggal pesanan</th>
               <th className="py-4 px-4 text-center">Bulan</th>
-              <th className="py-4 px-4 text-center">Tahun</th>
               <th className="py-4 px-4">Nomor Rumah</th>
               <th className="py-4 px-4">Kode Barang</th>
               <th className="py-4 px-4">Nama Barang</th>
               <th className="py-4 px-4 text-center">Jumlah</th>
-              <th className="py-4 px-4 text-right">Harga Modal</th>
-              <th className="py-4 px-4 text-right">Total Modal</th>
               <th className="py-4 px-4 text-right text-blue-600/70">Harga Jual</th>
               <th className="py-4 px-4 text-right text-blue-600">Total Jual</th>
               <th className="py-4 px-4">Metode</th>
@@ -852,13 +849,10 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
                 <td className="py-4 px-4 text-center text-slate-400 font-medium">{item.no}</td>
                 <td className="py-4 px-4 whitespace-nowrap font-medium text-slate-600">{item.tanggalPesanan}</td>
                 <td className="py-4 px-4 text-center font-bold text-slate-500">{item.bulan}</td>
-                <td className="py-4 px-4 text-center font-bold text-slate-500">{item.tahun}</td>
                 <td className="py-4 px-4 font-extrabold text-slate-900">{item.nomorRumah}</td>
                 <td className="py-4 px-4 font-mono text-[10px] text-slate-500">{item.kodeBarang}</td>
                 <td className="py-4 px-4 font-bold text-slate-800">{item.namaBarang}</td>
                 <td className="py-4 px-4 text-center font-black text-blue-600">{item.jumlah}</td>
-                <td className="py-4 px-4 text-right text-slate-500">{formatIDR(item.hargaModal)}</td>
-                <td className="py-4 px-4 text-right font-bold text-slate-600">{formatIDR(item.totalHargaModal)}</td>
                 <td className="py-4 px-4 text-right font-bold text-blue-600/70">{formatIDR(item.hargaJual)}</td>
                 <td className="py-4 px-4 text-right font-black text-blue-600">{formatIDR(item.totalHargaJual)}</td>
                 <td className="py-4 px-4">
@@ -992,7 +986,7 @@ function TransactionModal({ onClose, onSave, products }) {
 
           <div className="space-y-4 pt-4 border-t border-slate-100">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Item Transaksi</p>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-3">
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
@@ -1003,20 +997,22 @@ function TransactionModal({ onClose, onSave, products }) {
                   <option key={p.id} value={p.id}>{p.name} - {formatIDR(p.price)}</option>
                 ))}
               </select>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className={`w-20 p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-bold text-center`}
-              />
-              <button
-                type="button"
-                onClick={addItem}
-                className={`p-3 bg-blue-600 text-white ${UI_RADIUS.inner} hover:bg-blue-700 transition-all`}
-              >
-                <Plus size={20} />
-              </button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className={`w-20 p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-bold text-center`}
+                />
+                <button
+                  type="button"
+                  onClick={addItem}
+                  className={`flex-1 sm:flex-none p-3 bg-blue-600 text-white ${UI_RADIUS.inner} hover:bg-blue-700 transition-all flex items-center justify-center`}
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
             </div>
 
             <div className="bg-slate-50 border border-slate-100 overflow-hidden md:rounded-xl">
@@ -1314,7 +1310,7 @@ export default function AdminDashboard({
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
         <header className="flex items-center justify-between mb-12">
           <div>
-            <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label}</h2>
+            <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'transactions' && `(${transactions.length})`}</h2>
             <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
           </div>
           <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
@@ -1696,8 +1692,8 @@ export default function AdminDashboard({
 
       {/* Detail Pesanan Modal */}
       {selectedTx && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className={`bg-white w-full max-w-xl ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className={`bg-white w-full max-w-2xl ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 max-h-[90vh] flex flex-col`}>
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
               <div>
                 <h3 className="font-extrabold text-slate-900">Detail Pesanan</h3>
@@ -1718,22 +1714,39 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              <div>
-                <label className={UI_TEXT.label}>Metode Pembayaran</label>
-                <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 capitalize">
-                  <CreditCard size={14} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat'}
-                </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                <div>
+                  <label className={UI_TEXT.label}>Tahun</label>
+                  <p className="text-xs font-bold text-slate-700">{new Date(selectedTx.date).getFullYear()}</p>
+                </div>
+                <div className="sm:col-span-3">
+                  <label className={UI_TEXT.label}>Metode Pembayaran</label>
+                  <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 capitalize">
+                    <CreditCard size={14} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat'}
+                  </p>
+                </div>
               </div>
 
               <div>
                 <label className={UI_TEXT.label}>Item Dipesan</label>
-                <div className="space-y-2 mt-3">
-                  {selectedTx.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm py-3 border-b border-slate-50 last:border-0">
-                      <span className="font-medium text-slate-700">{item.qty}x {item.name}</span>
-                      <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
-                    </div>
-                  ))}
+                <div className="space-y-4 mt-3">
+                  {selectedTx.items.map((item, idx) => {
+                    const productData = products.find(p => p.id === item.id);
+                    const cost = productData?.cost || 0;
+                    return (
+                      <div key={idx} className="space-y-2 pb-4 border-b border-slate-50 last:border-0">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-extrabold text-slate-800">{item.qty}x {item.name}</span>
+                          <span className="font-black text-blue-600">{formatIDR(item.price * item.qty)}</span>
+                        </div>
+                        <div className="flex gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                          <span>Modal: {formatIDR(cost)}</span>
+                          <span>Total Modal: {formatIDR(cost * item.qty)}</span>
+                          <span className="text-emerald-500">Net Profit: {formatIDR((item.price - cost) * item.qty)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
