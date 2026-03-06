@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit, increment } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit, increment, writeBatch } from 'firebase/firestore';
 import { auth, db } from './firebase-config';
 import Login from './Login';
 import Pemesanan from './Pemesanan';
@@ -315,19 +315,29 @@ function AppContent() {
 
   const clearAllTransactions = async () => {
     try {
-      if (window.confirm('PERINGATAN: Seluruh data transaksi akan dihapus secara permanen. Lanjutkan?')) {
-        const batch = [];
-        const querySnapshot = await getDocs(collection(db, 'transactions'));
-        querySnapshot.forEach((d) => {
-          batch.push(deleteDoc(doc(db, 'transactions', d.id)));
-        });
-        await Promise.all(batch);
+      if (window.confirm('PERINGATAN: Seluruh data transaksi dan laporan akan dihapus secara permanen. Lanjutkan?')) {
+        const collectionsToClear = ['transactions', 'monthly_reports'];
+
+        for (const collName of collectionsToClear) {
+          const querySnapshot = await getDocs(collection(db, collName));
+          const docs = querySnapshot.docs;
+
+          // Firestore batch limit is 500
+          for (let i = 0; i < docs.length; i += 500) {
+            const batch = writeBatch(db);
+            const chunk = docs.slice(i, i + 500);
+            chunk.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+          }
+        }
+
         setTransactions([]);
-        toast.success('Seluruh transaksi berhasil dihapus!');
+        setMonthlyReports([]);
+        toast.success('Seluruh data berhasil dibersihkan!');
       }
     } catch (error) {
-      console.error('Error clearing transactions:', error);
-      toast.error('Gagal menghapus seluruh transaksi');
+      console.error('Error clearing data:', error);
+      toast.error('Gagal menghapus data');
     }
   };
 
