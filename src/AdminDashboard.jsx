@@ -271,7 +271,7 @@ function UserModal({ user, onClose, onSave }) {
 }
 
 // --- FINANCE VIEW ---
-function FinanceView({ transactions, products, selectedYear }) {
+function FinanceView({ transactions, products, selectedYear, setSelectedYear }) {
   const years = [2024, 2025, 2026];
   const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
@@ -442,7 +442,9 @@ function FinanceView({ transactions, products, selectedYear }) {
 }
 
 // --- PROFIT REPORT VIEW ---
-function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear }) {
+function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear, setSelectedYear }) {
+  const [editingMonthFormula, setEditingMonthFormula] = useState(null);
+  const [editingFormula, setEditingFormula] = useState(false);
   const [tempFormula, setTempFormula] = useState({
     marbotPercent: settings?.marbotPercent || 60,
     musholaPercent: settings?.musholaPercent || 0,
@@ -1414,7 +1416,7 @@ export default function AdminDashboard({
             </div>
           )}
 
-          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} selectedYear={selectedYear} />}
+          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} selectedYear={selectedYear} setSelectedYear={setSelectedYear} />}
 
           {adminTab === 'profit_report' && (
             <ProfitReportView
@@ -1425,6 +1427,7 @@ export default function AdminDashboard({
               settings={settings}
               saveSettings={saveSettings}
               selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
             />
           )}
 
