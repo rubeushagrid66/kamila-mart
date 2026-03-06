@@ -1329,39 +1329,18 @@ export default function AdminDashboard({
               <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
-                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline">Lihat Selengkapnya</button>
-                </div>
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-50 shadow-sm`}>
-                  <TransactionList
-                    updateStatus={updateTransactionStatus}
-                    transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
-                    products={products}
-                    onDetail={setSelectedTx}
-                  />
-                </div>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
+                <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline">Lihat Selengkapnya</button>
               </div>
-
-              <div className="space-y-6">
-                <h2 className={UI_TEXT.h2}>Update Cepat</h2>
-                <div className={`bg-slate-900 ${UI_RADIUS.outer} p-8 text-white relative overflow-hidden group`}>
-                  <div className="relative z-10 space-y-6">
-                    <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center">
-                      <Package size={24} className="text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold mb-1">Tambah Produk</h3>
-                      <p className="text-slate-400 text-xs leading-relaxed">Kelola inventaris dan stok mart Anda dengan mudah.</p>
-                    </div>
-                    <button onClick={() => { setIsAddingProduct(true); setAdminTab('products'); }} className="w-full py-4 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
-                      <Plus size={18} /> Produk Baru
-                    </button>
-                  </div>
-                  <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-700"></div>
-                </div>
+              <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+                <TransactionList
+                  updateStatus={updateTransactionStatus}
+                  transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                  products={products}
+                  onDetail={setSelectedTx}
+                />
               </div>
             </div>
           </div>
@@ -1427,12 +1406,12 @@ export default function AdminDashboard({
                 products={products}
                 onDetail={setSelectedTx}
               />
-              {filteredTransactions.length > visibleTransactions && (
-                <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-8 py-4 bg-slate-50 text-slate-500 font-bold text-xs ${UI_RADIUS.inner} hover:bg-slate-100 transition-all`}>
-                  Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
-                </button>
-              )}
             </div>
+            {filteredTransactions.length > visibleTransactions && (
+              <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-6 py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+                Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
+              </button>
+            )}
           </div>
         )}
 
