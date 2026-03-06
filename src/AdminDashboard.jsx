@@ -283,13 +283,10 @@ function FinanceView({ transactions, products }) {
         return d.getFullYear() === selectedYear && d.getMonth() === index;
       });
 
-      const successTx = monthTx.filter(t => t.paymentStatus === 'sukses');
-      const pendingTx = monthTx.filter(t => t.paymentStatus === 'menunggu');
-
       let profit = 0;
       let revenue = 0;
 
-      successTx.forEach(tx => {
+      monthTx.forEach(tx => {
         revenue += tx.total;
         tx.items.forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
@@ -301,8 +298,6 @@ function FinanceView({ transactions, products }) {
       return {
         monthName,
         totalTx: monthTx.length,
-        successCount: successTx.length,
-        pendingCount: pendingTx.length,
         revenue,
         profit
       };
@@ -312,8 +307,8 @@ function FinanceView({ transactions, products }) {
   const yearlyTotal = stats.reduce((acc, curr) => ({
     profit: acc.profit + curr.profit,
     revenue: acc.revenue + curr.revenue,
-    success: acc.success + curr.successCount
-  }), { profit: 0, revenue: 0, success: 0 });
+    totalTx: acc.totalTx + curr.totalTx
+  }), { profit: 0, revenue: 0, totalTx: 0 });
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -341,8 +336,8 @@ function FinanceView({ transactions, products }) {
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{formatIDR(yearlyTotal.revenue)}</p>
         </div>
         <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Transaksi Selesai</p>
-          <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.success} Pesanan</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
+          <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.totalTx} Pesanan</p>
         </div>
       </div>
 
@@ -367,10 +362,9 @@ function FinanceView({ transactions, products }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status Transaksi</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Jumlah Item</p>
                   <div className="flex gap-2">
-                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold">{s.successCount} Sukses</span>
-                    <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-bold">{s.pendingCount} Menunggu</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-bold">{s.totalTx} Transaksi</span>
                   </div>
                 </div>
                 <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
@@ -393,8 +387,7 @@ function FinanceView({ transactions, products }) {
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 <th className="px-6 py-4">Bulan</th>
-                <th className="px-6 py-4 text-center">Sukses</th>
-                <th className="px-6 py-4 text-center">Menunggu</th>
+                <th className="px-6 py-4 text-center">Jumlah Transaksi</th>
                 <th className="px-6 py-4">Omzet</th>
                 <th className="px-6 py-4">Keuntungan</th>
                 <th className="px-6 py-4 text-right">Status</th>
@@ -405,10 +398,7 @@ function FinanceView({ transactions, products }) {
                 <tr key={i} className={`text-sm hover:bg-slate-50/30 transition-colors ${s.profit > 0 ? '' : 'opacity-60'}`}>
                   <td className="px-6 py-4 font-bold text-slate-700">{s.monthName}</td>
                   <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[10px] font-bold">{s.successCount}</span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded-md text-[10px] font-bold">{s.pendingCount}</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold">{s.totalTx}</span>
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-500">{formatIDR(s.revenue)}</td>
                   <td className="px-6 py-4 font-black text-slate-900">{formatIDR(s.profit)}</td>
@@ -451,10 +441,9 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         return d.getFullYear() === selectedYear && d.getMonth() === index;
       });
 
-      const successTx = monthTx.filter(t => t.paymentStatus === 'sukses');
       let profit = 0;
 
-      successTx.forEach(tx => {
+      monthTx.forEach(tx => {
         tx.items.forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
           const cost = productInfo ? productInfo.cost : (item.price * 0.8);
@@ -476,7 +465,6 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         marbotPercent: mP,
         musholaPercent: msP,
         internalPercent: iP,
-        status: savedData.status || 'menunggu',
         notes: savedData.notes || ''
       };
     });
@@ -560,7 +548,6 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 <th className="px-6 py-4">Marbot</th>
                 <th className="px-6 py-4">Mushola</th>
                 <th className="px-6 py-4">Internal</th>
-                <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Catatan</th>
               </tr>
             </thead>
@@ -584,16 +571,6 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   <td className="px-6 py-5 text-emerald-600 font-bold">{formatIDR(s.profit * (s.marbotPercent / 100))}</td>
                   <td className="px-6 py-5 text-amber-600 font-bold">{formatIDR(s.profit * (s.musholaPercent / 100))}</td>
                   <td className="px-6 py-5 text-blue-600 font-bold">{formatIDR(s.profit * (s.internalPercent / 100))}</td>
-                  <td className="px-6 py-5">
-                    <select
-                      value={s.status}
-                      onChange={(e) => saveMonthlyReport(s.id, { status: e.target.value })}
-                      className={`text-[10px] font-bold uppercase p-2 px-3 rounded-lg border-0 outline-none cursor-pointer ${s.status === 'sukses' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
-                    >
-                      <option value="menunggu">Menunggu</option>
-                      <option value="sukses">Selesai</option>
-                    </select>
-                  </td>
                   <td className="px-6 py-5 min-w-[200px]">
                     <input
                       className="w-full bg-slate-50 p-2 rounded-lg border border-slate-100 text-xs outline-none focus:border-blue-300 transition-all font-medium"
@@ -721,7 +698,7 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
         const prod = products?.find(p => p.id === item.id || p.name === item.name);
         result.push({
           txId: t.id,
-          no: counter++,
+          no: globalIdx++,
           tanggalPesanan: t.time || d.toLocaleString(),
           bulan: bulan,
           tahun: tahun,
@@ -734,8 +711,6 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
           caraPembayaran: (t.method === 'transfer' ? 'Transfer' : 'Cash'),
           catatan: t.notes || '-',
           profit: item.profit || 0,
-          paymentStatus: t.paymentStatus,
-          shippingStatus: t.shippingStatus,
           originalTx: t
         });
       });
@@ -782,28 +757,21 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="space-y-1.5">
-                <label className={UI_TEXT.label}>Bayar</label>
-                <select
-                  value={t.paymentStatus}
-                  onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
-                  className={`w-full text-[11px] font-black uppercase p-3 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer transition-colors ${t.paymentStatus === 'lunas' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+            <div className="flex justify-between items-center pt-2">
+              <p className="text-[10px] font-bold text-slate-400">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => onEdit(t)}
+                  className={`p-2 text-slate-300 hover:text-amber-600 rounded-lg hover:bg-white transition-all`}
                 >
-                  <option value="menunggu">Unpaid</option>
-                  <option value="lunas">Lunas</option>
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label className={UI_TEXT.label}>Kirim</label>
-                <select
-                  value={t.shippingStatus}
-                  onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
-                  className={`w-full text-[11px] font-black uppercase p-3 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer transition-colors ${t.shippingStatus === 'dikirim' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
+                  <Edit2 size={16} />
+                </button>
+                <button
+                  onClick={() => onDelete(t.id)}
+                  className={`p-2 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-white transition-all`}
                 >
-                  <option value="menunggu">Pending</option>
-                  <option value="dikirim">Dikirim</option>
-                </select>
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
           </div>
@@ -895,9 +863,6 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
     items: transaction.items || [],
     // Ensure date is in ISO string format for datetime-local input
     date: transaction.date ? new Date(transaction.date).toISOString() : new Date().toISOString(),
-    // Ensure paymentStatus and shippingStatus are present for existing transactions
-    paymentStatus: transaction.paymentStatus || 'menunggu',
-    shippingStatus: transaction.shippingStatus || 'menunggu',
     notes: transaction.notes || '' // Ensure notes is present
   } : {
     customer: '',
@@ -906,8 +871,6 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
     items: [],
     method: 'cod',
     date: new Date().toISOString(),
-    paymentStatus: 'menunggu',
-    shippingStatus: 'menunggu',
     notes: ''
   });
 
@@ -1148,7 +1111,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, clearAllTransactions, updateTransactionStatus,
+  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, clearAllTransactions,
   monthlyReports, saveMonthlyReport, currentUserData
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
@@ -1216,7 +1179,7 @@ export default function AdminDashboard({
       return;
     }
 
-    const headers = ["Tanggal", "Pelanggan", "WhatsApp", "Alamat", "Items", "Total", "Metode", "Status Bayar", "Status Kirim", "Catatan"];
+    const headers = ["Tanggal", "Pelanggan", "WhatsApp", "Alamat", "Items", "Total", "Metode", "Catatan"];
     const rows = filteredTransactions.map(t => [
       t.time,
       t.customer,
@@ -1225,8 +1188,6 @@ export default function AdminDashboard({
       `"${t.items.map(i => `${i.qty}x ${i.name}`).join(', ')}"`,
       t.total,
       t.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat',
-      t.paymentStatus,
-      t.shippingStatus,
       `"${(t.notes || '').replace(/"/g, '""')}"`
     ]);
 
@@ -1320,8 +1281,6 @@ export default function AdminDashboard({
           items: transactionItems,
           total: t.total || calculatedTotal,
           method: (t.metode || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
-          paymentStatus: t.statusbayar || 'menunggu',
-          shippingStatus: t.statuskirim || 'menunggu',
           notes: t.catatan || ''
         });
       }
@@ -1376,12 +1335,12 @@ export default function AdminDashboard({
               <button
                 key={m.id}
                 onClick={() => { setAdminTab(m.id); setMobileMenuOpen(false); }}
-                className={`w-full flex items-center gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-bold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
+                className={`w-full flex items-start text-left gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-bold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
               >
-                <div className="w-6 flex justify-center shrink-0">
+                <div className="w-6 flex justify-center shrink-0 pt-0.5">
                   <IconComponent size={20} />
                 </div>
-                <span className="truncate">{m.label}</span>
+                <span className="leading-tight">{m.label}</span>
               </button>
             );
           })}
@@ -1422,7 +1381,6 @@ export default function AdminDashboard({
                 </div>
                 <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
                   <TransactionList
-                    updateStatus={updateTransactionStatus}
                     transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
                     products={products}
                     onDetail={setSelectedTx}
@@ -1487,7 +1445,6 @@ export default function AdminDashboard({
 
               <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
                 <TransactionList
-                  updateStatus={updateTransactionStatus}
                   transactions={filteredTransactions.slice(0, visibleTransactions)}
                   products={products}
                   onDetail={setSelectedTx}
@@ -1868,7 +1825,11 @@ export default function AdminDashboard({
                 <div className="relative mt-2">
                   <textarea
                     defaultValue={selectedTx.notes || ''}
-                    onBlur={(e) => updateTransactionStatus(selectedTx.id, 'notes', e.target.value)}
+                    onBlur={(e) => {
+                      if (e.target.value !== selectedTx.notes) {
+                        saveTransaction({ ...selectedTx, notes: e.target.value });
+                      }
+                    }}
                     placeholder="Tulis catatan di sini... (otomatis tersimpan)"
                     className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 transition-all resize-none h-24 font-medium`}
                   />

@@ -317,20 +317,6 @@ function AppContent() {
     }
   };
 
-  const updateTransactionStatus = async (transactionId, field, value) => {
-    try {
-      await updateDoc(doc(db, 'transactions', transactionId), {
-        [field]: value
-      });
-      setTransactions(prev => prev.map(t =>
-        t.id === transactionId ? { ...t, [field]: value } : t
-      ));
-      toast.success('Status berhasil diperbarui!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast.error('Gagal memperbarui status');
-    }
-  };
 
   // MONTHLY REPORTS
   const saveMonthlyReport = async (reportId, data) => {
@@ -467,7 +453,6 @@ function AppContent() {
                 saveTransaction={saveTransaction}
                 deleteTransaction={deleteTransaction}
                 clearAllTransactions={clearAllTransactions}
-                updateTransactionStatus={updateTransactionStatus}
                 monthlyReports={monthlyReports}
                 saveMonthlyReport={saveMonthlyReport}
                 currentUserData={

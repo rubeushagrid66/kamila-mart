@@ -44,9 +44,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
       total: total,
       method: customerInfo.paymentMethod,
       date: new Date(),
-      time: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }),
-      paymentStatus: 'menunggu',
-      shippingStatus: 'menunggu'
+      time: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
     });
 
     setShowSuccess(true);
