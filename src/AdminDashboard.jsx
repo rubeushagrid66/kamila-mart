@@ -1340,9 +1340,24 @@ export default function AdminDashboard({
   };
 
   const filteredTransactions = useMemo(() => {
+    const parseDate = (dateStr) => {
+      if (!dateStr) return new Date(0); // Undefined dates go to beginning of time
+      if (dateStr instanceof Date) return dateStr;
+
+      // Handle DD/MM/YYYY
+      const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) return new Date(dmy[3], dmy[2] - 1, dmy[1]);
+
+      // Handle YYYY-MM-DD
+      const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (ymd) return new Date(ymd[1], ymd[2] - 1, ymd[3]);
+
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? new Date(0) : d;
+    };
+
     return (transactions || []).filter(t => {
-      if (!t.date) return false;
-      const d = (t.date instanceof Date) ? t.date : new Date(t.date);
+      const d = parseDate(t.date);
       if (isNaN(d.getTime())) return false;
       return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
     });
