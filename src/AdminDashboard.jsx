@@ -673,7 +673,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 }
 
 // --- TRANSACTION LIST ---
-function TransactionList({ transactions, products, onDetail, updateStatus }) {
+function TransactionList({ transactions, products, onDetail, onEdit, onDelete }) {
   const flattenedItems = useMemo(() => {
     let globalIdx = 1;
     const result = [];
