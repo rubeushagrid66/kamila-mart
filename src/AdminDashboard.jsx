@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, Users,
-  Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
+  Edit, Edit2, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
   Plus, Download, FileText, Archive, EyeOff, CheckCircle2
 } from 'lucide-react';
