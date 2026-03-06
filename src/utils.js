@@ -1,8 +1,8 @@
 // Constants
 export const INITIAL_PRODUCTS = [
-  { id: 1, name: 'LPG 3kg', price: 20000, cost: 18000, stock: 50, image: 'https://images.unsplash.com/photo-1635335279970-ca72aa3d3c93?w=400&q=80' },
-  { id: 2, name: 'Le Minerale 15L', price: 22000, cost: 17000, stock: 30, image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200' },
-  { id: 3, name: 'Aqua Gallon', price: 19000, cost: 15000, stock: 40, image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=200' },
+  { id: 1, customId: 'GAS01', name: 'LPG 3kg', category: 'Gas', price: 20000, cost: 18000, stock: 50, image: 'https://images.unsplash.com/photo-1635335279970-ca72aa3d3c93?w=400&q=80' },
+  { id: 2, customId: 'LE01', name: 'Le Minerale 15L', category: 'Galon', price: 22000, cost: 17000, stock: 30, image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=200' },
+  { id: 3, customId: 'AQ01', name: 'Aqua Gallon', category: 'Galon', price: 19000, cost: 15000, stock: 40, image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=200' },
 ];
 
 export const INITIAL_USERS = [

@@ -14,6 +14,7 @@ function ProductModal({ product, onClose, onSave }) {
   const [formData, setFormData] = useState(product || {
     customId: '',
     name: '',
+    category: '',
     cost: '',
     price: '',
     stock: '',
@@ -62,6 +63,17 @@ function ProductModal({ product, onClose, onSave }) {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Contoh: Aqua Galon 19L"
+              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Kategori (Produk)</label>
+            <input
+              required
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              placeholder="Contoh: Galon, Gas, ATK"
               className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
@@ -690,10 +702,66 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 }
 
 // --- TRANSACTION LIST ---
-function TransactionList({ transactions, onDetail, updateStatus }) {
+function TransactionList({ transactions, products, onDetail, updateStatus }) {
+  const flattenedItems = useMemo(() => {
+    let globalIdx = 1;
+    const result = [];
+
+    // Sort transactions by date desc before flattening
+    const sortedTx = [...transactions].sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB - dateA;
+    });
+
+    sortedTx.forEach(t => {
+      const d = t.date instanceof Date ? t.date : new Date(t.date);
+      const day = d.getDate().toString().padStart(2, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const year = d.getFullYear();
+      const tanggalPesanan = `${day}/${month}/${year}`;
+      const bulan = d.getMonth() + 1;
+      const tahun = d.getFullYear();
+
+      t.items.forEach(item => {
+        const productInfo = products?.find(p => p.id === item.id) || {};
+        const hargaModal = productInfo.cost || 0;
+        const totalHargaModal = hargaModal * item.qty;
+        const hargaJual = item.price || 0;
+        const totalHargaJual = hargaJual * item.qty;
+        const profit = totalHargaJual - totalHargaModal;
+
+        result.push({
+          no: globalIdx++,
+          tanggalPesanan,
+          bulan,
+          tahun,
+          nomorRumah: t.customer,
+          produk: productInfo.category || '-',
+          kodeBarang: productInfo.customId || '-',
+          namaBarang: item.name,
+          jumlah: item.qty,
+          hargaModal,
+          totalHargaModal,
+          hargaJual,
+          totalHargaJual,
+          caraPembayaran: t.method === 'transfer' ? 'Transfer' : 'Cash',
+          catatan: t.notes || '-',
+          profit,
+          // Extra info for actions
+          txId: t.id,
+          paymentStatus: t.paymentStatus,
+          shippingStatus: t.shippingStatus,
+          originalTx: t
+        });
+      });
+    });
+    return result;
+  }, [transactions, products]);
+
   return (
     <div className="space-y-4">
-      {/* Mobile view: Cards */}
+      {/* Mobile view: Cards (Keep existing or simplified for many items) */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {transactions.map(t => (
           <div key={t.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
@@ -751,70 +819,68 @@ function TransactionList({ transactions, onDetail, updateStatus }) {
         )}
       </div>
 
-      {/* Desktop view: Table */}
+      {/* Desktop view: Table matching spreadsheet */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-collapse min-w-[1500px]">
           <thead>
-            <tr className={`border-b border-slate-100 ${UI_TEXT.label}`}>
-              <th className="pb-4 px-2">Tanggal</th>
-              <th className="pb-4 px-2">Pelanggan</th>
-              <th className="pb-4 px-2">Detail</th>
-              <th className="pb-4 px-2">Status Bayar</th>
-              <th className="pb-4 px-2">Pengiriman</th>
-              <th className="pb-4 px-2 text-right">Aksi</th>
+            <tr className={`border-b border-slate-100 ${UI_TEXT.label} bg-slate-50/50`}>
+              <th className="py-4 px-3 text-center border">No</th>
+              <th className="py-4 px-3 border">Tanggal pesanan</th>
+              <th className="py-4 px-3 text-center border">Bulan</th>
+              <th className="py-4 px-3 text-center border">Tahun</th>
+              <th className="py-4 px-3 border">Nomor Rumah</th>
+              <th className="py-4 px-3 border">Produk</th>
+              <th className="py-4 px-3 border">Kode Barang</th>
+              <th className="py-4 px-3 border">Nama Barang</th>
+              <th className="py-4 px-3 text-center border">Jumlah</th>
+              <th className="py-4 px-3 border">Harga Modal</th>
+              <th className="py-4 px-3 border">Total Harga Modal</th>
+              <th className="py-4 px-3 border">Harga Jual</th>
+              <th className="py-4 px-3 border">Total Harga Jual</th>
+              <th className="py-4 px-3 border">Cara Pembayaran</th>
+              <th className="py-4 px-3 border">Catatan</th>
+              <th className="py-4 px-3 border">Profit</th>
+              <th className="py-4 px-3 text-center border">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {transactions.map(t => (
-              <tr key={t.id} className="text-sm group hover:bg-slate-50/50 transition-colors">
-                <td className={`py-4 px-2 text-slate-400 font-medium text-[11px] whitespace-nowrap`}>{t.time}</td>
-                <td className="py-4 px-2">
-                  <div className="space-y-0.5 min-w-[120px]">
-                    <p className="font-bold text-slate-800 tracking-tight">{t.customer}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">{t.phone}</p>
-                  </div>
+            {flattenedItems.map((item, i) => (
+              <tr key={`${item.txId}-${i}`} className="text-[11px] hover:bg-slate-50/50 transition-colors">
+                <td className="py-3 px-3 text-center border font-medium text-slate-500">{item.no}</td>
+                <td className="py-3 px-3 border whitespace-nowrap">{item.tanggalPesanan}</td>
+                <td className="py-3 px-3 text-center border">{item.bulan}</td>
+                <td className="py-3 px-3 text-center border">{item.tahun}</td>
+                <td className="py-3 px-3 border font-bold text-slate-700">{item.nomorRumah}</td>
+                <td className="py-3 px-3 border">{item.produk}</td>
+                <td className="py-3 px-3 border font-mono text-[10px]">{item.kodeBarang}</td>
+                <td className="py-3 px-3 border font-medium">{item.namaBarang}</td>
+                <td className="py-3 px-3 text-center border font-bold">{item.jumlah}</td>
+                <td className="py-3 px-3 border">{formatIDR(item.hargaModal)}</td>
+                <td className="py-3 px-3 border font-medium">{formatIDR(item.totalHargaModal)}</td>
+                <td className="py-3 px-3 border text-blue-600 font-medium">{formatIDR(item.hargaJual)}</td>
+                <td className="py-3 px-3 border font-black text-blue-700">{formatIDR(item.totalHargaJual)}</td>
+                <td className="py-3 px-3 border">
+                  <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`}>
+                    {item.caraPembayaran}
+                  </span>
                 </td>
-                <td className="py-4 px-2">
-                  <div className="flex flex-col whitespace-nowrap">
-                    <span className="text-slate-500 text-xs font-medium">{t.items.length} item</span>
-                    <span className="text-blue-600 font-bold">{formatIDR(t.total)}</span>
-                  </div>
-                </td>
-                <td className="py-4 px-2">
-                  <select
-                    value={t.paymentStatus}
-                    onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
-                    className={`text-[10px] font-bold uppercase p-1.5 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.paymentStatus === 'lunas' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
-                  >
-                    <option value="menunggu">Unpaid</option>
-                    <option value="lunas">Lunas</option>
-                  </select>
-                </td>
-                <td className="py-4 px-2">
-                  <select
-                    value={t.shippingStatus}
-                    onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
-                    className={`text-[10px] font-bold uppercase p-1.5 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.shippingStatus === 'dikirim' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
-                  >
-                    <option value="menunggu">Pending</option>
-                    <option value="dikirim">Dikirim</option>
-                  </select>
-                </td>
-                <td className="py-4 px-2 text-right">
+                <td className="py-3 px-3 border text-slate-400 italic max-w-[150px] truncate">{item.catatan}</td>
+                <td className="py-3 px-3 border font-black text-emerald-600">{formatIDR(item.profit)}</td>
+                <td className="py-3 px-3 text-center border">
                   <button
-                    onClick={() => onDetail(t)}
-                    className={`p-2 text-slate-300 hover:text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all`}
+                    onClick={() => onDetail(item.originalTx)}
+                    className={`p-1.5 text-slate-300 hover:text-blue-600 hover:bg-white ${UI_RADIUS.inner} transition-all`}
                   >
-                    <Eye size={18} />
+                    <Eye size={14} />
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {transactions.length === 0 && (
+        {flattenedItems.length === 0 && (
           <div className="text-center py-10">
-            <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
+            <p className="text-slate-400 text-xs font-medium">Tidak ada data transaksi ditemukan</p>
           </div>
         )}
       </div>
@@ -1192,6 +1258,7 @@ export default function AdminDashboard({
                   <TransactionList
                     updateStatus={updateTransactionStatus}
                     transactions={transactions.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                    products={products}
                     onDetail={setSelectedTx}
                   />
                 </div>
@@ -1270,6 +1337,7 @@ export default function AdminDashboard({
               <TransactionList
                 updateStatus={updateTransactionStatus}
                 transactions={filteredTransactions.slice(0, visibleTransactions)}
+                products={products}
                 onDetail={setSelectedTx}
               />
               {filteredTransactions.length > visibleTransactions && (
