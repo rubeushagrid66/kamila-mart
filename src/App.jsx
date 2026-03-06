@@ -136,7 +136,15 @@ function AppContent() {
     const unsubTx = onSnapshot(qTx, (snapshot) => {
       const txList = snapshot.docs.map(doc => {
         const data = doc.data();
-        const date = data.date?.toDate ? data.date.toDate() : new Date(data.date);
+        let date;
+        if (data.date?.toDate) {
+          date = data.date.toDate();
+        } else if (data.date) {
+          date = new Date(data.date);
+          if (isNaN(date.getTime())) date = new Date();
+        } else {
+          date = new Date();
+        }
         return { id: doc.id, ...data, date };
       });
       if (mounted) setTransactions(txList);
@@ -288,11 +296,8 @@ function AppContent() {
 
   const deleteTransaction = async (transactionId) => {
     try {
-      if (window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
-        await deleteDoc(doc(db, 'transactions', transactionId));
-        setTransactions(prev => prev.filter(t => t.id !== transactionId));
-        toast.success('Transaksi berhasil dihapus!');
-      }
+      await deleteDoc(doc(db, 'transactions', transactionId));
+      toast.success('Transaksi berhasil dihapus!');
     } catch (error) {
       console.error('Error deleting transaction:', error);
       toast.error('Gagal menghapus transaksi');
@@ -457,8 +462,8 @@ function AppContent() {
                 saveMonthlyReport={saveMonthlyReport}
                 currentUserData={
                   customUser ||
-                  users.find(u => u.username === user.email.split('@')[0]) ||
-                  (user.email.split('@')[0] === 'admin'
+                  users.find(u => u.username === user?.email?.split('@')[0]) ||
+                  (user?.email?.split('@')[0] === 'admin'
                     ? { name: 'Super Admin', permissions: ['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'users', 'settings'] }
                     : { permissions: ['dashboard'] })
                 }

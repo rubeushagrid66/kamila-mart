@@ -278,20 +278,22 @@ function FinanceView({ transactions, products }) {
 
   const stats = useMemo(() => {
     return months.map((monthName, index) => {
-      const monthTx = transactions.filter(t => {
-        const d = new Date(t.date);
+      const monthTx = (transactions || []).filter(t => {
+        const d = (t.date instanceof Date) ? t.date : new Date(t.date);
         return d.getFullYear() === selectedYear && d.getMonth() === index;
       });
 
       let profit = 0;
       let revenue = 0;
+      let itemsSold = 0;
 
       monthTx.forEach(tx => {
-        revenue += tx.total;
-        tx.items.forEach(item => {
+        revenue += (tx.total || 0);
+        (tx.items || []).forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
           const cost = productInfo ? productInfo.cost : (item.price * 0.8);
-          profit += (item.price - cost) * item.qty;
+          profit += ((item.price || 0) - cost) * (item.qty || 0);
+          itemsSold += (item.qty || 0);
         });
       });
 
@@ -299,7 +301,8 @@ function FinanceView({ transactions, products }) {
         monthName,
         totalTx: monthTx.length,
         revenue,
-        profit
+        profit,
+        itemsSold
       };
     });
   }, [transactions, selectedYear, products]);
@@ -307,8 +310,9 @@ function FinanceView({ transactions, products }) {
   const yearlyTotal = stats.reduce((acc, curr) => ({
     profit: acc.profit + curr.profit,
     revenue: acc.revenue + curr.revenue,
-    totalTx: acc.totalTx + curr.totalTx
-  }), { profit: 0, revenue: 0, totalTx: 0 });
+    totalTx: acc.totalTx + curr.totalTx,
+    itemsSold: acc.itemsSold + curr.itemsSold
+  }), { profit: 0, revenue: 0, totalTx: 0, itemsSold: 0 });
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -338,6 +342,10 @@ function FinanceView({ transactions, products }) {
         <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.totalTx} Pesanan</p>
+        </div>
+        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-indigo-600">Barang Terjual</p>
+          <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.itemsSold} Unit</p>
         </div>
       </div>
 
@@ -373,6 +381,17 @@ function FinanceView({ transactions, products }) {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-50">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Transaksi</span>
+                  <span className="text-xs font-bold text-slate-700">{s.totalTx}</span>
+                </div>
+                <div className="flex flex-col text-right">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Terjual</span>
+                  <span className="text-xs font-black text-blue-600">{s.itemsSold} unit</span>
+                </div>
+              </div>
+
               <div className="flex justify-between items-center pt-1 px-1">
                 <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Omzet</span>
                 <span className="text-slate-600 font-bold text-sm tracking-tight">{formatIDR(s.revenue)}</span>
@@ -387,7 +406,8 @@ function FinanceView({ transactions, products }) {
             <thead>
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 <th className="px-6 py-4">Bulan</th>
-                <th className="px-6 py-4 text-center">Jumlah Transaksi</th>
+                <th className="px-6 py-4 text-center">Transaksi</th>
+                <th className="px-6 py-4 text-center text-blue-600">Terjual</th>
                 <th className="px-6 py-4">Omzet</th>
                 <th className="px-6 py-4">Keuntungan</th>
                 <th className="px-6 py-4 text-right">Status</th>
@@ -398,7 +418,10 @@ function FinanceView({ transactions, products }) {
                 <tr key={i} className={`text-sm hover:bg-slate-50/30 transition-colors ${s.profit > 0 ? '' : 'opacity-60'}`}>
                   <td className="px-6 py-4 font-bold text-slate-700">{s.monthName}</td>
                   <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold">{s.totalTx}</span>
+                    <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[10px] font-bold">{s.totalTx}</span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black">{s.itemsSold}</span>
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-500">{formatIDR(s.revenue)}</td>
                   <td className="px-6 py-4 font-black text-slate-900">{formatIDR(s.profit)}</td>
@@ -1206,6 +1229,7 @@ export default function AdminDashboard({
     const file = e.target.files[0];
     if (!file) return;
 
+    const reader = new FileReader();
     reader.onload = async (event) => {
       const text = event.target.result;
       const lines = text.split('\n');
@@ -1381,7 +1405,11 @@ export default function AdminDashboard({
                 </div>
                 <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
                   <TransactionList
-                    transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                    transactions={(transactions || []).slice().sort((a, b) => {
+                      const dA = a.date instanceof Date ? a.date : new Date(a.date);
+                      const dB = b.date instanceof Date ? b.date : new Date(b.date);
+                      return dB - dA;
+                    }).slice(0, 5)}
                     products={products}
                     onDetail={setSelectedTx}
                   />
