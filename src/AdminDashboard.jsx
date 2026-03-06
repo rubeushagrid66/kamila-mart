@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User,
+  LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, Users,
   Edit, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
   Plus, Download, FileText, Archive, EyeOff, CheckCircle2
@@ -708,7 +708,7 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
     const result = [];
 
     // Sort transactions by date desc before flattening
-    const sortedTx = [...transactions].sort((a, b) => {
+    const sortedTx = [...(transactions || [])].sort((a, b) => {
       const dateA = a.date instanceof Date ? a.date : new Date(a.date);
       const dateB = b.date instanceof Date ? b.date : new Date(b.date);
       return dateB - dateA;
@@ -1183,7 +1183,7 @@ export default function AdminDashboard({
   };
 
   const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => {
+    return (transactions || []).filter(t => {
       if (!t.date) return false;
       const d = (t.date instanceof Date) ? t.date : new Date(t.date);
       if (isNaN(d.getTime())) return false;
@@ -1242,10 +1242,10 @@ export default function AdminDashboard({
         {adminTab === 'dashboard' && (
           <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard label="Total Transaksi" val={transactions.length} icon={ShoppingCart} />
-              <StatCard label="Total Produk" val={products.length} icon={Package} color="bg-emerald-50 text-emerald-600" />
-              <StatCard label="Total User" val={users.length} icon={Users} color="bg-amber-50 text-amber-600" />
-              <StatCard label="Total Penjualan" val={formatIDR(transactions.reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
+              <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
+              <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
+              <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" />
+              <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1257,7 +1257,7 @@ export default function AdminDashboard({
                 <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-50 shadow-sm`}>
                   <TransactionList
                     updateStatus={updateTransactionStatus}
-                    transactions={transactions.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                    transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
                     products={products}
                     onDetail={setSelectedTx}
                   />
