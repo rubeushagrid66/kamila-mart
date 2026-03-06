@@ -271,8 +271,7 @@ function UserModal({ user, onClose, onSave }) {
 }
 
 // --- FINANCE VIEW ---
-function FinanceView({ transactions, products }) {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+function FinanceView({ transactions, products, selectedYear }) {
   const years = [2024, 2025, 2026];
   const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
@@ -316,16 +315,6 @@ function FinanceView({ transactions, products }) {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-        <div className="flex gap-2">
-          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
-            <Calendar size={16} className="ml-2 text-slate-400" />
-            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-transparent text-sm font-bold text-slate-700 p-2 outline-none">
-              {years.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className={`p-8 bg-slate-900 text-white ${UI_RADIUS.outer} shadow-xl relative overflow-hidden`}>
@@ -342,10 +331,6 @@ function FinanceView({ transactions, products }) {
         <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.totalTx} Pesanan</p>
-        </div>
-        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-indigo-600">Barang Terjual</p>
-          <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.itemsSold} Unit</p>
         </div>
       </div>
 
@@ -443,10 +428,7 @@ function FinanceView({ transactions, products }) {
 }
 
 // --- PROFIT REPORT VIEW ---
-function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings }) {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [editingMonthFormula, setEditingMonthFormula] = useState(null);
-  const [editingFormula, setEditingFormula] = useState(false);
+function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear }) {
   const [tempFormula, setTempFormula] = useState({
     marbotPercent: settings?.marbotPercent || 60,
     musholaPercent: settings?.musholaPercent || 0,
@@ -542,12 +524,6 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
         <div className="flex gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
-            <Calendar size={14} className="text-slate-400" />
-            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="bg-transparent text-xs font-bold text-slate-700 py-1.5 outline-none">
-              {years.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
           <button
             onClick={() => {
               setTempFormula({ marbotPercent: marbotP, musholaPercent: musholaP, internalPercent: internalP });
@@ -1381,8 +1357,26 @@ export default function AdminDashboard({
         <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex flex-col flex-1">
           <header className="mb-12">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'transactions' && `(${transactions.length})`}</h2>
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                  <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {(adminTab === 'transactions' || adminTab === 'dashboard') && `(${filteredTransactions.length})`}</h2>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={selectedMonth}
+                      onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                      className="bg-transparent text-[10px] font-black uppercase text-blue-600 border-none outline-none focus:ring-0 cursor-pointer"
+                    >
+                      {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                    </select>
+                    <select
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(Number(e.target.value))}
+                      className="bg-transparent text-[10px] font-black uppercase text-blue-600 border-none outline-none focus:ring-0 cursor-pointer"
+                    >
+                      {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                </div>
                 <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
               </div>
               <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
@@ -1392,10 +1386,10 @@ export default function AdminDashboard({
           {adminTab === 'dashboard' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
+                <StatCard label="Total Transaksi" val={filteredTransactions.length} icon={ShoppingCart} />
                 <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
                 <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" />
-                <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
+                <StatCard label="Total Penjualan" val={formatIDR(filteredTransactions.reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
               </div>
 
               <div className="space-y-6">
@@ -1405,11 +1399,7 @@ export default function AdminDashboard({
                 </div>
                 <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
                   <TransactionList
-                    transactions={(transactions || []).slice().sort((a, b) => {
-                      const dA = a.date instanceof Date ? a.date : new Date(a.date);
-                      const dB = b.date instanceof Date ? b.date : new Date(b.date);
-                      return dB - dA;
-                    }).slice(0, 5)}
+                    transactions={filteredTransactions.slice(0, 5)}
                     products={products}
                     onDetail={setSelectedTx}
                   />
@@ -1418,7 +1408,7 @@ export default function AdminDashboard({
             </div>
           )}
 
-          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
+          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} selectedYear={selectedYear} />}
 
           {adminTab === 'profit_report' && (
             <ProfitReportView
@@ -1428,6 +1418,7 @@ export default function AdminDashboard({
               saveMonthlyReport={saveMonthlyReport}
               settings={settings}
               saveSettings={saveSettings}
+              selectedYear={selectedYear}
             />
           )}
 
@@ -1435,20 +1426,7 @@ export default function AdminDashboard({
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div className="flex flex-wrap items-center gap-3">
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                    className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
-                  >
-                    {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
-                  </select>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                    className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
-                  >
-                    {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
-                  </select>
+                  {/* Global filter moved to header */}
                 </div>
 
                 <div className="flex gap-2 w-full sm:w-auto">
