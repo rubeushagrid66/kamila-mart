@@ -825,21 +825,17 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
       </div>
 
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left min-w-[1500px]">
+        <table className="w-full text-left min-w-[1000px]">
           <thead>
             <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
               <th className="py-4 px-4 text-center">No</th>
               <th className="py-4 px-4">Tanggal pesanan</th>
-              <th className="py-4 px-4 text-center">Bulan</th>
               <th className="py-4 px-4">Nomor Rumah</th>
               <th className="py-4 px-4">Kode Barang</th>
               <th className="py-4 px-4">Nama Barang</th>
               <th className="py-4 px-4 text-center">Jumlah</th>
-              <th className="py-4 px-4 text-right text-blue-600/70">Harga Jual</th>
               <th className="py-4 px-4 text-right text-blue-600">Total Jual</th>
               <th className="py-4 px-4">Metode</th>
-              <th className="py-4 px-4">Catatan</th>
-              <th className="py-4 px-4 text-right">Profit</th>
               <th className="py-4 px-4 text-center">Aksi</th>
             </tr>
           </thead>
@@ -848,20 +844,16 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
               <tr key={`${item.txId}-${i}`} className="text-[12px] hover:bg-slate-50/50 transition-colors group">
                 <td className="py-4 px-4 text-center text-slate-400 font-medium">{item.no}</td>
                 <td className="py-4 px-4 whitespace-nowrap font-medium text-slate-600">{item.tanggalPesanan}</td>
-                <td className="py-4 px-4 text-center font-bold text-slate-500">{item.bulan}</td>
                 <td className="py-4 px-4 font-extrabold text-slate-900">{item.nomorRumah}</td>
                 <td className="py-4 px-4 font-mono text-[10px] text-slate-500">{item.kodeBarang}</td>
                 <td className="py-4 px-4 font-bold text-slate-800">{item.namaBarang}</td>
                 <td className="py-4 px-4 text-center font-black text-blue-600">{item.jumlah}</td>
-                <td className="py-4 px-4 text-right font-bold text-blue-600/70">{formatIDR(item.hargaJual)}</td>
                 <td className="py-4 px-4 text-right font-black text-blue-600">{formatIDR(item.totalHargaJual)}</td>
                 <td className="py-4 px-4">
                   <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     {item.caraPembayaran}
                   </span>
                 </td>
-                <td className="py-4 px-4 text-slate-400 italic max-w-[150px] truncate font-medium">{item.catatan}</td>
-                <td className="py-4 px-4 text-right font-black text-emerald-600 text-sm">{formatIDR(item.profit)}</td>
                 <td className="py-4 px-4 text-center">
                   <button
                     onClick={() => onDetail(item.originalTx)}
