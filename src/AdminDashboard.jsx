@@ -736,8 +736,7 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
           tanggalPesanan,
           bulan,
           tahun,
-          nomorRumah: t.customer,
-          produk: productInfo.category || '-',
+          nomorRumah: t.address || t.customer, // Map from address as requested
           kodeBarang: productInfo.customId || '-',
           namaBarang: item.name,
           jumlah: item.qty,
@@ -761,49 +760,61 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
 
   return (
     <div className="space-y-4">
-      {/* Mobile view: Cards (Keep existing or simplified for many items) */}
+      {/* Mobile view: Improved Responsive Cards */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {transactions.map(t => (
-          <div key={t.id} className={`p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
+          <div key={t.id} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
             <div className="flex justify-between items-start">
               <div>
-                <p className={UI_TEXT.label}>{t.time}</p>
-                <p className="font-bold text-slate-800 text-base mt-1">{t.customer}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
+                <p className="font-extrabold text-slate-900 text-base mt-1">{t.customer}</p>
+                <p className="text-[11px] text-slate-500 mt-1 leading-tight font-medium">{t.address}</p>
               </div>
               <button
                 onClick={() => onDetail(t)}
-                className={`p-2.5 bg-slate-50 text-blue-600 ${UI_RADIUS.inner} active:scale-95 transition-all`}
+                className={`p-3 bg-slate-50 text-blue-600 ${UI_RADIUS.inner} active:scale-95 transition-all outline-none`}
               >
-                <Eye size={18} />
+                <Eye size={20} />
               </button>
             </div>
 
-            <div className={`flex justify-between items-center bg-slate-50/50 p-3 ${UI_RADIUS.inner} border border-slate-50`}>
-              <div className="flex flex-col">
-                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-tighter">Total</span>
-                <span className="text-blue-600 font-black text-lg">{formatIDR(t.total)}</span>
-              </div>
-              <span className={`px-2 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[10px] font-bold text-slate-500 uppercase`}>{t.items.length} Item</span>
+            <div className="space-y-2 border-t border-slate-50 pt-4">
+              {t.items.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center text-xs">
+                  <span className="text-slate-600 font-medium">{item.qty}x {item.name}</span>
+                  <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
+                </div>
+              ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
+            <div className={`flex justify-between items-center bg-slate-50/50 p-4 ${UI_RADIUS.inner} border border-slate-50`}>
+              <div className="flex flex-col">
+                <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">Total Bayar</span>
+                <span className="text-blue-600 font-black text-xl tracking-tight">{formatIDR(t.total)}</span>
+              </div>
+              <span className={`px-2.5 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[10px] font-black text-slate-500 uppercase tracking-tighter shadow-sm`}>
+                {t.method === 'transfer' ? 'Transfer' : 'Cash'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="space-y-1.5">
                 <label className={UI_TEXT.label}>Bayar</label>
                 <select
                   value={t.paymentStatus}
                   onChange={(e) => updateStatus(t.id, 'paymentStatus', e.target.value)}
-                  className={`w-full text-[10px] font-bold uppercase p-2 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.paymentStatus === 'lunas' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
+                  className={`w-full text-[11px] font-black uppercase p-3 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer transition-colors ${t.paymentStatus === 'lunas' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}
                 >
                   <option value="menunggu">Unpaid</option>
                   <option value="lunas">Lunas</option>
                 </select>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <label className={UI_TEXT.label}>Kirim</label>
                 <select
                   value={t.shippingStatus}
                   onChange={(e) => updateStatus(t.id, 'shippingStatus', e.target.value)}
-                  className={`w-full text-[10px] font-bold uppercase p-2 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer ${t.shippingStatus === 'dikirim' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
+                  className={`w-full text-[11px] font-black uppercase p-3 ${UI_RADIUS.inner} border-0 outline-none cursor-pointer transition-colors ${t.shippingStatus === 'dikirim' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
                 >
                   <option value="menunggu">Pending</option>
                   <option value="dikirim">Dikirim</option>
@@ -829,7 +840,6 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
               <th className="py-4 px-3 text-center border">Bulan</th>
               <th className="py-4 px-3 text-center border">Tahun</th>
               <th className="py-4 px-3 border">Nomor Rumah</th>
-              <th className="py-4 px-3 border">Produk</th>
               <th className="py-4 px-3 border">Kode Barang</th>
               <th className="py-4 px-3 border">Nama Barang</th>
               <th className="py-4 px-3 text-center border">Jumlah</th>
@@ -851,7 +861,6 @@ function TransactionList({ transactions, products, onDetail, updateStatus }) {
                 <td className="py-3 px-3 text-center border">{item.bulan}</td>
                 <td className="py-3 px-3 text-center border">{item.tahun}</td>
                 <td className="py-3 px-3 border font-bold text-slate-700">{item.nomorRumah}</td>
-                <td className="py-3 px-3 border">{item.produk}</td>
                 <td className="py-3 px-3 border font-mono text-[10px]">{item.kodeBarang}</td>
                 <td className="py-3 px-3 border font-medium">{item.namaBarang}</td>
                 <td className="py-3 px-3 text-center border font-bold">{item.jumlah}</td>
@@ -1114,6 +1123,7 @@ export default function AdminDashboard({
   const [visibleProducts, setVisibleProducts] = useState(20);
   const [visibleUsers, setVisibleUsers] = useState(20);
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleProductSave = (productData) => {
     saveProduct(productData);
@@ -1182,6 +1192,59 @@ export default function AdminDashboard({
     document.body.removeChild(link);
   };
 
+  const handleImportCSV = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target.result;
+      const lines = text.split('\n');
+      const headers = lines[0].split(',');
+
+      const newTransactions = lines.slice(1).filter(line => line.trim()).map(line => {
+        const values = line.split(',');
+        const t = {};
+        headers.forEach((h, i) => {
+          const key = h.trim().toLowerCase().replace(' ', '');
+          let val = values[i]?.replace(/"/g, '').trim();
+
+          if (key === 'total' || key === 'harga' || key === 'price') val = Number(val) || 0;
+          if (key === 'items') {
+            // Very simple parser for items like "2x Aqua, 1x Gas"
+            val = val.split(';').map(itemStr => {
+              const [qty, ...nameParts] = itemStr.trim().split('x ');
+              return { qty: Number(qty) || 1, name: nameParts.join('x ').trim(), price: 0 }; // Price will be updated from products later if needed
+            });
+          }
+          t[key] = val;
+        });
+
+        return {
+          id: Date.now() + Math.random().toString(36).substr(2, 9),
+          date: t.tanggal ? new Date(t.tanggal).toISOString() : new Date().toISOString(),
+          time: t.tanggal || new Date().toLocaleString(),
+          customer: t.pelanggan || 'Imported Customer',
+          phone: t.whatsapp || '',
+          address: t.alamat || '',
+          items: t.items || [],
+          total: t.total || 0,
+          method: (t.metode || '').toLowerCase().includes('transfer') ? 'transfer' : 'cash',
+          paymentStatus: t.statusbayar || 'menunggu',
+          shippingStatus: t.statuskirim || 'menunggu',
+          notes: t.catatan || ''
+        };
+      });
+
+      if (newTransactions.length > 0) {
+        newTransactions.forEach(tx => saveTransaction(tx));
+        alert(`Berhasil mengimpor ${newTransactions.length} transaksi!`);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // Reset input
+  };
+
   const filteredTransactions = useMemo(() => {
     return (transactions || []).filter(t => {
       if (!t.date) return false;
@@ -1217,7 +1280,10 @@ export default function AdminDashboard({
                 onClick={() => { setAdminTab(m.id); setMobileMenuOpen(false); }}
                 className={`w-full flex items-center gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-bold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
               >
-                <IconComponent size={20} /> {m.label}
+                <div className="w-6 flex justify-center shrink-0">
+                  <IconComponent size={20} />
+                </div>
+                <span className="truncate">{m.label}</span>
               </button>
             );
           })}
@@ -1307,6 +1373,16 @@ export default function AdminDashboard({
                 <p className={UI_TEXT.caption}>Kelola semua pesanan masuk dari pelanggan.</p>
               </div>
               <div className="flex gap-2 w-full sm:w-auto">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImportCSV}
+                  accept=".csv"
+                  className="hidden"
+                />
+                <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none text-blue-600 border-blue-100 hover:bg-blue-50`}>
+                  <Download size={18} className="rotate-180" /> Import
+                </button>
                 <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
                   <Download size={18} /> Export
                 </button>
@@ -1361,37 +1437,85 @@ export default function AdminDashboard({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.slice(0, visibleProducts).map(p => (
-                <div key={p.id} className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:border-blue-100 transition-all duration-300`}>
-                  <div className="aspect-square relative overflow-hidden bg-slate-50">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                      <div className="flex gap-2 w-full">
-                        <button onClick={() => setEditingProduct(p)} className="flex-1 py-3 bg-white text-slate-900 rounded-lg font-bold text-xs shadow-lg hover:bg-blue-600 hover:text-white transition-all">Edit</button>
-                        <button onClick={() => deleteProduct(p.id)} className="p-3 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-all shadow-lg"><Trash2 size={16} /></button>
+            <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className={`border-b border-slate-50 ${UI_TEXT.label} bg-slate-50/50`}>
+                      <th className="py-4 px-6 border-b">No</th>
+                      <th className="py-4 px-6 border-b">Kode Barang</th>
+                      <th className="py-4 px-6 border-b">Nama Barang</th>
+                      <th className="py-4 px-6 border-b">Kategori</th>
+                      <th className="py-4 px-6 border-b text-right">Harga Modal</th>
+                      <th className="py-4 px-6 border-b text-right">Harga Jual</th>
+                      <th className="py-4 px-6 border-b text-center">Stok</th>
+                      <th className="py-4 px-6 border-b text-center">Status</th>
+                      <th className="py-4 px-6 border-b text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {(products || []).slice(0, visibleProducts).map((p, idx) => (
+                      <tr key={p.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
+                        <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
+                        <td className="py-4 px-6 font-mono text-[11px] text-slate-700">{p.customId || `SKU-${p.id}`}</td>
+                        <td className="py-4 px-6 font-bold text-slate-900">{p.name}</td>
+                        <td className="py-4 px-6">
+                          <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[10px] font-black uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
+                        </td>
+                        <td className="py-4 px-6 text-right font-medium text-slate-600">{formatIDR(p.cost)}</td>
+                        <td className="py-4 px-6 text-right font-black text-blue-600">{formatIDR(p.price)}</td>
+                        <td className="py-4 px-6 text-center">
+                          <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
+                        </td>
+                        <td className="py-4 px-6 text-center">
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                            {p.status || 'aktif'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-center">
+                          <div className="flex justify-center gap-2">
+                            <button onClick={() => setEditingProduct(p)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
+                            <button onClick={() => deleteProduct(p.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden divide-y divide-slate-50">
+                {(products || []).slice(0, visibleProducts).map((p) => (
+                  <div key={p.id} className="p-5 flex flex-col gap-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
+                          <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase">{p.category || 'General'}</span>
+                        </div>
+                        <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{p.name}</h3>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => setEditingProduct(p)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
+                        <button onClick={() => deleteProduct(p.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                      <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
+                        <p className="text-sm font-black text-blue-600">{formatIDR(p.price)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
+                        <p className={`text-sm font-black ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
                       </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="min-w-0">
-                        <h3 className="font-bold text-slate-900 text-sm truncate mb-0.5">{p.name}</h3>
-                        <span className={`${UI_TEXT.caption} inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 rounded-full font-bold uppercase text-[9px]`}>SKU-{p.id}</span>
-                      </div>
-                      <p className="font-black text-blue-600 text-sm">{formatIDR(p.price)}</p>
-                    </div>
-                    <div className="flex items-center justify-between text-xs pt-4 border-t border-slate-50">
-                      <div className="flex items-center gap-1.5 text-slate-400 font-medium">
-                        <Archive size={14} /> Stok: <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-slate-400 font-medium">
-                        <DollarSign size={14} /> Modal: <span className="font-bold text-slate-900">{formatIDR(p.cost)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
             {products.length > visibleProducts && (
               <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
