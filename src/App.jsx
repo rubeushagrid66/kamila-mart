@@ -299,6 +299,24 @@ function AppContent() {
     }
   };
 
+  const clearAllTransactions = async () => {
+    try {
+      if (window.confirm('PERINGATAN: Seluruh data transaksi akan dihapus secara permanen. Lanjutkan?')) {
+        const batch = [];
+        const querySnapshot = await getDocs(collection(db, 'transactions'));
+        querySnapshot.forEach((d) => {
+          batch.push(deleteDoc(doc(db, 'transactions', d.id)));
+        });
+        await Promise.all(batch);
+        setTransactions([]);
+        toast.success('Seluruh transaksi berhasil dihapus!');
+      }
+    } catch (error) {
+      console.error('Error clearing transactions:', error);
+      toast.error('Gagal menghapus seluruh transaksi');
+    }
+  };
+
   const updateTransactionStatus = async (transactionId, field, value) => {
     try {
       await updateDoc(doc(db, 'transactions', transactionId), {
@@ -448,6 +466,7 @@ function AppContent() {
                 transactions={transactions}
                 saveTransaction={saveTransaction}
                 deleteTransaction={deleteTransaction}
+                clearAllTransactions={clearAllTransactions}
                 updateTransactionStatus={updateTransactionStatus}
                 monthlyReports={monthlyReports}
                 saveMonthlyReport={saveMonthlyReport}

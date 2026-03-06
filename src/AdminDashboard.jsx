@@ -316,7 +316,7 @@ function FinanceView({ transactions, products }) {
   }), { profit: 0, revenue: 0, success: 0 });
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
         <div className="flex gap-2">
           <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
@@ -528,7 +528,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const internalP = settings?.internalPercent || 40;
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
         <div className="flex gap-2 w-full sm:w-auto">
           <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
@@ -1118,7 +1118,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, updateTransactionStatus,
+  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, clearAllTransactions, updateTransactionStatus,
   monthlyReports, saveMonthlyReport, currentUserData
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
@@ -1308,361 +1308,381 @@ export default function AdminDashboard({
       {mobileMenuOpen && <div className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
 
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
-        <header className="mb-12">
-          <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex items-center justify-between">
-            <div>
-              <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'transactions' && `(${transactions.length})`}</h2>
-              <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
-            </div>
-            <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
-          </div>
-        </header>
-
-        {adminTab === 'dashboard' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
-              <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
-              <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" />
-              <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
-                <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline">Lihat Selengkapnya</button>
+        <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex flex-col flex-1">
+          <header className="mb-12">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'transactions' && `(${transactions.length})`}</h2>
+                <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
               </div>
-              <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+              <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
+            </div>
+          </header>
+
+          {adminTab === 'dashboard' && (
+            <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
+                <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
+                <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" />
+                <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
+                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline">Lihat Selengkapnya</button>
+                </div>
+                <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+                  <TransactionList
+                    updateStatus={updateTransactionStatus}
+                    transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                    products={products}
+                    onDetail={setSelectedTx}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
+
+          {adminTab === 'profit_report' && (
+            <ProfitReportView
+              transactions={transactions}
+              products={products}
+              monthlyReports={monthlyReports}
+              saveMonthlyReport={saveMonthlyReport}
+              settings={settings}
+              saveSettings={saveSettings}
+            />
+          )}
+
+          {adminTab === 'transactions' && (
+            <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImportCSV}
+                    accept=".csv"
+                    className="hidden"
+                  />
+                  <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none text-blue-600 border-blue-100 hover:bg-blue-50`}>
+                    <Download size={18} className="rotate-180" /> Import
+                  </button>
+                  <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
+                    <Download size={18} /> Export
+                  </button>
+                  <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
+                    <Plus size={18} /> Tambah
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                  className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                >
+                  {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                </select>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                >
+                  {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+
+              <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
                 <TransactionList
                   updateStatus={updateTransactionStatus}
-                  transactions={(transactions || []).slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
+                  transactions={filteredTransactions.slice(0, visibleTransactions)}
                   products={products}
                   onDetail={setSelectedTx}
                 />
               </div>
+              {filteredTransactions.length > visibleTransactions && (
+                <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-6 py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+                  Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
+                </button>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} />}
-
-        {adminTab === 'profit_report' && (
-          <ProfitReportView
-            transactions={transactions}
-            products={products}
-            monthlyReports={monthlyReports}
-            saveMonthlyReport={saveMonthlyReport}
-            settings={settings}
-            saveSettings={saveSettings}
-          />
-        )}
-
-        {adminTab === 'transactions' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
-              <div className="flex gap-2 w-full sm:w-auto">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImportCSV}
-                  accept=".csv"
-                  className="hidden"
-                />
-                <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none text-blue-600 border-blue-100 hover:bg-blue-50`}>
-                  <Download size={18} className="rotate-180" /> Import
-                </button>
-                <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
-                  <Download size={18} /> Export
-                </button>
-                <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} flex-1 sm:flex-none`}>
-                  <Plus size={18} /> Tambah
+          {adminTab === 'products' && (
+            <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
+                <button onClick={() => setIsAddingProduct(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
+                  <Plus size={18} /> Tambah Produk
                 </button>
               </div>
-            </div>
 
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
-              >
-                {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
-              </select>
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
-              >
-                {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-
-            <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
-              <TransactionList
-                updateStatus={updateTransactionStatus}
-                transactions={filteredTransactions.slice(0, visibleTransactions)}
-                products={products}
-                onDetail={setSelectedTx}
-              />
-            </div>
-            {filteredTransactions.length > visibleTransactions && (
-              <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-6 py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
-                Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
-              </button>
-            )}
-          </div>
-        )}
-
-        {adminTab === 'products' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
-              <button onClick={() => setIsAddingProduct(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
-                <Plus size={18} /> Tambah Produk
-              </button>
-            </div>
-
-            <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[1000px]">
-                  <thead>
-                    <tr className={`border-b border-slate-50 ${UI_TEXT.label} bg-slate-50/50`}>
-                      <th className="py-4 px-6 border-b">No</th>
-                      <th className="py-4 px-6 border-b">Kode Barang</th>
-                      <th className="py-4 px-6 border-b">Nama Barang</th>
-                      <th className="py-4 px-6 border-b">Kategori</th>
-                      <th className="py-4 px-6 border-b text-right">Harga Modal</th>
-                      <th className="py-4 px-6 border-b text-right">Harga Jual</th>
-                      <th className="py-4 px-6 border-b text-center">Stok</th>
-                      <th className="py-4 px-6 border-b text-center">Status</th>
-                      <th className="py-4 px-6 border-b text-center">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {(products || []).slice(0, visibleProducts).map((p, idx) => (
-                      <tr key={p.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
-                        <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
-                        <td className="py-4 px-6 font-mono text-[11px] text-slate-700">{p.customId || `SKU-${p.id}`}</td>
-                        <td className="py-4 px-6 font-bold text-slate-900">{p.name}</td>
-                        <td className="py-4 px-6">
-                          <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[10px] font-black uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
-                        </td>
-                        <td className="py-4 px-6 text-right font-medium text-slate-600">{formatIDR(p.cost)}</td>
-                        <td className="py-4 px-6 text-right font-black text-blue-600">{formatIDR(p.price)}</td>
-                        <td className="py-4 px-6 text-center">
-                          <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
-                            {p.status || 'aktif'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex justify-center gap-2">
-                            <button onClick={() => setEditingProduct(p)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
-                            <button onClick={() => deleteProduct(p.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
-                          </div>
-                        </td>
+              <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[1000px]">
+                    <thead>
+                      <tr className={`border-b border-slate-50 ${UI_TEXT.label} bg-slate-50/50`}>
+                        <th className="py-4 px-6 border-b">No</th>
+                        <th className="py-4 px-6 border-b">Kode Barang</th>
+                        <th className="py-4 px-6 border-b">Nama Barang</th>
+                        <th className="py-4 px-6 border-b">Kategori</th>
+                        <th className="py-4 px-6 border-b text-right">Harga Modal</th>
+                        <th className="py-4 px-6 border-b text-right">Harga Jual</th>
+                        <th className="py-4 px-6 border-b text-center">Stok</th>
+                        <th className="py-4 px-6 border-b text-center">Status</th>
+                        <th className="py-4 px-6 border-b text-center">Aksi</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {(products || []).slice(0, visibleProducts).map((p, idx) => (
+                        <tr key={p.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
+                          <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
+                          <td className="py-4 px-6 font-mono text-[11px] text-slate-700">{p.customId || `SKU-${p.id}`}</td>
+                          <td className="py-4 px-6 font-bold text-slate-900">{p.name}</td>
+                          <td className="py-4 px-6">
+                            <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[10px] font-black uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
+                          </td>
+                          <td className="py-4 px-6 text-right font-medium text-slate-600">{formatIDR(p.cost)}</td>
+                          <td className="py-4 px-6 text-right font-black text-blue-600">{formatIDR(p.price)}</td>
+                          <td className="py-4 px-6 text-center">
+                            <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
+                          </td>
+                          <td className="py-4 px-6 text-center">
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                              {p.status || 'aktif'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6 text-center">
+                            <div className="flex justify-center gap-2">
+                              <button onClick={() => setEditingProduct(p)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
+                              <button onClick={() => deleteProduct(p.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-              {/* Mobile Card View */}
-              <div className="md:hidden divide-y divide-slate-50">
-                {(products || []).slice(0, visibleProducts).map((p) => (
-                  <div key={p.id} className="p-5 flex flex-col gap-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
-                          <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase">{p.category || 'General'}</span>
-                        </div>
-                        <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{p.name}</h3>
-                      </div>
-                      <div className="flex gap-1">
-                        <button onClick={() => setEditingProduct(p)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
-                        <button onClick={() => deleteProduct(p.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
-                      <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
-                        <p className="text-sm font-black text-blue-600">{formatIDR(p.price)}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
-                        <p className={`text-sm font-black ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {products.length > visibleProducts && (
-              <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
-                Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
-              </button>
-            )}
-          </div>
-        )}
-
-        {adminTab === 'users' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
-              <button onClick={() => setIsAddingUser(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
-                <Plus size={18} /> User Baru
-              </button>
-            </div>
-
-            <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[800px]">
-                  <thead>
-                    <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                      <th className="py-4 px-6">No</th>
-                      <th className="py-4 px-6">Nama</th>
-                      <th className="py-4 px-6">Username</th>
-                      <th className="py-4 px-6">Hak Akses</th>
-                      <th className="py-4 px-6 text-center">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {users.map((u, idx) => (
-                      <tr key={u.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
-                        <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
-                        <td className="py-4 px-6 font-bold text-slate-900">{u.name}</td>
-                        <td className="py-4 px-6 font-mono text-[11px] text-slate-500">@{u.username}</td>
-                        <td className="py-4 px-6">
-                          <div className="flex flex-wrap gap-1">
-                            {u.permissions.map(p => (
-                              <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex justify-center gap-2">
-                            <button onClick={() => setEditingUser(u)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
-                            <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile Card View */}
-              <div className="md:hidden divide-y divide-slate-50">
-                {users.map(u => (
-                  <div key={u.id} className="p-5 flex flex-col gap-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                          <Users size={18} />
-                        </div>
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-slate-50">
+                  {(products || []).slice(0, visibleProducts).map((p) => (
+                    <div key={p.id} className="p-5 flex flex-col gap-4">
+                      <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{u.name}</h3>
-                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
+                            <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase">{p.category || 'General'}</span>
+                          </div>
+                          <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{p.name}</h3>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => setEditingProduct(p)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
+                          <button onClick={() => deleteProduct(p.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
                         </div>
                       </div>
-                      <div className="flex gap-1">
-                        <button onClick={() => setEditingUser(u)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
-                        <button onClick={() => handleDeleteUser(u.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
+
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                        <div>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
+                          <p className="text-sm font-black text-blue-600">{formatIDR(p.price)}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
+                          <p className={`text-sm font-black ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="space-y-2 pt-4 border-t border-slate-50">
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
-                      <div className="flex flex-wrap gap-1">
-                        {u.permissions.map(p => (
-                          <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {adminTab === 'settings' && (
-          <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] w-full px-4 md:px-8 mx-auto ${UI_SPACING.section}`}>
-            <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
-              <button onClick={handleSettingsSave} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
-                <Download size={18} /> Simpan Perubahan
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
-                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Archive size={18} /></div>
-                    Identitas Toko
-                  </h3>
-                  <div className="space-y-5">
-                    <div className="space-y-1.5">
-                      <label className={UI_TEXT.label}>Nama Mart</label>
-                      <input
-                        value={settings.martName}
-                        onChange={(e) => setSettings({ ...settings, martName: e.target.value })}
-                        className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className={UI_TEXT.label}>WhatsApp Admin</label>
-                      <input
-                        value={settings.adminPhone}
-                        onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })}
-                        className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
-                      />
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
+              {products.length > visibleProducts && (
+                <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+                  Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
+                </button>
+              )}
+            </div>
+          )}
 
-              <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
-                    <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><DollarSign size={18} /></div>
-                    Informasi Pembayaran (Transfer Bank)
-                  </h3>
-                  <div className="space-y-5">
-                    <div className="space-y-1.5">
-                      <label className={UI_TEXT.label}>Nama Bank</label>
-                      <input
-                        value={settings.bankName}
-                        onChange={(e) => setSettings({ ...settings, bankName: e.target.value })}
-                        className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
-                      />
+          {adminTab === 'users' && (
+            <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
+                <button onClick={() => setIsAddingUser(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
+                  <Plus size={18} /> User Baru
+                </button>
+              </div>
+
+              <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                      <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                        <th className="py-4 px-6">No</th>
+                        <th className="py-4 px-6">Nama</th>
+                        <th className="py-4 px-6">Username</th>
+                        <th className="py-4 px-6">Hak Akses</th>
+                        <th className="py-4 px-6 text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {users.map((u, idx) => (
+                        <tr key={u.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
+                          <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
+                          <td className="py-4 px-6 font-bold text-slate-900">{u.name}</td>
+                          <td className="py-4 px-6 font-mono text-[11px] text-slate-500">@{u.username}</td>
+                          <td className="py-4 px-6">
+                            <div className="flex flex-wrap gap-1">
+                              {u.permissions.map(p => (
+                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="py-4 px-6 text-center">
+                            <div className="flex justify-center gap-2">
+                              <button onClick={() => setEditingUser(u)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
+                              <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-slate-50">
+                  {users.map(u => (
+                    <div key={u.id} className="p-5 flex flex-col gap-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                            <Users size={18} />
+                          </div>
+                          <div>
+                            <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{u.name}</h3>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <button onClick={() => setEditingUser(u)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
+                          <button onClick={() => handleDeleteUser(u.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
+                        </div>
+                      </div>
+                      <div className="space-y-2 pt-4 border-t border-slate-50">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
+                        <div className="flex flex-wrap gap-1">
+                          {u.permissions.map(p => (
+                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {adminTab === 'settings' && (
+            <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
+              <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
+                <button onClick={handleSettingsSave} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} w-full sm:w-auto`}>
+                  <Download size={18} /> Simpan Perubahan
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Archive size={18} /></div>
+                      Identitas Toko
+                    </h3>
+                    <div className="space-y-5">
                       <div className="space-y-1.5">
-                        <label className={UI_TEXT.label}>No. Rekening</label>
+                        <label className={UI_TEXT.label}>Nama Mart</label>
                         <input
-                          value={settings.bankAccountNumber}
-                          onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })}
+                          value={settings.martName}
+                          onChange={(e) => setSettings({ ...settings, martName: e.target.value })}
                           className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className={UI_TEXT.label}>Atas Nama</label>
+                        <label className={UI_TEXT.label}>WhatsApp Admin</label>
                         <input
-                          value={settings.bankAccountName}
-                          onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })}
+                          value={settings.adminPhone}
+                          onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })}
                           className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
+
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><DollarSign size={18} /></div>
+                      Informasi Pembayaran (Transfer Bank)
+                    </h3>
+                    <div className="space-y-5">
+                      <div className="space-y-1.5">
+                        <label className={UI_TEXT.label}>Nama Bank</label>
+                        <input
+                          value={settings.bankName}
+                          onChange={(e) => setSettings({ ...settings, bankName: e.target.value })}
+                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className={UI_TEXT.label}>No. Rekening</label>
+                          <input
+                            value={settings.bankAccountNumber}
+                            onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })}
+                            className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className={UI_TEXT.label}>Atas Nama</label>
+                          <input
+                            value={settings.bankAccountName}
+                            onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })}
+                            className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={18} /></div>
+                      Pengelolaan Data
+                    </h3>
+                    <div className="space-y-4">
+                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Gunakan tombol di bawah untuk menghapus seluruh data transaksi dari sistem. Aksi ini tidak dapat dibatalkan.</p>
+                      <button
+                        onClick={clearAllTransactions}
+                        className="w-full py-4 px-6 bg-rose-50 text-rose-600 font-bold text-sm rounded-xl hover:bg-rose-100 transition-all flex items-center justify-center gap-2 border border-rose-100 active:scale-95"
+                      >
+                        <Trash2 size={18} /> Hapus Seluruh Data Transaksi
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </main>
 
       {/* Modal CRUD Produk */}
