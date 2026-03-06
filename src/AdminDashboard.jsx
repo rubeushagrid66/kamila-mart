@@ -1268,7 +1268,8 @@ export default function AdminDashboard({
 
       const existingProducts = [...products];
       let importedCount = 0;
-      let newProductCount = 0;
+      let skippedCount = 0;
+      let skippedReasons = [];
 
       for (const line of lines.slice(1)) {
         const values = line.split(',').map(v => v.replace(/^"|"$/g, '').trim());
@@ -1278,11 +1279,12 @@ export default function AdminDashboard({
         const date = parseDate(rawRow.date);
         const transactionItems = [];
         let calculatedTotal = 0;
+        let hasMissingProduct = false;
+        let missingProducts = [];
 
         const itemParts = (rawRow.items || "").split(';').map(s => s.trim()).filter(s => s);
 
         for (const itemPart of itemParts) {
-          // Format: "2x Product Name" or just "Product Name"
           const match = itemPart.match(/^(\d+)[xX]\s*(.+)$/);
           const qty = match ? Number(match[1]) : 1;
           const name = match ? match[2].trim() : itemPart.trim();
@@ -1290,20 +1292,9 @@ export default function AdminDashboard({
           let product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
 
           if (!product) {
-            // Auto-create product
-            const newProduct = {
-              name: name,
-              category: 'Imported',
-              price: Number(rawRow.total) / (itemParts.length || 1) / qty || 10000,
-              cost: (Number(rawRow.total) / (itemParts.length || 1) / qty || 10000) * 0.8,
-              stock: 100,
-              image: '',
-              customId: `NEW-${Math.floor(1000 + Math.random() * 9000)}`
-            };
-            const savedId = await saveProduct(newProduct);
-            product = { id: savedId, ...newProduct };
-            existingProducts.push(product);
-            newProductCount++;
+            hasMissingProduct = true;
+            missingProducts.push(name);
+            continue;
           }
 
           transactionItems.push({
@@ -1315,6 +1306,12 @@ export default function AdminDashboard({
             profit: (product.price - product.cost) * qty
           });
           calculatedTotal += product.price * qty;
+        }
+
+        if (hasMissingProduct) {
+          skippedCount++;
+          skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: Produk tidak ditemukan (${missingProducts.join(', ')})`);
+          continue;
         }
 
         const transaction = {
@@ -1333,7 +1330,17 @@ export default function AdminDashboard({
         importedCount++;
       }
 
-      toast.success(`Berhasil mengimpor ${importedCount} transaksi dan ${newProductCount} produk baru!`);
+      if (skippedCount > 0) {
+        toast((t) => (
+          <span className="text-xs">
+            <b>Selesai:</b> {importedCount} diimpor, {skippedCount} dilewati.<br />
+            {skippedReasons.slice(0, 3).map((r, i) => <div key={i}>{r}</div>)}
+            {skippedCount > 3 && <div>...dan {skippedCount - 3} lainnya</div>}
+          </span>
+        ), { duration: 6000, icon: '⚠️' });
+      } else {
+        toast.success(`Berhasil mengimpor ${importedCount} transaksi!`);
+      }
     };
     reader.readAsText(file);
     e.target.value = '';
