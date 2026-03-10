@@ -1269,7 +1269,7 @@ export default function AdminDashboard({
 
       // Header mapping
       const headerMap = {
-        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date', 'waktu': 'date',
+        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date', 'waktu': 'date', 'tanggal pesanan': 'date',
         'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer', 'nama pelanggan': 'customer',
         'whatsapp': 'phone', 'phone': 'phone', 'wa': 'phone', 'no': 'phone', 'telepon': 'phone', 'no hp': 'phone',
         'alamat': 'address', 'address': 'address', 'rumah': 'address',
