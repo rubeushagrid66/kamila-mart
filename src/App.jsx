@@ -37,6 +37,7 @@ function AppContent() {
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [monthlyReports, setMonthlyReports] = useState([]);
 
@@ -147,7 +148,10 @@ function AppContent() {
         }
         return { id: doc.id, ...data, date };
       });
-      if (mounted) setTransactions(txList);
+      if (mounted) {
+        setTransactions(txList);
+        setLoadingData(false);
+      }
 
       if (!isFirstLoad) {
         snapshot.docChanges().forEach((change) => {
@@ -509,6 +513,7 @@ function AppContent() {
                 handleLogout={handleLogout}
                 onCustomerView={onCustomerView}
                 transactions={transactions}
+                isLoading={loadingData}
                 saveTransaction={saveTransaction}
                 saveTransactionsBulk={saveTransactionsBulk}
                 deleteTransaction={deleteTransaction}

@@ -698,7 +698,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 }
 
 // --- TRANSACTION LIST ---
-function TransactionList({ transactions, products, onDetail, onEdit, onDelete }) {
+function TransactionList({ transactions, products, onDetail, onEdit, onDelete, isLoading = false }) {
   const flattenedItems = useMemo(() => {
     let globalIdx = 1;
     const result = [];
@@ -770,64 +770,77 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete })
     <div className="space-y-4">
       {/* Mobile view: Improved Responsive Cards */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {transactions.map(t => (
-          <div key={t.id} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
-                <p className="font-extrabold text-slate-900 text-base mt-1">{t.customer}</p>
-                <p className="text-[11px] text-slate-500 mt-1 leading-tight font-medium">{t.address}</p>
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm animate-pulse flex flex-col gap-4`}>
+                <div className="h-4 w-3/4 bg-slate-100 rounded" />
+                <div className="h-10 w-full bg-slate-50 rounded" />
               </div>
-              <button
-                onClick={() => onDetail(t)}
-                className={`p-3 bg-slate-50 text-blue-600 ${UI_RADIUS.inner} active:scale-95 transition-all outline-none`}
-              >
-                <Eye size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-2 border-t border-slate-50 pt-4">
-              {t.items.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center text-xs">
-                  <span className="text-slate-600 font-medium">{item.qty}x {item.name}</span>
-                  <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
+            ))}
+          </div>
+        ) : (
+          <>
+            {transactions.map(t => (
+              <div key={t.id} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
+                    <p className="font-extrabold text-slate-900 text-base mt-1">{t.customer}</p>
+                    <p className="text-[11px] text-slate-500 mt-1 leading-tight font-medium">{t.address}</p>
+                  </div>
+                  <button
+                    onClick={() => onDetail(t)}
+                    className={`p-3 bg-slate-50 text-blue-600 ${UI_RADIUS.inner} active:scale-95 transition-all outline-none`}
+                  >
+                    <Eye size={20} />
+                  </button>
                 </div>
-              ))}
-            </div>
 
-            <div className={`flex justify-between items-center bg-slate-50/50 p-4 ${UI_RADIUS.inner} border border-slate-50`}>
-              <div className="flex flex-col">
-                <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">Total Bayar</span>
-                <span className="text-blue-600 font-black text-xl tracking-tight">{formatIDR(t.total)}</span>
-              </div>
-              <span className={`px-2.5 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[10px] font-black text-slate-500 uppercase tracking-tighter shadow-sm`}>
-                {t.method === 'transfer' ? 'Transfer' : 'Cash'}
-              </span>
-            </div>
+                <div className="space-y-2 border-t border-slate-50 pt-4">
+                  {t.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-xs">
+                      <span className="text-slate-600 font-medium">{item.qty}x {item.name}</span>
+                      <span className="font-bold text-slate-900">{formatIDR(item.price * item.qty)}</span>
+                    </div>
+                  ))}
+                </div>
 
-            <div className="flex justify-between items-center pt-2">
-              <p className="text-[10px] font-bold text-slate-400">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => onEdit(t)}
-                  className={`p-2 text-slate-300 hover:text-amber-600 rounded-lg hover:bg-white transition-all`}
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={() => onDelete(t.id)}
-                  className={`p-2 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-white transition-all`}
-                >
-                  <Trash2 size={16} />
-                </button>
+                <div className={`flex justify-between items-center bg-slate-50/50 p-4 ${UI_RADIUS.inner} border border-slate-50`}>
+                  <div className="flex flex-col">
+                    <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">Total Bayar</span>
+                    <span className="text-blue-600 font-black text-xl tracking-tight">{formatIDR(t.total)}</span>
+                  </div>
+                  <span className={`px-2.5 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[10px] font-black text-slate-500 uppercase tracking-tighter shadow-sm`}>
+                    {t.method === 'transfer' ? 'Transfer' : 'Cash'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center pt-2">
+                  <p className="text-[10px] font-bold text-slate-400">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => onEdit(t)}
+                      className={`p-2 text-slate-300 hover:text-amber-600 rounded-lg hover:bg-white transition-all`}
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(t.id)}
+                      className={`p-2 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-white transition-all`}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-        {transactions.length === 0 && (
-          <div className={`text-center py-10 bg-slate-50/50 ${UI_RADIUS.inner} border border-dashed border-slate-200`}>
-            <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
-          </div>
+            ))}
+            {transactions.length === 0 && (
+              <div className={`text-center py-10 bg-slate-50/50 ${UI_RADIUS.inner} border border-dashed border-slate-200`}>
+                <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -1141,15 +1154,19 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
 }
 
 // --- STAT CARD ---
-function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }) {
+function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", isLoading = false }) {
   return (
     <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-white shadow-sm flex items-center gap-5 transition-all hover:shadow-md group`}>
       <div className={`w-14 h-14 ${color} ${UI_RADIUS.inner} flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform`}>
         <Icon size={24} />
       </div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className={`${UI_TEXT.label} mb-1 opacity-70`}>{label}</p>
-        <p className="text-2xl font-black text-slate-900 tracking-tight">{val}</p>
+        {isLoading ? (
+          <div className="h-8 w-24 bg-slate-100 animate-pulse rounded-lg mt-1" />
+        ) : (
+          <p className="text-2xl font-black text-slate-900 tracking-tight">{val}</p>
+        )}
       </div>
     </div>
   );
@@ -1159,7 +1176,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions,
+  handleLogout, onCustomerView, transactions, isLoading, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions,
   monthlyReports, saveMonthlyReport, currentUserData
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
@@ -1551,10 +1568,10 @@ export default function AdminDashboard({
           {adminTab === 'dashboard' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
-                <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
-                <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" />
-                <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + (t.total || 0), 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
+                <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} isLoading={isLoading} />
+                <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" isLoading={isLoading} />
+                <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" isLoading={isLoading} />
+                <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + (t.total || 0), 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" isLoading={isLoading} />
               </div>
 
               <div className="space-y-6">
@@ -1566,6 +1583,7 @@ export default function AdminDashboard({
                   <TransactionList
                     transactions={[...(transactions || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
                     products={products}
+                    isLoading={isLoading}
                     onDetail={setSelectedTx}
                     onEdit={setEditingTransaction}
                     onDelete={handleDeleteTransaction}
