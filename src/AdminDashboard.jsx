@@ -1495,7 +1495,7 @@ export default function AdminDashboard({
           <header className="mb-12">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {(adminTab === 'transactions' || adminTab === 'dashboard') && `(${filteredTransactions.length})`}</h2>
+                <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'dashboard' ? `(${(transactions || []).length})` : adminTab === 'transactions' ? `(${filteredTransactions.length})` : ''}</h2>
                 <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
               </div>
               <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
@@ -1505,10 +1505,10 @@ export default function AdminDashboard({
           {adminTab === 'dashboard' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard label="Total Transaksi" val={filteredTransactions.length} icon={ShoppingCart} />
+                <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} />
                 <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" />
                 <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" />
-                <StatCard label="Total Penjualan" val={formatIDR(filteredTransactions.reduce((sum, t) => sum + t.total, 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
+                <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + (t.total || 0), 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" />
               </div>
 
               <div className="space-y-6">
@@ -1518,7 +1518,7 @@ export default function AdminDashboard({
                 </div>
                 <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
                   <TransactionList
-                    transactions={filteredTransactions.slice(0, 5)}
+                    transactions={[...(transactions || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
                     products={products}
                     onDetail={setSelectedTx}
                   />
