@@ -1284,11 +1284,24 @@ export default function AdminDashboard({
       const parseDate = (dateStr) => {
         if (!dateStr) return new Date();
         const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-        if (dmy) return new Date(dmy[3], dmy[2] - 1, dmy[1]);
-        const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-        if (ymd) return new Date(ymd[1], ymd[2] - 1, ymd[3]);
-        const d = new Date(dateStr);
-        return isNaN(d.getTime()) ? new Date() : d;
+        let date;
+        if (dmy) date = new Date(dmy[3], dmy[2] - 1, dmy[1]);
+        else {
+          const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+          if (ymd) date = new Date(ymd[1], ymd[2] - 1, ymd[3]);
+          else date = new Date(dateStr);
+        }
+
+        if (isNaN(date.getTime())) return new Date();
+
+        // Auto-correct common year typos (e.g., 2825 -> 2025, 1899 -> current year context)
+        let year = date.getFullYear();
+        if (year > 2100 && String(year).startsWith('28')) {
+          date.setFullYear(Number(String(year).replace('28', '20')));
+        } else if (year < 1920) {
+          date.setFullYear(new Date().getFullYear()); // Fallback for systemic errors like 1899
+        }
+        return date;
       };
 
       const parseCurrency = (val) => {
@@ -1422,6 +1435,39 @@ export default function AdminDashboard({
     };
     reader.readAsText(file);
     e.target.value = '';
+  };
+
+  const repairYearTypos = async () => {
+    const toFix = transactions.filter(t => {
+      const year = new Date(t.date).getFullYear();
+      return year > 2100 && String(year).startsWith('28');
+    });
+
+    if (toFix.length === 0) {
+      toast.success("Tidak ditemukan kesalahan tahun (28xx).");
+      return;
+    }
+
+    if (!window.confirm(`Ditemukan ${toFix.length} transaksi dengan kesalahan tahun (28xx). Perbaiki sekarang?`)) return;
+
+    const fixed = toFix.map(t => {
+      const d = new Date(t.date);
+      const year = d.getFullYear();
+      d.setFullYear(Number(String(year).replace('28', '20')));
+      return {
+        ...t,
+        date: d.toISOString(),
+        time: d.toLocaleString('id-ID')
+      };
+    });
+
+    try {
+      await saveTransactionsBulk(fixed, { skipStockUpdate: true });
+      toast.success(`Berhasil memperbaiki ${fixed.length} transaksi!`);
+    } catch (err) {
+      console.error("Repair failed:", err);
+      toast.error("Gagal memperbaiki data.");
+    }
   };
 
   const filteredTransactions = useMemo(() => {
@@ -1843,6 +1889,24 @@ export default function AdminDashboard({
                           />
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8 text-rose-600`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-rose-50 text-rose-600 rounded-lg"><TrendingUp size={18} /></div>
+                      Perbaikan Data
+                    </h3>
+                    <div className="space-y-4">
+                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Temukan dan perbaiki kesalahan umum pada data, seperti tahun yang salah (contoh: 2825 menjadi 2025).</p>
+                      <button
+                        onClick={repairYearTypos}
+                        className="w-full py-4 px-6 bg-blue-50 text-blue-600 font-bold text-sm rounded-xl hover:bg-blue-100 transition-all flex items-center justify-center gap-2 border border-blue-100 active:scale-95"
+                      >
+                        <CheckCircle2 size={18} /> Perbaiki Kesalahan Tahun (28xx)
+                      </button>
                     </div>
                   </div>
                 </div>
