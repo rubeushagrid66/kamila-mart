@@ -305,6 +305,39 @@ function AppContent() {
     }
   };
 
+  const saveTransactionsBulk = async (transactionsArray, { skipStockUpdate = false } = {}) => {
+    try {
+      // 1. Save to Firestore in batches of 500
+      for (let i = 0; i < transactionsArray.length; i += 500) {
+        const batch = writeBatch(db);
+        const chunk = transactionsArray.slice(i, i + 500);
+
+        chunk.forEach(tx => {
+          const { id, ...dataToSave } = tx;
+          // Note: we assume IDs are already generated or provided for bulk imports to ensure idempotency if needed
+          const docRef = id ? doc(db, 'transactions', id.toString()) : doc(collection(db, 'transactions'));
+          batch.set(docRef, dataToSave, { merge: true });
+        });
+
+        await batch.commit();
+      }
+
+      // 2. (Optional) Bulk stock update if needed, but for historical data we usually skip
+      // In this app, we skip stock update for bulk imports as per implementation plan
+
+      // 3. Update global state once at the end (the listener will also pick it up, 
+      // but manual update ensures immediate UI sync if listener is slow)
+      // Actually, since we have onSnapshot, it will trigger anyway.
+      // But for massive imports, onSnapshot might be overwhelming.
+
+      toast.success(`Berhasil mengimpor ${transactionsArray.length} transaksi!`);
+    } catch (error) {
+      console.error('Error saving transactions bulk:', error);
+      toast.error('Gagal menyimpan beberapa transaksi');
+      throw error;
+    }
+  };
+
   const deleteTransaction = async (transactionId) => {
     try {
       await deleteDoc(doc(db, 'transactions', transactionId));
@@ -477,6 +510,7 @@ function AppContent() {
                 onCustomerView={onCustomerView}
                 transactions={transactions}
                 saveTransaction={saveTransaction}
+                saveTransactionsBulk={saveTransactionsBulk}
                 deleteTransaction={deleteTransaction}
                 clearAllTransactions={clearAllTransactions}
                 monthlyReports={monthlyReports}

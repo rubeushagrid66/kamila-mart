@@ -1159,7 +1159,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600" }
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, saveTransaction, deleteTransaction, clearAllTransactions,
+  handleLogout, onCustomerView, transactions, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions,
   monthlyReports, saveMonthlyReport, currentUserData
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
@@ -1262,22 +1262,20 @@ export default function AdminDashboard({
       const lines = text.split('\n').map(l => l.trim()).filter(l => l);
       if (lines.length < 2) return;
 
-      // Detect delimiter: simple check for ',' vs ';' in the first line
       const commaCount = (lines[0].match(/,/g) || []).length;
       const semiCount = (lines[0].match(/;/g) || []).length;
       const delimiter = semiCount > commaCount ? ';' : ',';
 
       const rawHeaders = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
 
-      // Header mapping
       const headerMap = {
         'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date', 'waktu': 'date', 'tanggal pesanan': 'date',
-        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer', 'nama pelanggan': 'customer',
+        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer', 'nama pelanggan': 'customer', 'nomor rumah': 'customer',
         'whatsapp': 'phone', 'phone': 'phone', 'wa': 'phone', 'no': 'phone', 'telepon': 'phone', 'no hp': 'phone',
         'alamat': 'address', 'address': 'address', 'rumah': 'address',
-        'items': 'items', 'barang': 'items', 'produk': 'items', 'nama produk': 'items', 'nama barang': 'items', 'pesanan': 'items',
-        'total': 'total', 'harga': 'total', 'price': 'total', 'total harga': 'total',
-        'metode': 'method', 'method': 'method', 'pembayaran': 'method', 'cara bayar': 'method',
+        'items': 'items', 'barang': 'items', 'produk': 'items', 'nama produk': 'items', 'nama barang': 'name_col', 'pesanan': 'items',
+        'jumlah': 'qty_col', 'qty': 'qty_col', 'total': 'total', 'harga': 'total', 'price': 'total', 'total harga jual': 'total',
+        'metode': 'method', 'method': 'method', 'pembayaran': 'method', 'cara bayar': 'method', 'cara pembayaran': 'method',
         'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes', 'memo': 'notes'
       };
 
@@ -1285,24 +1283,21 @@ export default function AdminDashboard({
 
       const parseDate = (dateStr) => {
         if (!dateStr) return new Date();
-        // Handle DD/MM/YYYY or D/M/YYYY
         const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
         if (dmy) return new Date(dmy[3], dmy[2] - 1, dmy[1]);
-        // Handle YYYY-MM-DD
         const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
         if (ymd) return new Date(ymd[1], ymd[2] - 1, ymd[3]);
-        // Fallback to native
         const d = new Date(dateStr);
         return isNaN(d.getTime()) ? new Date() : d;
       };
 
-      const existingProducts = [...products];
-      let importedCount = 0;
-      let skippedCount = 0;
-      let skippedReasons = [];
-
-      const totalLines = lines.length - 1;
-      setImportStatus(prev => ({ ...prev, total: totalLines }));
+      const parseCurrency = (val) => {
+        if (!val) return 0;
+        if (typeof val === 'number') return val;
+        // Strip Rp, dots (thousands), and whitespace
+        const clean = val.replace(/Rp/gi, '').replace(/\./g, '').trim();
+        return Number(clean) || 0;
+      };
 
       const splitCSVLine = (line, delim) => {
         const result = [];
@@ -1310,104 +1305,119 @@ export default function AdminDashboard({
         let inQuotes = false;
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === delim && !inQuotes) {
+          if (char === '"') inQuotes = !inQuotes;
+          else if (char === delim && !inQuotes) {
             result.push(cur.trim());
             cur = '';
-          } else {
-            cur += char;
-          }
+          } else cur += char;
         }
         result.push(cur.trim());
         return result.map(v => v.replace(/^"|"$/g, '').trim());
       };
 
-      for (const line of lines.slice(1)) {
+      const existingProducts = [...products];
+      let importedTransactions = [];
+      let skippedCount = 0;
+      let skippedReasons = [];
+      const totalRows = lines.length - 1;
+
+      setImportStatus({ isImporting: true, current: 0, total: totalRows });
+
+      for (let i = 1; i < lines.length; i++) {
         try {
-          const values = splitCSVLine(line, delimiter);
+          const values = splitCSVLine(lines[i], delimiter);
           if (values.length < 2) continue;
 
           const rawRow = {};
-          mappedHeaders.forEach((h, i) => { rawRow[h] = values[i]; });
+          mappedHeaders.forEach((h, idx) => { rawRow[h] = values[idx]; });
 
           const date = parseDate(rawRow.date);
           const transactionItems = [];
-          let calculatedTotal = 0;
-          let hasMissingProduct = false;
-          let missingProducts = [];
 
-          // Support semicolon, comma, or pipe as item separators
-          const itemParts = (rawRow.items || "").split(/[|;,]/).map(s => s.trim()).filter(s => s);
-
-          for (const itemPart of itemParts) {
-            // Regex to catch "2 x Product" or "2x Product" or "2 Product"
-            const match = itemPart.match(/^(\d+)\s*[xX]?\s*(.+)$/);
-            const qty = match ? Number(match[1]) : 1;
-            const name = (match ? match[2] : itemPart).trim();
-
+          // Support independent columns: Nama Barang + Jumlah
+          if (rawRow.name_col) {
+            const name = rawRow.name_col;
+            const qty = Number(rawRow.qty_col) || 1;
             const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
 
-            if (!product) {
-              hasMissingProduct = true;
-              missingProducts.push(name);
+            if (product) {
+              transactionItems.push({
+                id: product.id,
+                name: product.name,
+                qty: qty,
+                price: product.price,
+                cost: product.cost,
+                profit: (product.price - product.cost) * qty
+              });
+            } else {
+              skippedCount++;
+              skippedReasons.push(`Baris ${i + 1}: Produk "${name}" tidak ditemukan`);
               continue;
             }
-
-            transactionItems.push({
-              id: product.id,
-              name: product.name,
-              qty: qty,
-              price: product.price,
-              cost: product.cost,
-              profit: (product.price - product.cost) * qty
-            });
-            calculatedTotal += product.price * qty;
+          } else {
+            // Fallback to parsed "items" string
+            const itemParts = (rawRow.items || "").split(/[|;,]/).map(s => s.trim()).filter(s => s);
+            for (const itemPart of itemParts) {
+              const match = itemPart.match(/^(\d+)\s*[xX]?\s*(.+)$/);
+              const qty = match ? Number(match[1]) : 1;
+              const name = (match ? match[2] : itemPart).trim();
+              const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
+              if (product) {
+                transactionItems.push({
+                  id: product.id, name: product.name, qty, price: product.price, cost: product.cost,
+                  profit: (product.price - product.cost) * qty
+                });
+              }
+            }
           }
 
-          // If no items were parsed at all, skip the row
           if (transactionItems.length === 0) {
             skippedCount++;
-            skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: ${hasMissingProduct ? 'Produk tidak ditemukan' : 'Item kosong'}`);
             continue;
           }
 
-          const transaction = {
+          importedTransactions.push({
             date: date.toISOString(),
             time: date.toLocaleString('id-ID'),
             customer: rawRow.customer || 'Imported Customer',
             phone: rawRow.phone || '',
-            address: rawRow.address || '',
+            address: rawRow.address || (rawRow.customer && rawRow.customer.includes('.') ? rawRow.customer : ''), // Fallback address to Nomor Rumah if it looks like one
             items: transactionItems,
-            total: Number(rawRow.total) || calculatedTotal,
+            total: parseCurrency(rawRow.total) || transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0),
             method: (rawRow.method || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
             notes: rawRow.notes || 'Imported from CSV'
-          };
+          });
 
-          await saveTransaction(transaction, { silent: true, skipStockUpdate: true });
-          importedCount++;
-          setImportStatus(prev => ({ ...prev, current: importedCount + skippedCount }));
-          // Yield to main thread to allow UI update
-          await new Promise(r => setTimeout(r, 0));
+          // Save in batches of 100 to yield and show progress
+          if (importedTransactions.length >= 100) {
+            await saveTransactionsBulk(importedTransactions, { skipStockUpdate: true });
+            setImportStatus(prev => ({ ...prev, current: i }));
+            importedTransactions = [];
+            // Yield to main thread
+            await new Promise(r => setTimeout(r, 0));
+          } else if (i % 20 === 0) {
+            setImportStatus(prev => ({ ...prev, current: i }));
+            await new Promise(r => setTimeout(r, 0));
+          }
+
         } catch (err) {
-          console.error("Error importing row:", err, line);
+          console.error(`Error processing row ${i + 1}:`, err);
           skippedCount++;
-          skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: Error sistem`);
         }
+      }
+
+      // Final save for remaining
+      if (importedTransactions.length > 0) {
+        await saveTransactionsBulk(importedTransactions, { skipStockUpdate: true });
       }
 
       setImportStatus({ isImporting: false, current: 0, total: 0 });
 
+      const successCount = totalRows - skippedCount;
       if (skippedCount > 0) {
-        toast((t) => (
-          <span className="text-xs">
-            <b>Selesai:</b> {importedCount} diimpor, {skippedCount} dilewati.<br />
-            {skippedReasons.slice(0, 3).map((r, i) => <div key={i}>{r}</div>)}
-            {skippedCount > 3 && <div>...dan {skippedCount - 3} lainnya</div>}
-          </span>
-        ), { duration: 8000, icon: '⚠️' });
+        toast.success(`Berhasil mengimpor ${successCount} transaksi! (${skippedCount} baris bermasalah dilewati)`, { duration: 6000 });
       } else {
-        toast.success(`Berhasil mengimpor ${importedCount} transaksi!`);
+        toast.success(`Berhasil mengimpor seluruh ${successCount} transaksi!`);
       }
     };
     reader.readAsText(file);
