@@ -262,7 +262,7 @@ function AppContent() {
   };
 
   // TRANSACTION CRUD
-  const saveTransaction = async (transactionData) => {
+  const saveTransaction = async (transactionData, { silent = false } = {}) => {
     try {
       const { id, ...dataToSave } = transactionData;
       const isNew = !id || !transactions.some(t => t.id === id.toString());
@@ -294,7 +294,9 @@ function AppContent() {
         return [...prev, { id: targetId, ...dataToSave }];
       });
 
-      toast.success(isNew ? 'Pesanan berhasil dibuat!' : 'Transaksi berhasil diperbarui!');
+      if (!silent) {
+        toast.success(isNew ? 'Pesanan berhasil dibuat!' : 'Transaksi berhasil diperbarui!');
+      }
       return targetId;
     } catch (error) {
       console.error('Error saving transaction:', error);

@@ -1176,6 +1176,7 @@ export default function AdminDashboard({
   const [visibleUsers, setVisibleUsers] = useState(20);
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [importStatus, setImportStatus] = useState({ isImporting: false, current: 0, total: 0 });
   const fileInputRef = useRef(null);
 
   const handleProductSave = (productData) => {
@@ -1256,6 +1257,7 @@ export default function AdminDashboard({
 
     const reader = new FileReader();
     reader.onload = async (event) => {
+      setImportStatus({ isImporting: true, current: 0, total: 0 });
       const text = event.target.result;
       const lines = text.split('\n').map(l => l.trim()).filter(l => l);
       if (lines.length < 2) return;
@@ -1298,6 +1300,9 @@ export default function AdminDashboard({
       let importedCount = 0;
       let skippedCount = 0;
       let skippedReasons = [];
+
+      const totalLines = lines.length - 1;
+      setImportStatus(prev => ({ ...prev, total: totalLines }));
 
       for (const line of lines.slice(1)) {
         const values = line.split(delimiter).map(v => v.replace(/^"|"$/g, '').trim());
@@ -1359,9 +1364,14 @@ export default function AdminDashboard({
           notes: rawRow.notes || 'Imported from CSV'
         };
 
-        await saveTransaction(transaction);
+        await saveTransaction(transaction, { silent: true });
         importedCount++;
+        setImportStatus(prev => ({ ...prev, current: importedCount + skippedCount }));
+        // Yield to main thread to allow UI update
+        await new Promise(r => setTimeout(r, 0));
       }
+
+      setImportStatus({ isImporting: false, current: 0, total: 0 });
 
       if (skippedCount > 0) {
         toast((t) => (
@@ -1852,6 +1862,28 @@ export default function AdminDashboard({
           onSave={handleTransactionSave}
           saveProduct={saveProduct}
         />
+      )}
+
+      {/* Import Progress Overlay */}
+      {importStatus.isImporting && (
+        <div className="fixed bottom-8 right-8 z-[70] animate-in slide-in-from-bottom-5 duration-300">
+          <div className={`bg-white p-6 ${UI_RADIUS.outer} shadow-2xl border border-blue-100 flex flex-col gap-3 min-w-[280px]`}>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                <span className="text-xs font-black text-slate-900 uppercase tracking-widest">Mengimpor Data...</span>
+              </div>
+              <span className="text-xs font-bold text-blue-600">{importStatus.current} / {importStatus.total}</span>
+            </div>
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                style={{ width: `${(importStatus.current / importStatus.total) * 100}%` }}
+              ></div>
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium italic text-center">Mohon jangan tutup halaman ini</p>
+          </div>
+        </div>
       )}
 
       {/* Detail Pesanan Modal */}
