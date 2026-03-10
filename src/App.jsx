@@ -262,7 +262,7 @@ function AppContent() {
   };
 
   // TRANSACTION CRUD
-  const saveTransaction = async (transactionData, { silent = false } = {}) => {
+  const saveTransaction = async (transactionData, { silent = false, skipStockUpdate = false } = {}) => {
     try {
       const { id, ...dataToSave } = transactionData;
       const isNew = !id || !transactions.some(t => t.id === id.toString());
@@ -270,7 +270,7 @@ function AppContent() {
 
       await setDoc(doc(db, 'transactions', targetId), dataToSave, { merge: true });
 
-      if (isNew) {
+      if (isNew && !skipStockUpdate) {
         // --- REDUCE STOCK ---
         const stockUpdates = (dataToSave.items || []).map(async (item) => {
           if (item.id) {

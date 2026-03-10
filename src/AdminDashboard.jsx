@@ -1304,71 +1304,96 @@ export default function AdminDashboard({
       const totalLines = lines.length - 1;
       setImportStatus(prev => ({ ...prev, total: totalLines }));
 
+      const splitCSVLine = (line, delim) => {
+        const result = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === delim && !inQuotes) {
+            result.push(cur.trim());
+            cur = '';
+          } else {
+            cur += char;
+          }
+        }
+        result.push(cur.trim());
+        return result.map(v => v.replace(/^"|"$/g, '').trim());
+      };
+
       for (const line of lines.slice(1)) {
-        const values = line.split(delimiter).map(v => v.replace(/^"|"$/g, '').trim());
-        if (values.length < 2) continue; // Skip empty lines or malformed rows
+        try {
+          const values = splitCSVLine(line, delimiter);
+          if (values.length < 2) continue;
 
-        const rawRow = {};
-        mappedHeaders.forEach((h, i) => { rawRow[h] = values[i]; });
+          const rawRow = {};
+          mappedHeaders.forEach((h, i) => { rawRow[h] = values[i]; });
 
-        const date = parseDate(rawRow.date);
-        const transactionItems = [];
-        let calculatedTotal = 0;
-        let hasMissingProduct = false;
-        let missingProducts = [];
+          const date = parseDate(rawRow.date);
+          const transactionItems = [];
+          let calculatedTotal = 0;
+          let hasMissingProduct = false;
+          let missingProducts = [];
 
-        // Support semicolon, comma, or pipe as item separators
-        const itemParts = (rawRow.items || "").split(/[|;,]/).map(s => s.trim()).filter(s => s);
+          // Support semicolon, comma, or pipe as item separators
+          const itemParts = (rawRow.items || "").split(/[|;,]/).map(s => s.trim()).filter(s => s);
 
-        for (const itemPart of itemParts) {
-          // Regex to catch "2 x Product" or "2x Product" or "2 Product"
-          const match = itemPart.match(/^(\d+)\s*[xX]?\s*(.+)$/);
-          const qty = match ? Number(match[1]) : 1;
-          const name = (match ? match[2] : itemPart).trim();
+          for (const itemPart of itemParts) {
+            // Regex to catch "2 x Product" or "2x Product" or "2 Product"
+            const match = itemPart.match(/^(\d+)\s*[xX]?\s*(.+)$/);
+            const qty = match ? Number(match[1]) : 1;
+            const name = (match ? match[2] : itemPart).trim();
 
-          const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
+            const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
 
-          if (!product) {
-            hasMissingProduct = true;
-            missingProducts.push(name);
+            if (!product) {
+              hasMissingProduct = true;
+              missingProducts.push(name);
+              continue;
+            }
+
+            transactionItems.push({
+              id: product.id,
+              name: product.name,
+              qty: qty,
+              price: product.price,
+              cost: product.cost,
+              profit: (product.price - product.cost) * qty
+            });
+            calculatedTotal += product.price * qty;
+          }
+
+          // If no items were parsed at all, skip the row
+          if (transactionItems.length === 0) {
+            skippedCount++;
+            skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: ${hasMissingProduct ? 'Produk tidak ditemukan' : 'Item kosong'}`);
             continue;
           }
 
-          transactionItems.push({
-            id: product.id,
-            name: product.name,
-            qty: qty,
-            price: product.price,
-            cost: product.cost,
-            profit: (product.price - product.cost) * qty
-          });
-          calculatedTotal += product.price * qty;
-        }
+          const transaction = {
+            date: date.toISOString(),
+            time: date.toLocaleString('id-ID'),
+            customer: rawRow.customer || 'Imported Customer',
+            phone: rawRow.phone || '',
+            address: rawRow.address || '',
+            items: transactionItems,
+            total: Number(rawRow.total) || calculatedTotal,
+            method: (rawRow.method || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
+            notes: rawRow.notes || 'Imported from CSV'
+          };
 
-        // If no items were parsed at all, skip the row
-        if (transactionItems.length === 0) {
+          await saveTransaction(transaction, { silent: true, skipStockUpdate: true });
+          importedCount++;
+          setImportStatus(prev => ({ ...prev, current: importedCount + skippedCount }));
+          // Yield to main thread to allow UI update
+          await new Promise(r => setTimeout(r, 0));
+        } catch (err) {
+          console.error("Error importing row:", err, line);
           skippedCount++;
-          skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: ${hasMissingProduct ? 'Produk tidak ditemukan' : 'Item kosong'}`);
-          continue;
+          skippedReasons.push(`Baris ${importedCount + skippedCount + 1}: Error sistem`);
         }
-
-        const transaction = {
-          date: date.toISOString(),
-          time: date.toLocaleString('id-ID'),
-          customer: rawRow.customer || 'Imported Customer',
-          phone: rawRow.phone || '',
-          address: rawRow.address || '',
-          items: transactionItems,
-          total: Number(rawRow.total) || calculatedTotal,
-          method: (rawRow.method || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
-          notes: rawRow.notes || 'Imported from CSV'
-        };
-
-        await saveTransaction(transaction, { silent: true });
-        importedCount++;
-        setImportStatus(prev => ({ ...prev, current: importedCount + skippedCount }));
-        // Yield to main thread to allow UI update
-        await new Promise(r => setTimeout(r, 0));
       }
 
       setImportStatus({ isImporting: false, current: 0, total: 0 });
