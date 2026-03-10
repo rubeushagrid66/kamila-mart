@@ -1567,6 +1567,8 @@ export default function AdminDashboard({
                     transactions={[...(transactions || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
                     products={products}
                     onDetail={setSelectedTx}
+                    onEdit={setEditingTransaction}
+                    onDelete={handleDeleteTransaction}
                   />
                 </div>
               </div>
