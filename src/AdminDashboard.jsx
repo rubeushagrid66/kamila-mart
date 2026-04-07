@@ -1236,6 +1236,9 @@ export default function AdminDashboard({
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
+  const [txSelectedMonth, setTxSelectedMonth] = useState('all');
+  const [txSelectedYear, setTxSelectedYear] = useState('all');
+
   const monthsList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   const yearsList = [2024, 2025, 2026];
 
@@ -1262,7 +1265,9 @@ export default function AdminDashboard({
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Laporan_Transaksi_${monthsList[selectedMonth]}_${selectedYear}.csv`);
+    const monthName = txSelectedMonth === 'all' ? 'Semua_Bulan' : monthsList[txSelectedMonth];
+    const yearName = txSelectedYear === 'all' ? 'Semua_Tahun' : txSelectedYear;
+    link.setAttribute("download", `Laporan_Transaksi_${monthName}_${yearName}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1507,9 +1512,11 @@ export default function AdminDashboard({
     return (transactions || []).filter(t => {
       const d = parseDate(t.date);
       if (isNaN(d.getTime())) return false;
-      return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+      const monthMatch = txSelectedMonth === 'all' || d.getMonth() === txSelectedMonth;
+      const yearMatch = txSelectedYear === 'all' || d.getFullYear() === txSelectedYear;
+      return monthMatch && yearMatch;
     });
-  }, [transactions, selectedMonth, selectedYear]);
+  }, [transactions, txSelectedMonth, txSelectedYear]);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
@@ -1612,17 +1619,19 @@ export default function AdminDashboard({
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div className="flex flex-wrap items-center gap-3">
                   <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    value={txSelectedMonth}
+                    onChange={(e) => setTxSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                     className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
+                    <option value="all">Semua Bulan</option>
                     {monthsList.map((m, i) => <option key={i} value={i}>{m}</option>)}
                   </select>
                   <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    value={txSelectedYear}
+                    onChange={(e) => setTxSelectedYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                     className={`p-2.5 bg-white border border-slate-200 ${UI_RADIUS.inner} text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
+                    <option value="all">Semua Tahun</option>
                     {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
