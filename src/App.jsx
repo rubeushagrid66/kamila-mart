@@ -272,6 +272,10 @@ function AppContent() {
       const isNew = !id || !transactions.some(t => t.id === id.toString());
       const targetId = id ? id.toString() : doc(collection(db, 'transactions')).id;
 
+      if (isNew && !dataToSave.paymentStatus) {
+        dataToSave.paymentStatus = 'Belum Bayar';
+      }
+
       await setDoc(doc(db, 'transactions', targetId), dataToSave, { merge: true });
 
       if (isNew && !skipStockUpdate) {

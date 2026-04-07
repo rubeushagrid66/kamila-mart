@@ -279,7 +279,8 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear }) 
     return months.map((monthName, index) => {
       const monthTx = (transactions || []).filter(t => {
         const d = (t.date instanceof Date) ? t.date : new Date(t.date);
-        return d.getFullYear() === selectedYear && d.getMonth() === index;
+        const isPaid = t.paymentStatus !== 'Belum Bayar';
+        return d.getFullYear() === selectedYear && d.getMonth() === index && isPaid;
       });
 
       let profit = 0;
@@ -459,7 +460,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
     return months.map((monthName, index) => {
       const monthTx = transactions.filter(t => {
         const d = (t.date instanceof Date) ? t.date : new Date(t.date);
-        return d.getFullYear() === selectedYear && d.getMonth() === index;
+        const isPaid = t.paymentStatus !== 'Belum Bayar';
+        return d.getFullYear() === selectedYear && d.getMonth() === index && isPaid;
       });
 
       let profit = 0;
@@ -698,7 +700,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 }
 
 // --- TRANSACTION LIST ---
-function TransactionList({ transactions, products, onDetail, onEdit, onDelete, isLoading = false }) {
+function TransactionList({ transactions, products, onDetail, onEdit, onDelete, isLoading = false, onToggleStatus }) {
   const flattenedItems = useMemo(() => {
     let globalIdx = 1;
     const result = [];
@@ -785,7 +787,19 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
               <div key={t.id} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
+                    <div className="flex items-center gap-2">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
+                       <button
+                         onClick={(e) => { e.stopPropagation(); onToggleStatus && onToggleStatus(t); }}
+                         className={`text-[9px] font-bold px-1.5 py-0.5 rounded border transition-colors ${
+                           (t.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
+                             ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                             : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
+                         }`}
+                       >
+                         {t.paymentStatus || 'Sudah Bayar'}
+                       </button>
+                    </div>
                     <p className="font-extrabold text-slate-900 text-base mt-1">{t.customer}</p>
                     <p className="text-[11px] text-slate-500 mt-1 leading-tight font-medium">{t.address}</p>
                   </div>
@@ -856,6 +870,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
               <th className="py-4 px-4 text-center">Jumlah</th>
               <th className="py-4 px-4 text-right text-blue-600">Total Jual</th>
               <th className="py-4 px-4">Metode</th>
+              <th className="py-4 px-4 text-center">Status</th>
               <th className="py-4 px-4 text-center">Aksi</th>
             </tr>
           </thead>
@@ -873,6 +888,18 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
                   <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     {item.caraPembayaran}
                   </span>
+                </td>
+                <td className="py-4 px-4 text-center">
+                  <button
+                    onClick={() => onToggleStatus && onToggleStatus(item.originalTx)}
+                    className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter cursor-pointer transition-colors border ${
+                      (item.originalTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
+                        ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                        : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
+                    }`}
+                  >
+                    {item.originalTx.paymentStatus || 'Sudah Bayar'}
+                  </button>
                 </td>
                 <td className="py-4 px-4 text-center">
                   <div className="flex items-center justify-center gap-1">
@@ -1214,6 +1241,11 @@ export default function AdminDashboard({
     setEditingTransaction(null);
   };
 
+  const handleToggleStatus = async (tx) => {
+    const newStatus = tx.paymentStatus === 'Belum Bayar' ? 'Sudah Bayar' : 'Belum Bayar';
+    await saveTransaction({ ...tx, paymentStatus: newStatus }, { silent: true });
+  };
+
   const handleDeleteTransaction = async (txId) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
       await deleteTransaction(txId);
@@ -1238,6 +1270,7 @@ export default function AdminDashboard({
 
   const [txSelectedMonth, setTxSelectedMonth] = useState('all');
   const [txSelectedYear, setTxSelectedYear] = useState('all');
+  const [txSelectedStatus, setTxSelectedStatus] = useState('all');
 
   const monthsList = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   const yearsList = [2024, 2025, 2026];
@@ -1514,7 +1547,8 @@ export default function AdminDashboard({
       if (isNaN(d.getTime())) return false;
       const monthMatch = txSelectedMonth === 'all' || d.getMonth() === txSelectedMonth;
       const yearMatch = txSelectedYear === 'all' || d.getFullYear() === txSelectedYear;
-      return monthMatch && yearMatch;
+      const statusMatch = txSelectedStatus === 'all' || (t.paymentStatus || 'Sudah Bayar') === txSelectedStatus;
+      return monthMatch && yearMatch && statusMatch;
     });
   }, [transactions, txSelectedMonth, txSelectedYear]);
 
@@ -1593,6 +1627,7 @@ export default function AdminDashboard({
                     onDetail={setSelectedTx}
                     onEdit={setEditingTransaction}
                     onDelete={handleDeleteTransaction}
+                    onToggleStatus={handleToggleStatus}
                   />
                 </div>
               </div>
@@ -1634,6 +1669,15 @@ export default function AdminDashboard({
                     <option value="all">Semua Tahun</option>
                     {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
+                  <div className="flex bg-slate-100 p-1 rounded-lg">
+                    <button onClick={() => setTxSelectedStatus('all')} className={`px-3 py-1.5 rounded-md text-[10px] font-bold ${txSelectedStatus === 'all' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>Semua</button>
+                    <button onClick={() => setTxSelectedStatus('Belum Bayar')} className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1 ${txSelectedStatus === 'Belum Bayar' ? 'bg-amber-50 text-amber-600 shadow-sm border border-amber-200/50' : 'text-slate-500 hover:text-slate-700'}`}>
+                      Belum Bayar <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[8px] leading-none mb-0.5">{transactions?.filter(t => t.paymentStatus === 'Belum Bayar').length || 0}</span>
+                    </button>
+                    <button onClick={() => setTxSelectedStatus('Sudah Bayar')} className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1 ${txSelectedStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-200/50' : 'text-slate-500 hover:text-slate-700'}`}>
+                      Sudah Bayar <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[8px] leading-none mb-0.5">{transactions?.filter(t => (t.paymentStatus || 'Sudah Bayar') === 'Sudah Bayar').length || 0}</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex gap-2 w-full sm:w-auto">
@@ -1663,6 +1707,7 @@ export default function AdminDashboard({
                   onDetail={setSelectedTx}
                   onEdit={setEditingTransaction}
                   onDelete={handleDeleteTransaction}
+                  onToggleStatus={handleToggleStatus}
                 />
               </div>
               {filteredTransactions.length > visibleTransactions && (
@@ -2042,11 +2087,29 @@ export default function AdminDashboard({
                   <label className={UI_TEXT.label}>Tahun</label>
                   <p className="text-xs font-bold text-slate-700">{new Date(selectedTx.date).getFullYear()}</p>
                 </div>
-                <div className="sm:col-span-3">
-                  <label className={UI_TEXT.label}>Metode Pembayaran</label>
+                <div className="sm:col-span-1">
+                  <label className={UI_TEXT.label}>Metode</label>
                   <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5 capitalize">
-                    <CreditCard size={14} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer Bank' : 'Bayar di Tempat'}
+                    <CreditCard size={14} className="text-blue-500" /> {selectedTx.method === 'transfer' ? 'Transfer' : 'COD'}
                   </p>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={UI_TEXT.label}>Status Pembayaran</label>
+                  <div>
+                    <button
+                      onClick={() => {
+                        const newStatus = (selectedTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar' ? 'Sudah Bayar' : 'Belum Bayar';
+                        saveTransaction({ ...selectedTx, paymentStatus: newStatus }, { silent: true }).then(() => setSelectedTx({ ...selectedTx, paymentStatus: newStatus }));
+                      }}
+                      className={`mt-1 text-[10px] font-bold px-2 py-1 rounded border transition-colors ${
+                        (selectedTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
+                          ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
+                          : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
+                      }`}
+                    >
+                      {selectedTx.paymentStatus || 'Sudah Bayar'}
+                    </button>
+                  </div>
                 </div>
               </div>
 
