@@ -1567,11 +1567,10 @@ export default function AdminDashboard({
 
           {adminTab === 'dashboard' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} isLoading={isLoading} />
                 <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" isLoading={isLoading} />
                 <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" isLoading={isLoading} />
-                <StatCard label="Total Penjualan" val={formatIDR((transactions || []).reduce((sum, t) => sum + (t.total || 0), 0))} icon={DollarSign} color="bg-indigo-50 text-indigo-600" isLoading={isLoading} />
               </div>
 
               <div className="space-y-6">
