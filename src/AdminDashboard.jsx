@@ -18,7 +18,8 @@ function ProductModal({ product, onClose, onSave }) {
     cost: '',
     price: '',
     stock: '',
-    status: 'aktif'
+    status: 'aktif',
+    keterangan: ''
   });
 
   const handleSubmit = (e) => {
@@ -32,7 +33,8 @@ function ProductModal({ product, onClose, onSave }) {
       id: product?.id,
       cost: Number(formData.cost),
       price: Number(formData.price),
-      stock: Number(formData.stock)
+      stock: Number(formData.stock),
+      keterangan: formData.keterangan || ''
     });
   };
 
@@ -128,6 +130,16 @@ function ProductModal({ product, onClose, onSave }) {
               <option value="aktif">Aktif (Tampil)</option>
               <option value="tidak_aktif">Tidak Aktif (Sembunyi)</option>
             </select>
+          </div>
+          <div className="space-y-2">
+            <label className={UI_TEXT.label}>Keterangan</label>
+            <textarea
+              value={formData.keterangan || ''}
+              onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
+              placeholder="Contoh: Dikirim vendor 5 April, catatan khusus produk..."
+              rows={3}
+              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 text-sm text-slate-700 resize-none`}
+            />
           </div>
           <div className="pt-4 flex gap-3">
             <button
