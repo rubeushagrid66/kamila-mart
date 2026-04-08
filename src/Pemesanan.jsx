@@ -123,9 +123,6 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                   key={p.id}
                   className={`p-4 bg-white ${UI_RADIUS.outer} border transition-all duration-300 flex items-center gap-4 ${qty > 0 ? 'border-blue-500 shadow-lg shadow-blue-500/5 scale-[1.02]' : 'border-slate-100 shadow-sm'} ${isOutOfStock ? 'opacity-60 grayscale' : ''}`}
                 >
-                  <div className={`w-12 h-12 bg-blue-50 text-blue-600 ${UI_RADIUS.inner} flex-shrink-0 flex items-center justify-center border border-blue-50`}>
-                    <Package size={20} />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-900 text-sm truncate mb-1">{p.name}</h3>
                     <div className="flex items-center gap-3">
