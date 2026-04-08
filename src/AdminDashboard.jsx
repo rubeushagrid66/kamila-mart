@@ -458,19 +458,25 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 
   const stats = useMemo(() => {
     return months.map((monthName, index) => {
-      const monthTx = transactions.filter(t => {
+      const monthTxAll = transactions.filter(t => {
         const d = (t.date instanceof Date) ? t.date : new Date(t.date);
-        const isPaid = t.paymentStatus !== 'Belum Bayar';
-        return d.getFullYear() === selectedYear && d.getMonth() === index && isPaid;
+        return d.getFullYear() === selectedYear && d.getMonth() === index;
       });
 
       let profit = 0;
+      let unrealizedProfit = 0;
 
-      monthTx.forEach(tx => {
+      monthTxAll.forEach(tx => {
+        const isUnpaid = tx.paymentStatus === 'Belum Bayar';
         tx.items.forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
           const cost = productInfo ? productInfo.cost : (item.price * 0.8);
-          profit += (item.price - cost) * item.qty;
+          const itemProfit = (item.price - cost) * item.qty;
+          if (isUnpaid) {
+            unrealizedProfit += itemProfit;
+          } else {
+            profit += itemProfit;
+          }
         });
       });
 
@@ -485,6 +491,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         id: reportId,
         monthName,
         profit,
+        unrealizedProfit,
         marbotPercent: mP,
         musholaPercent: msP,
         internalPercent: iP,
@@ -571,6 +578,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
               <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
                 <th className="px-6 py-4">Bulan</th>
                 <th className="px-6 py-4">Total Profit</th>
+                <th className="px-6 py-4">Realisasi Profit</th>
                 <th className="px-6 py-4 text-center">Formula</th>
                 <th className="px-6 py-4">Marbot</th>
                 <th className="px-6 py-4">Mushola</th>
@@ -583,6 +591,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 <tr key={s.id} className="text-sm hover:bg-slate-50/30 transition-colors">
                   <td className="px-6 py-5 font-bold text-slate-700">{s.monthName}</td>
                   <td className="px-6 py-5 font-black text-slate-900">{formatIDR(s.profit)}</td>
+                  <td className="px-6 py-5 font-black text-rose-600">{formatIDR(s.unrealizedProfit)}</td>
                   <td className="px-6 py-5 text-center">
                     <button
                       onClick={() => {
