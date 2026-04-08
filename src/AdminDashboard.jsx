@@ -1550,7 +1550,7 @@ export default function AdminDashboard({
       const statusMatch = txSelectedStatus === 'all' || (t.paymentStatus || 'Sudah Bayar') === txSelectedStatus;
       return monthMatch && yearMatch && statusMatch;
     });
-  }, [transactions, txSelectedMonth, txSelectedYear]);
+  }, [transactions, txSelectedMonth, txSelectedYear, txSelectedStatus]);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
