@@ -1701,7 +1701,7 @@ export default function AdminDashboard({
                   </div>
                 </div>
 
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full sm:w-auto">
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -1709,13 +1709,13 @@ export default function AdminDashboard({
                     accept=".csv"
                     className="hidden"
                   />
-                  <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none text-blue-600 border-blue-100 hover:bg-blue-50 py-2.5 h-[42px]`}>
+                  <button onClick={() => fileInputRef.current?.click()} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} text-blue-600 border-blue-100 hover:bg-blue-50 py-2.5 h-[42px] px-3 sm:px-6`}>
                     <Download size={18} className="rotate-180" /> Import
                   </button>
-                  <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} flex-1 sm:flex-none py-2.5 h-[42px]`}>
+                  <button onClick={handleExportCSV} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} py-2.5 h-[42px] px-3 sm:px-6`}>
                     <Download size={18} /> Export
                   </button>
-                  <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} flex-1 sm:flex-none py-2.5 h-[42px]`}>
+                  <button onClick={() => setIsAddingTransaction(true)} className={`${UI_BUTTON.base} ${UI_BUTTON.primary} ${UI_RADIUS.inner} col-span-2 sm:col-span-1 py-2.5 h-[42px] px-3 sm:px-6`}>
                     <Plus size={18} /> Tambah
                   </button>
                 </div>
