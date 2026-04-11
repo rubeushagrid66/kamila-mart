@@ -1896,7 +1896,9 @@ export default function AdminDashboard({
         'items': 'items', 'barang': 'items', 'produk': 'items', 'nama produk': 'items', 'nama barang': 'name_col', 'pesanan': 'items',
         'jumlah': 'qty_col', 'qty': 'qty_col', 'total': 'total', 'harga': 'total', 'price': 'total', 'total harga jual': 'total',
         'metode': 'method', 'method': 'method', 'pembayaran': 'method', 'cara bayar': 'method', 'cara pembayaran': 'method',
-        'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes', 'memo': 'notes'
+        'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes', 'memo': 'notes',
+        'modal': 'cost_col', 'harga modal': 'cost_col', 'pokok': 'cost_col',
+        'jual': 'price_col', 'harga jual': 'price_col'
       };
 
       const mappedHeaders = rawHeaders.map(h => headerMap[h] || h);
@@ -1959,6 +1961,40 @@ export default function AdminDashboard({
       };
 
       const existingProducts = [...products];
+      const newlyCreatedProducts = new Map(); // Cache to avoid duplicate creation in same run
+
+      const getOrAutoCreateProduct = async (name, rowData) => {
+        const lowerName = name.toLowerCase();
+        let product = existingProducts.find(p => p.name.toLowerCase() === lowerName) || newlyCreatedProducts.get(lowerName);
+        
+        if (product) return product;
+
+        // Auto-create product
+        const cost = parseCurrency(rowData.cost_col) || 0;
+        const price = parseCurrency(rowData.price_col) || (parseCurrency(rowData.total) / (Number(rowData.qty_col) || 1)) || 0;
+        
+        const newProduct = {
+          name: name,
+          cost: cost || (price * 0.8),
+          price: price,
+          stock: 100, // Initial stock for imported product
+          status: 'aktif',
+          category: 'Imported'
+        };
+
+        try {
+          // Trigger saveProduct prop
+          await saveProduct(newProduct);
+          // Note: Since saveProduct (prop) triggers a snapshot update in App.jsx,
+          // we should manually keep track of it here for the remainder of the loop
+          newlyCreatedProducts.set(lowerName, newProduct);
+          return newProduct;
+        } catch (e) {
+          console.error("Failed to auto-create product:", name, e);
+          return null;
+        }
+      };
+
       let importedTransactions = [];
       let skippedCount = 0;
       let skippedReasons = [];
@@ -1981,11 +2017,11 @@ export default function AdminDashboard({
           if (rawRow.name_col) {
             const name = rawRow.name_col;
             const qty = Number(rawRow.qty_col) || 1;
-            const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
+            const product = await getOrAutoCreateProduct(name, rawRow);
 
             if (product) {
               transactionItems.push({
-                id: product.id,
+                id: product.id || `temp-${name}`, // fallback id if save hasn't returned it yet
                 name: product.name,
                 qty: qty,
                 price: product.price,
@@ -1994,7 +2030,7 @@ export default function AdminDashboard({
               });
             } else {
               skippedCount++;
-              skippedReasons.push(`Baris ${i + 1}: Produk "${name}" tidak ditemukan`);
+              skippedReasons.push(`Baris ${i + 1}: Gagal membuat produk "${name}"`);
               continue;
             }
           } else {
@@ -2004,10 +2040,10 @@ export default function AdminDashboard({
               const match = itemPart.match(/^(\d+)\s*[xX]?\s*(.+)$/);
               const qty = match ? Number(match[1]) : 1;
               const name = (match ? match[2] : itemPart).trim();
-              const product = existingProducts.find(p => p.name.toLowerCase() === name.toLowerCase());
+              const product = await getOrAutoCreateProduct(name, rawRow);
               if (product) {
                 transactionItems.push({
-                  id: product.id, name: product.name, qty, price: product.price, cost: product.cost,
+                  id: product.id || `temp-${name}`, name: product.name, qty, price: product.price, cost: product.cost,
                   profit: (product.price - product.cost) * qty
                 });
               }
