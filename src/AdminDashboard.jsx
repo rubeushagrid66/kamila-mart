@@ -1349,7 +1349,7 @@ function BalanceReport({ transactions }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard label="Total Bayar di Tempat" val={formatIDR(summary.cod)} icon={CreditCard} color="bg-amber-50 text-amber-600" />
+        <StatCard label="Total Bayar di Tempat (Cash)" val={formatIDR(summary.cod)} icon={CreditCard} color="bg-amber-50 text-amber-600" />
         <StatCard label="Total Transfer" val={formatIDR(summary.transfer)} icon={ArrowUpRight} color="bg-indigo-50 text-indigo-600" />
         <StatCard label="Saldo Keseluruhan" val={formatIDR(summary.total)} icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
       </div>
@@ -1360,7 +1360,7 @@ function BalanceReport({ transactions }) {
             <thead>
               <tr className="bg-slate-50/50">
                 <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Bulan</th>
-                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Bayar di Tempat</th>
+                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Bayar di Tempat (Cash)</th>
                 <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Transfer</th>
                 <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Total Balance</th>
               </tr>
