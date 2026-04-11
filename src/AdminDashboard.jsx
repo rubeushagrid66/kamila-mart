@@ -1277,6 +1277,119 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", 
   );
 }
 
+// --- BALANCE REPORT VIEW ---
+function BalanceReport({ transactions }) {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const balanceData = useMemo(() => {
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    const report = months.map((month, idx) => ({
+      month,
+      cod: 0,
+      transfer: 0,
+      total: 0
+    }));
+
+    (transactions || []).forEach(tx => {
+      if ((tx.paymentStatus || 'Sudah Bayar') !== 'Sudah Bayar') return;
+
+      const d = tx.date instanceof Date ? tx.date : new Date(tx.date);
+      if (isNaN(d.getTime())) return;
+      if (d.getFullYear() !== selectedYear) return;
+
+      const monthIdx = d.getMonth();
+      const amount = tx.total || 0;
+
+      if (tx.method === 'transfer') {
+        report[monthIdx].transfer += amount;
+      } else {
+        report[monthIdx].cod += amount;
+      }
+      report[monthIdx].total += amount;
+    });
+
+    return report;
+  }, [transactions, selectedYear]);
+
+  const summary = useMemo(() => {
+    return balanceData.reduce((acc, curr) => ({
+      cod: acc.cod + curr.cod,
+      transfer: acc.transfer + curr.transfer,
+      total: acc.total + curr.total
+    }), { cod: 0, transfer: 0, total: 0 });
+  }, [balanceData]);
+
+  const years = useMemo(() => {
+    const uniqueYears = [...new Set((transactions || []).map(t => {
+      const d = t.date instanceof Date ? t.date : new Date(t.date);
+      return isNaN(d.getTime()) ? null : d.getFullYear();
+    }))].filter(Boolean).sort((a,b) => b-a);
+    return uniqueYears.length > 0 ? uniqueYears : [new Date().getFullYear()];
+  }, [transactions]);
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+          <h3 className="text-xl font-black text-slate-900 tracking-tight mb-1">Total Saldo Masuk</h3>
+          <p className="text-xs text-slate-500 font-medium tracking-wide">Akumulasi seluruh pembayaran "Sudah Bayar"</p>
+        </div>
+        <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+          {years.map(y => (
+            <button
+              key={y}
+              onClick={() => setSelectedYear(y)}
+              className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all ${selectedYear === y ? 'bg-white text-blue-600 shadow-sm shadow-blue-500/10' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              {y}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard label="Total Bayar di Tempat" val={formatIDR(summary.cod)} icon={CreditCard} color="bg-amber-50 text-amber-600" />
+        <StatCard label="Total Transfer" val={formatIDR(summary.transfer)} icon={ArrowUpRight} color="bg-indigo-50 text-indigo-600" />
+        <StatCard label="Saldo Keseluruhan" val={formatIDR(summary.total)} icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
+      </div>
+
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Bulan</th>
+                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Bayar di Tempat</th>
+                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Transfer</th>
+                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Total Balance</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {balanceData.map((row, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="py-5 px-8 text-sm font-bold text-slate-900">{row.month}</td>
+                  <td className="py-5 px-8 text-sm font-medium text-slate-600 text-right">{formatIDR(row.cod)}</td>
+                  <td className="py-5 px-8 text-sm font-medium text-slate-600 text-right">{formatIDR(row.transfer)}</td>
+                  <td className="py-5 px-8 text-sm font-black text-blue-600 text-right">{formatIDR(row.total)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-blue-50/30">
+                <td className="py-6 px-8 text-sm font-black text-slate-900">GRAND TOTAL</td>
+                <td className="py-6 px-8 text-sm font-black text-slate-900 text-right">{formatIDR(summary.cod)}</td>
+                <td className="py-6 px-8 text-sm font-black text-slate-900 text-right">{formatIDR(summary.transfer)}</td>
+                <td className="py-6 px-8 text-base font-black text-blue-600 text-right">{formatIDR(summary.total)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- MAIN ADMIN LAYOUT ---
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
@@ -1691,6 +1804,7 @@ export default function AdminDashboard({
               'Package': Package,
               'DollarSign': DollarSign,
               'FileText': FileText,
+              'TrendingUp': TrendingUp,
               'Users': Users,
               'Settings': Settings
             };
@@ -1770,6 +1884,10 @@ export default function AdminDashboard({
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
             />
+          )}
+
+          {adminTab === 'balance_report' && (
+            <BalanceReport transactions={transactions} />
           )}
 
           {adminTab === 'transactions' && (

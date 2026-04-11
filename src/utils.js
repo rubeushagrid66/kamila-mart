@@ -26,6 +26,7 @@ export const MENU_OPTIONS = [
   { id: 'products', label: 'Produk & Stok', icon: 'Package' },
   { id: 'finance', label: 'Manajemen Keuangan', icon: 'DollarSign' },
   { id: 'profit_report', label: 'Laporan Keuntungan', icon: 'FileText' },
+  { id: 'balance_report', label: 'Laporan Balance', icon: 'TrendingUp' },
   { id: 'users', label: 'Manajemen User', icon: 'Users' },
   { id: 'settings', label: 'Pengaturan', icon: 'Settings' },
 ];
