@@ -11,7 +11,8 @@ import Footer from './Footer';
 
 // --- MODAL PRODUK ---
 function ProductModal({ product, onClose, onSave }) {
-  const [formData, setFormData] = useState(product || {
+  const [tambahStok, setTambahStok] = useState('');
+  const [formData, setFormData] = useState(product ? { ...product, tempVendorStatus: product.vendorStatus || 'Belum Bayar' } : {
     customId: '',
     name: '',
     category: '',
@@ -108,7 +109,6 @@ function ProductModal({ product, onClose, onSave }) {
               </div>
             </div>
           </div>
-
           <div className="space-y-2">
             <label className={UI_TEXT.label}>Stok Tersedia</label>
             <input
@@ -120,6 +120,63 @@ function ProductModal({ product, onClose, onSave }) {
               className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
+
+          {product && (
+            <div className="p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
+              <div className="space-y-2">
+                <label className={UI_TEXT.label}>Tambah Stok Baru</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      value={tambahStok}
+                      onChange={(e) => setTambahStok(e.target.value)}
+                      placeholder="Contoh: 10"
+                      className={`w-full p-4 bg-white border border-blue-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const amount = Number(tambahStok);
+                      if (amount > 0) {
+                        setFormData({
+                          ...formData,
+                          stock: Number(formData.stock) + amount,
+                          vendorStatus: formData.tempVendorStatus || 'Belum Bayar'
+                        });
+                        setTambahStok('');
+                      }
+                    }}
+                    className={`px-6 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-xs hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-500/20`}
+                  >
+                    Tambah
+                  </button>
+                </div>
+                <p className="text-[10px] text-blue-500 font-medium italic">Angka ini akan ditambahkan ke Stok Tersedia di atas.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className={UI_TEXT.label}>Status Pembayaran Vendor (Untuk Stok Baru)</label>
+                <div className="flex bg-white p-1 rounded-xl border border-blue-100 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, tempVendorStatus: 'Belum Bayar' })}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ (formData.tempVendorStatus || 'Belum Bayar') === 'Belum Bayar' ? 'bg-amber-50 text-amber-600 shadow-sm border border-amber-100/50' : 'text-slate-400 hover:text-slate-600' }`}
+                  >
+                    Belum Bayar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, tempVendorStatus: 'Sudah Bayar' })}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ formData.tempVendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100/50' : 'text-slate-400 hover:text-slate-600' }`}
+                  >
+                    Sudah Bayar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <label className={UI_TEXT.label}>Status Produk</label>
             <select
@@ -1794,7 +1851,14 @@ export default function AdminDashboard({
                           <td className="py-4 px-6 text-right font-medium text-slate-600">{formatIDR(p.cost)}</td>
                           <td className="py-4 px-6 text-right font-black text-blue-600">{formatIDR(p.price)}</td>
                           <td className="py-4 px-6 text-center">
-                            <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
+                            <div className="flex flex-col items-center">
+                              <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
+                              {p.vendorStatus && (
+                                <span className={`mt-1 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                  {p.vendorStatus}
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="py-4 px-6 text-center">
                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
@@ -1836,9 +1900,14 @@ export default function AdminDashboard({
                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
                           <p className="text-sm font-black text-blue-600">{formatIDR(p.price)}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex flex-col items-end">
                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
                           <p className={`text-sm font-black ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
+                          {p.vendorStatus && (
+                            <span className={`mt-1 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                              {p.vendorStatus}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
