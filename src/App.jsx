@@ -560,7 +560,7 @@ function AppContent() {
                   customUser ||
                   users.find(u => u.username === user?.email?.split('@')[0]) ||
                   (user?.email?.split('@')[0] === 'admin'
-                    ? { name: 'Super Admin', permissions: ['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'users', 'settings'] }
+                    ? { name: 'Super Admin', permissions: ['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'balance_report', 'users', 'settings'] }
                     : { permissions: ['dashboard'] })
                 }
               />
