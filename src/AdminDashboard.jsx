@@ -81,6 +81,21 @@ function ProductModal({ product, onClose, onSave }) {
     amount: 0
   });
 
+  const toggleVendorPaymentStatus = (paymentId) => {
+    setFormData(prev => ({
+      ...prev,
+      vendorPayments: (prev.vendorPayments || []).map(p => {
+        if (p.id === paymentId) {
+          return {
+            ...p,
+            status: p.status === 'Sudah Bayar' ? 'Belum Bayar' : 'Sudah Bayar'
+          };
+        }
+        return p;
+      })
+    }));
+  };
+
   const handleNewPaymentQtyChange = (val) => {
     const qty = val === '' ? '' : Number(val);
     const cost = Number(formData.cost) || 0;
@@ -319,9 +334,13 @@ function ProductModal({ product, onClose, onSave }) {
                       <div>
                         <div className="flex items-center gap-3 mb-1">
                           <span className="text-xs font-black text-slate-900">{formatIDR(p.amount)}</span>
-                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                          <button
+                            type="button"
+                            onClick={() => toggleVendorPaymentStatus(p.id)}
+                            className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter cursor-pointer hover:scale-105 transition-all ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
+                          >
                             {p.status}
-                          </span>
+                          </button>
                         </div>
                         <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
                           <span>{p.qty} UNIT</span>
@@ -1565,7 +1584,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", 
         {isLoading ? (
           <div className="h-8 w-24 bg-slate-100 animate-pulse rounded-lg mt-1" />
         ) : (
-          <p className="text-2xl font-black text-slate-900 tracking-tight">{val}</p>
+          <p className={`text-2xl font-black tracking-tight ${val.toString().startsWith('-') ? 'text-rose-500' : 'text-slate-900'}`}>{val}</p>
         )}
       </div>
     </div>
@@ -1626,6 +1645,18 @@ function BalanceReport({ transactions, products, isLoading = false }) {
     return report;
   }, [transactions, products, selectedYear]);
 
+  const debt = useMemo(() => {
+    let totalUnpaid = 0;
+    (products || []).forEach(p => {
+      (p.vendorPayments || []).forEach(pay => {
+        if (pay.status !== 'Sudah Bayar' && (pay.year === selectedYear || !selectedYear)) {
+          totalUnpaid += (pay.amount || 0);
+        }
+      });
+    });
+    return totalUnpaid;
+  }, [products, selectedYear]);
+
   const summary = useMemo(() => {
     return balanceData.reduce((acc, curr) => ({
       cod: acc.cod + curr.cod,
@@ -1671,10 +1702,11 @@ function BalanceReport({ transactions, products, isLoading = false }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard label="Total Bayar di Tempat (Cash)" val={formatIDR(summary.cod)} icon={CreditCard} color="bg-amber-50 text-amber-600" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard label="Total Cash (COD)" val={formatIDR(summary.cod)} icon={CreditCard} color="bg-amber-50 text-amber-600" />
         <StatCard label="Total Transfer" val={formatIDR(summary.transfer)} icon={ArrowUpRight} color="bg-indigo-50 text-indigo-600" />
-        <StatCard label="Saldo Keseluruhan" val={formatIDR(summary.total)} icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
+        <StatCard label="Hutang Vendor (Belum Bayar)" val={formatIDR(debt)} icon={EyeOff} color="bg-rose-50 text-rose-600" />
+        <StatCard label="Saldo Bersih (Net)" val={formatIDR(summary.total - debt)} icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
       </div>
 
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
