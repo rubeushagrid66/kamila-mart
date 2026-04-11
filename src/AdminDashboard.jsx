@@ -1898,7 +1898,9 @@ export default function AdminDashboard({
         'metode': 'method', 'method': 'method', 'pembayaran': 'method', 'cara bayar': 'method', 'cara pembayaran': 'method',
         'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes', 'memo': 'notes',
         'modal': 'cost_col', 'harga modal': 'cost_col', 'pokok': 'cost_col',
-        'jual': 'price_col', 'harga jual': 'price_col'
+        'jual': 'price_col', 'harga jual': 'price_col',
+        'kode': 'custom_id', 'kode barang': 'custom_id', 'sku': 'custom_id', 'id': 'custom_id',
+        'kategori': 'category_col', 'category': 'category_col'
       };
 
       const mappedHeaders = rawHeaders.map(h => headerMap[h] || h);
@@ -1965,7 +1967,14 @@ export default function AdminDashboard({
 
       const getOrAutoCreateProduct = async (name, rowData) => {
         const lowerName = name.toLowerCase();
-        let product = existingProducts.find(p => p.name.toLowerCase() === lowerName) || newlyCreatedProducts.get(lowerName);
+        const customId = rowData.custom_id || '';
+        
+        // Match by BOTH name and customId to honor user's request for separate products
+        let product = existingProducts.find(p => 
+          p.name.toLowerCase() === lowerName && (customId === '' || p.customId === customId)
+        ) || Array.from(newlyCreatedProducts.values()).find(p => 
+          p.name.toLowerCase() === lowerName && (customId === '' || p.customId === customId)
+        );
         
         if (product) return product;
 
@@ -1975,19 +1984,17 @@ export default function AdminDashboard({
         
         const newProduct = {
           name: name,
+          customId: customId,
+          category: rowData.category_col || 'Imported',
           cost: cost || (price * 0.8),
           price: price,
           stock: 100, // Initial stock for imported product
-          status: 'aktif',
-          category: 'Imported'
+          status: 'aktif'
         };
 
         try {
-          // Trigger saveProduct prop
           await saveProduct(newProduct);
-          // Note: Since saveProduct (prop) triggers a snapshot update in App.jsx,
-          // we should manually keep track of it here for the remainder of the loop
-          newlyCreatedProducts.set(lowerName, newProduct);
+          newlyCreatedProducts.set(`${lowerName}-${customId}`, newProduct);
           return newProduct;
         } catch (e) {
           console.error("Failed to auto-create product:", name, e);
