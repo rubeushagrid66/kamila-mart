@@ -360,13 +360,15 @@ function AppContent() {
   const clearAllTransactions = async () => {
     try {
       if (window.confirm('PERINGATAN: Seluruh data transaksi dan laporan akan dihapus secara permanen. Lanjutkan?')) {
+        toast.loading('Membersihkan data transaksi...', { id: 'clearing_tx' });
         const collectionsToClear = ['transactions', 'monthly_reports'];
 
         for (const collName of collectionsToClear) {
           const querySnapshot = await getDocs(collection(db, collName));
           const docs = querySnapshot.docs;
 
-          // Firestore batch limit is 500
+          if (docs.length === 0) continue;
+
           for (let i = 0; i < docs.length; i += 500) {
             const batch = writeBatch(db);
             const chunk = docs.slice(i, i + 500);
@@ -377,11 +379,39 @@ function AppContent() {
 
         setTransactions([]);
         setMonthlyReports([]);
-        toast.success('Seluruh data berhasil dibersihkan!');
+        toast.success('Seluruh data transaksi berhasil dibersihkan!', { id: 'clearing_tx' });
       }
     } catch (error) {
-      console.error('Error clearing data:', error);
-      toast.error('Gagal menghapus data');
+      console.error('Error clearing transactions:', error);
+      toast.error('Gagal menghapus data transaksi', { id: 'clearing_tx' });
+    }
+  };
+
+  const clearAllProducts = async () => {
+    try {
+      if (window.confirm('PERINGATAN: Seluruh data produk akan dihapus secara permanen. Lanjutkan?')) {
+        toast.loading('Membersihkan data produk...', { id: 'clearing_products' });
+        const querySnapshot = await getDocs(collection(db, 'products'));
+        const docs = querySnapshot.docs;
+
+        if (docs.length === 0) {
+          toast.success('Data produk sudah kosong', { id: 'clearing_products' });
+          return;
+        }
+
+        for (let i = 0; i < docs.length; i += 500) {
+          const batch = writeBatch(db);
+          const chunk = docs.slice(i, i + 500);
+          chunk.forEach(d => batch.delete(d.ref));
+          await batch.commit();
+        }
+
+        setProducts([]);
+        toast.success('Seluruh data produk berhasil dibersihkan!', { id: 'clearing_products' });
+      }
+    } catch (error) {
+      console.error('Error clearing products:', error);
+      toast.error('Gagal menghapus data produk', { id: 'clearing_products' });
     }
   };
 
@@ -523,6 +553,7 @@ function AppContent() {
                 saveTransactionsBulk={saveTransactionsBulk}
                 deleteTransaction={deleteTransaction}
                 clearAllTransactions={clearAllTransactions}
+                clearAllProducts={clearAllProducts}
                 monthlyReports={monthlyReports}
                 saveMonthlyReport={saveMonthlyReport}
                 currentUserData={

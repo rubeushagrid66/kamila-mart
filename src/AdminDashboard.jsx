@@ -1281,7 +1281,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", 
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
-  handleLogout, onCustomerView, transactions, isLoading, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions,
+  handleLogout, onCustomerView, transactions, isLoading, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions, clearAllProducts,
   monthlyReports, saveMonthlyReport, currentUserData
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
@@ -2110,6 +2110,16 @@ export default function AdminDashboard({
                       >
                         <Trash2 size={18} /> Hapus Seluruh Data Transaksi
                       </button>
+
+                      <div className="pt-4 mt-4 border-t border-slate-100/50">
+                        <p className="text-xs text-slate-500 leading-relaxed font-medium mb-4">Hapus seluruh inventaris produk. Gunakan ini jika ingin mereset daftar produk dari awal.</p>
+                        <button
+                          onClick={clearAllProducts}
+                          className="w-full py-4 px-6 bg-slate-50 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2 border border-slate-100 active:scale-95"
+                        >
+                          <Package size={18} /> Hapus Seluruh Data Produk
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
