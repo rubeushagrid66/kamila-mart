@@ -731,7 +731,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
           <div className={`bg-white w-full max-w-md ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 p-8 space-y-6`}>
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-black text-slate-900 text-lg tracking-tight">
-                {editingMonthFormula ? `Set Formula: ${editingMonthFormula.monthName}` : 'Atur Formula Master'}
+                {editingMonthFormula ? `Set Formula: ${editingMonthFormula.monthName}` : 'Atur Formula Master (Update)'}
               </h3>
               <button onClick={() => { setEditingFormula(false); setEditingMonthFormula(null); }} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={20} /></button>
             </div>
@@ -739,7 +739,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
             <div className="space-y-4">
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
-                  <span>Marbot (%)</span>
+                  <span>Marbot (Sumber Dana Diatur)</span>
                   <span className="text-emerald-600">{tempFormula.marbotPercent}%</span>
                 </div>
                 <input
