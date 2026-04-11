@@ -1570,9 +1570,12 @@ export default function AdminDashboard({
 
       // Final save for remaining
       if (importedTransactions.length > 0) {
+        setImportStatus(prev => ({ ...prev, current: totalRows }));
         await saveTransactionsBulk(importedTransactions, { skipStockUpdate: true });
       }
 
+      // Add a small artificial delay so user can see it's done
+      await new Promise(r => setTimeout(r, 1000));
       setImportStatus({ isImporting: false, current: 0, total: 0 });
 
       const successCount = totalRows - skippedCount;
@@ -1581,6 +1584,10 @@ export default function AdminDashboard({
       } else {
         toast.success(`Berhasil mengimpor seluruh ${successCount} transaksi!`);
       }
+    };
+    reader.onerror = () => {
+      setImportStatus({ isImporting: false, current: 0, total: 0 });
+      toast.error("Gagal membaca file CSV");
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -2176,22 +2183,40 @@ export default function AdminDashboard({
 
       {/* Import Progress Overlay */}
       {importStatus.isImporting && (
-        <div className="fixed bottom-8 right-8 z-[70] animate-in slide-in-from-bottom-5 duration-300">
-          <div className={`bg-white p-6 ${UI_RADIUS.outer} shadow-2xl border border-blue-100 flex flex-col gap-3 min-w-[280px]`}>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                <span className="text-xs font-black text-slate-900 uppercase tracking-widest">Mengimpor Data...</span>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className={`bg-white p-10 ${UI_RADIUS.outer} shadow-2xl border border-blue-50 flex flex-col items-center gap-6 min-w-[320px] max-w-md w-full animate-in zoom-in duration-300`}>
+            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center animate-bounce shadow-inner">
+              <Download size={32} />
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h4 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Memproses Data</h4>
+              <p className="text-xs text-slate-500 font-medium">Sedang menyinkronkan data dengan database...</p>
+            </div>
+
+            <div className="w-full space-y-4">
+              <div className="flex justify-between items-end">
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest px-2 py-1 bg-blue-50 rounded-md">Progress Import</span>
+                <span className="text-sm font-black text-slate-900">{Math.round((importStatus.current / importStatus.total) * 100) || 0}%</span>
               </div>
-              <span className="text-xs font-bold text-blue-600">{importStatus.current} / {importStatus.total}</span>
+              
+              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                <div
+                  className="h-full bg-blue-600 transition-all duration-300 ease-out shadow-lg"
+                  style={{ width: `${(importStatus.current / importStatus.total) * 100}%` }}
+                ></div>
+              </div>
+              
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest px-1">
+                <span>{importStatus.current} Baris</span>
+                <span>{importStatus.total} Total</span>
+              </div>
             </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-600 transition-all duration-300 ease-out"
-                style={{ width: `${(importStatus.current / importStatus.total) * 100}%` }}
-              ></div>
+
+            <div className="pt-2 flex items-center gap-3">
+              <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-sm shadow-rose-500/50"></div>
+              <p className="text-[10px] text-slate-400 font-black italic uppercase tracking-widest">Jangan tutup atau refresh halaman</p>
             </div>
-            <p className="text-[10px] text-slate-400 font-medium italic text-center">Mohon jangan tutup halaman ini</p>
           </div>
         </div>
       )}
