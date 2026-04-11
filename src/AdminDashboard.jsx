@@ -20,8 +20,38 @@ function ProductModal({ product, onClose, onSave }) {
     price: '',
     stock: '',
     status: 'aktif',
-    keterangan: ''
+    keterangan: '',
+    vendorPayments: product?.vendorPayments || []
   });
+
+  const [newPayment, setNewPayment] = useState({
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+    status: 'Sudah Bayar',
+    source: 'cod',
+    amount: ''
+  });
+
+  const addVendorPayment = () => {
+    if (!newPayment.amount) return;
+    const payment = {
+      ...newPayment,
+      id: Date.now(),
+      amount: Number(newPayment.amount)
+    };
+    setFormData(prev => ({
+      ...prev,
+      vendorPayments: [...(prev.vendorPayments || []), payment]
+    }));
+    setNewPayment({ ...newPayment, amount: '' });
+  };
+
+  const removeVendorPayment = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      vendorPayments: (prev.vendorPayments || []).filter(p => p.id !== id)
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -142,8 +172,7 @@ function ProductModal({ product, onClose, onSave }) {
                       if (amount > 0) {
                         setFormData({
                           ...formData,
-                          stock: Number(formData.stock) + amount,
-                          vendorStatus: formData.tempVendorStatus || 'Belum Bayar'
+                          stock: Number(formData.stock) + amount
                         });
                         setTambahStok('');
                       }
@@ -155,28 +184,115 @@ function ProductModal({ product, onClose, onSave }) {
                 </div>
                 <p className="text-[10px] text-blue-500 font-medium italic">Angka ini akan ditambahkan ke Stok Tersedia di atas.</p>
               </div>
-
-              <div className="space-y-2">
-                <label className={UI_TEXT.label}>Status Pembayaran Vendor (Untuk Stok Baru)</label>
-                <div className="flex bg-white p-1 rounded-xl border border-blue-100 shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, tempVendorStatus: 'Belum Bayar' })}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ (formData.tempVendorStatus || 'Belum Bayar') === 'Belum Bayar' ? 'bg-amber-50 text-amber-600 shadow-sm border border-amber-100/50' : 'text-slate-400 hover:text-slate-600' }`}
-                  >
-                    Belum Bayar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, tempVendorStatus: 'Sudah Bayar' })}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${ formData.tempVendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100/50' : 'text-slate-400 hover:text-slate-600' }`}
-                  >
-                    Sudah Bayar
-                  </button>
-                </div>
-              </div>
             </div>
           )}
+
+          <div className="space-y-4 pt-6 border-t border-slate-100">
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <CreditCard size={14} /> Riwayat Pembayaran Vendor
+            </h4>
+            
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">Tahun</label>
+                  <select
+                    value={newPayment.year}
+                    onChange={(e) => setNewPayment({ ...newPayment, year: Number(e.target.value) })}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                  >
+                    {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">Bulan</label>
+                  <select
+                    value={newPayment.month}
+                    onChange={(e) => setNewPayment({ ...newPayment, month: Number(e.target.value) })}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                  >
+                    {["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"].map((m, i) => (
+                      <option key={i} value={i}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">Status</label>
+                  <select
+                    value={newPayment.status}
+                    onChange={(e) => setNewPayment({ ...newPayment, status: e.target.value })}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                  >
+                    <option value="Belum Bayar">Belum Bayar</option>
+                    <option value="Sudah Bayar">Sudah Bayar</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">Sumber</label>
+                  <select
+                    value={newPayment.source}
+                    onChange={(e) => setNewPayment({ ...newPayment, source: e.target.value })}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                  >
+                    <option value="cod">Cash</option>
+                    <option value="transfer">Transfer</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-2.5 text-slate-400 text-[10px] font-bold">Rp</span>
+                  <input
+                    type="number"
+                    value={newPayment.amount}
+                    onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+                    placeholder="Total Bayar"
+                    className="w-full p-2 pl-8 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400 font-bold"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={addVendorPayment}
+                  className="px-4 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all"
+                >
+                  Catat
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {(formData.vendorPayments || []).length === 0 ? (
+                <p className="text-center py-4 text-[10px] text-slate-400 font-medium bg-slate-50 rounded-xl border border-dashed border-slate-200">Belum ada riwayat pembayaran</p>
+              ) : (
+                <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                  {formData.vendorPayments.map(p => (
+                    <div key={p.id} className="flex justify-between items-center p-3 bg-white border border-slate-100 rounded-xl shadow-sm group hover:border-blue-200 transition-all">
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black text-slate-900">{formatIDR(p.amount)}</span>
+                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${p.status === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{p.status}</span>
+                        </div>
+                        <p className="text-[9px] text-slate-400 font-medium">
+                          {["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][p.month]} {p.year} • {p.source === 'cod' ? 'Cash' : 'Transfer'}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeVendorPayment(p.id)}
+                        className="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <div className="space-y-2">
             <label className={UI_TEXT.label}>Status Produk</label>
             <select
@@ -1346,7 +1462,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", 
 }
 
 // --- BALANCE REPORT VIEW ---
-function BalanceReport({ transactions }) {
+function BalanceReport({ transactions, products }) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   const balanceData = useMemo(() => {
@@ -1359,6 +1475,7 @@ function BalanceReport({ transactions }) {
       total: 0
     }));
 
+    // Add Revenues (Sudah Bayar)
     (transactions || []).forEach(tx => {
       if ((tx.paymentStatus || 'Sudah Bayar') !== 'Sudah Bayar') return;
 
@@ -1377,8 +1494,26 @@ function BalanceReport({ transactions }) {
       report[monthIdx].total += amount;
     });
 
+    // Subtract Vendor Payments (Sudah Bayar)
+    (products || []).forEach(p => {
+      (p.vendorPayments || []).forEach(pay => {
+        if (pay.status !== 'Sudah Bayar') return;
+        if (pay.year !== selectedYear) return;
+
+        const monthIdx = pay.month;
+        const amount = pay.amount || 0;
+
+        if (pay.source === 'transfer') {
+          report[monthIdx].transfer -= amount;
+        } else {
+          report[monthIdx].cod -= amount;
+        }
+        report[monthIdx].total -= amount;
+      });
+    });
+
     return report;
-  }, [transactions, selectedYear]);
+  }, [transactions, products, selectedYear]);
 
   const summary = useMemo(() => {
     return balanceData.reduce((acc, curr) => ({
@@ -1955,7 +2090,10 @@ export default function AdminDashboard({
           )}
 
           {adminTab === 'balance_report' && (
-            <BalanceReport transactions={transactions} />
+            <BalanceReport
+              transactions={transactions}
+              products={products}
+            />
           )}
 
           {adminTab === 'transactions' && (
