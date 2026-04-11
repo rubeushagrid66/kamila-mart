@@ -2427,14 +2427,16 @@ export default function AdminDashboard({
                     </div>
                   ))}
                 </div>
-              </div>
-              {products.length > visibleProducts && (
-                <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
-                  Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
-                </button>
-              )}
+              </>
+            )}
             </div>
-          )}
+            {products.length > visibleProducts && (
+              <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+                Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
+              </button>
+            )}
+          </div>
+        )}
 
           {adminTab === 'users' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
