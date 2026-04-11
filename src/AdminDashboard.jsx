@@ -313,7 +313,7 @@ function UserModal({ user, onClose, onSave }) {
           <div className="space-y-4 pt-4 border-t border-slate-50">
             <p className={UI_TEXT.label}>Hak Akses Modul</p>
             <div className="grid grid-cols-2 gap-3">
-              {['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'settings', 'users'].map(perm => (
+              {['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'balance_report', 'settings', 'users'].map(perm => (
                 <label key={perm} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(perm) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-100'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
                   <input
                     type="checkbox"

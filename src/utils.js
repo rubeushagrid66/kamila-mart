@@ -6,7 +6,7 @@ export const INITIAL_PRODUCTS = [
 ];
 
 export const INITIAL_USERS = [
-  { id: 1, name: 'Admin Utama', username: 'admin', password: '123', permissions: ['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'settings', 'users'] },
+  { id: 1, name: 'Admin Utama', username: 'admin', password: '123', permissions: ['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'balance_report', 'settings', 'users'] },
 ];
 
 export const INITIAL_SETTINGS = {
