@@ -1414,6 +1414,16 @@ export default function AdminDashboard({
 
       const mappedHeaders = rawHeaders.map(h => headerMap[h] || h);
 
+      // Verify required headers
+      const hasCustomer = mappedHeaders.includes('customer');
+      const hasProducts = mappedHeaders.includes('items') || mappedHeaders.includes('name_col');
+
+      if (!hasCustomer || !hasProducts) {
+        setImportStatus({ isImporting: false, current: 0, total: 0 });
+        toast.error(`Format CSV tidak sesuai. Kolom wajib tidak ditemukan: ${!hasCustomer ? '[Pelanggan] ' : ''}${!hasProducts ? '[Produk/Barang]' : ''}`, { duration: 6000 });
+        return;
+      }
+
       const parseDate = (dateStr) => {
         if (!dateStr) return new Date();
         const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
@@ -1519,6 +1529,7 @@ export default function AdminDashboard({
 
           if (transactionItems.length === 0) {
             skippedCount++;
+            skippedReasons.push(`Baris ${i + 1}: Tidak ada item pesanan yang valid found (mungkin nama produk tidak cocok)`);
             continue;
           }
 
@@ -1580,7 +1591,14 @@ export default function AdminDashboard({
 
       const successCount = totalRows - skippedCount;
       if (skippedCount > 0) {
-        toast.success(`Berhasil mengimpor ${successCount} transaksi! (${skippedCount} baris bermasalah dilewati)`, { duration: 6000 });
+        const uniqueReasons = [...new Set(skippedReasons)].slice(0, 3);
+        const reasonText = uniqueReasons.length > 0 ? `\n\nMasalah: ${uniqueReasons.join(', ')}...` : '';
+        
+        if (successCount === 0) {
+          toast.error(`Gagal mengimpor data. Seluruh ${skippedCount} baris bermasalah.${reasonText}`, { duration: 8000 });
+        } else {
+          toast.success(`Berhasil mengimpor ${successCount} transaksi.${reasonText}\n(${skippedCount} baris dilewati)`, { duration: 8000 });
+        }
       } else {
         toast.success(`Berhasil mengimpor seluruh ${successCount} transaksi!`);
       }
