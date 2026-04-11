@@ -518,7 +518,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const [tempFormula, setTempFormula] = useState({
     marbotPercent: settings?.marbotPercent || 60,
     musholaPercent: settings?.musholaPercent || 0,
-    internalPercent: settings?.internalPercent || 40
+    internalPercent: settings?.internalPercent || 40,
+    marbotSource: settings?.marbotSource || 'cod',
+    musholaSource: settings?.musholaSource || 'cod',
+    internalSource: settings?.internalSource || 'transfer'
   });
   const [applyToAll, setApplyToAll] = useState(false);
 
@@ -556,6 +559,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       const msP = savedData.musholaPercent !== undefined ? savedData.musholaPercent : (settings?.musholaPercent || 0);
       const iP = savedData.internalPercent !== undefined ? savedData.internalPercent : (settings?.internalPercent || 40);
 
+      const mS = savedData.marbotSource || (settings?.marbotSource || 'cod');
+      const msS = savedData.musholaSource || (settings?.musholaSource || 'cod');
+      const iS = savedData.internalSource || (settings?.internalSource || 'transfer');
+
       return {
         id: reportId,
         monthName,
@@ -564,6 +571,9 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         marbotPercent: mP,
         musholaPercent: msP,
         internalPercent: iP,
+        marbotSource: mS,
+        musholaSource: msS,
+        internalSource: iS,
         notes: savedData.notes || ''
       };
     });
@@ -577,11 +587,13 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
     }
 
     if (editingMonthFormula) {
-      // Per Month Override
       saveMonthlyReport(editingMonthFormula.id, {
         marbotPercent: Number(tempFormula.marbotPercent),
         musholaPercent: Number(tempFormula.musholaPercent),
-        internalPercent: Number(tempFormula.internalPercent)
+        internalPercent: Number(tempFormula.internalPercent),
+        marbotSource: tempFormula.marbotSource,
+        musholaSource: tempFormula.musholaSource,
+        internalSource: tempFormula.internalSource
       });
       setEditingMonthFormula(null);
     } else {
@@ -590,7 +602,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         ...settings,
         marbotPercent: Number(tempFormula.marbotPercent),
         musholaPercent: Number(tempFormula.musholaPercent),
-        internalPercent: Number(tempFormula.internalPercent)
+        internalPercent: Number(tempFormula.internalPercent),
+        marbotSource: tempFormula.marbotSource,
+        musholaSource: tempFormula.musholaSource,
+        internalSource: tempFormula.internalSource
       });
 
       if (applyToAll) {
@@ -601,7 +616,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
           saveMonthlyReport(mId, {
             marbotPercent: Number(tempFormula.marbotPercent),
             musholaPercent: Number(tempFormula.musholaPercent),
-            internalPercent: Number(tempFormula.internalPercent)
+            internalPercent: Number(tempFormula.internalPercent),
+            marbotSource: tempFormula.marbotSource,
+            musholaSource: tempFormula.musholaSource,
+            internalSource: tempFormula.internalSource
           });
         }
       }
@@ -613,6 +631,9 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const marbotP = settings?.marbotPercent || 60;
   const musholaP = settings?.musholaPercent || 0;
   const internalP = settings?.internalPercent || 40;
+  const marbotS = settings?.marbotSource || 'cod';
+  const musholaS = settings?.musholaSource || 'cod';
+  const internalS = settings?.internalSource || 'transfer';
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -630,7 +651,14 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
           </div>
           <button
             onClick={() => {
-              setTempFormula({ marbotPercent: marbotP, musholaPercent: musholaP, internalPercent: internalP });
+              setTempFormula({
+                marbotPercent: marbotP,
+                musholaPercent: musholaP,
+                internalPercent: internalP,
+                marbotSource: marbotS,
+                musholaSource: musholaS,
+                internalSource: internalS
+              });
               setEditingFormula(true);
             }}
             className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-bold text-xs ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all`}
@@ -664,7 +692,14 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   <td className="px-6 py-5 text-center">
                     <button
                       onClick={() => {
-                        setTempFormula({ marbotPercent: s.marbotPercent, musholaPercent: s.musholaPercent, internalPercent: s.internalPercent });
+                        setTempFormula({
+                          marbotPercent: s.marbotPercent,
+                          musholaPercent: s.musholaPercent,
+                          internalPercent: s.internalPercent,
+                          marbotSource: s.marbotSource,
+                          musholaSource: s.musholaSource,
+                          internalSource: s.internalSource
+                        });
                         setEditingMonthFormula(s);
                       }}
                       className="group flex flex-col items-center justify-center p-2 hover:bg-slate-100 rounded-lg transition-all"
@@ -702,7 +737,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Marbot (%)</span>
                   <span className="text-emerald-600">{tempFormula.marbotPercent}%</span>
@@ -713,9 +748,20 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   onChange={(e) => setTempFormula({ ...tempFormula, marbotPercent: Number(e.target.value) })}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                  <select
+                    value={tempFormula.marbotSource}
+                    onChange={(e) => setTempFormula({ ...tempFormula, marbotSource: e.target.value })}
+                    className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
+                  >
+                    <option value="cod">Bayar di Tempat (Cash)</option>
+                    <option value="transfer">Transfer</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Mushola (%)</span>
                   <span className="text-amber-600">{tempFormula.musholaPercent}%</span>
@@ -726,9 +772,20 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   onChange={(e) => setTempFormula({ ...tempFormula, musholaPercent: Number(e.target.value) })}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                  <select
+                    value={tempFormula.musholaSource}
+                    onChange={(e) => setTempFormula({ ...tempFormula, musholaSource: e.target.value })}
+                    className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
+                  >
+                    <option value="cod">Bayar di Tempat (Cash)</option>
+                    <option value="transfer">Transfer</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Internal (%)</span>
                   <span className="text-blue-600">{tempFormula.internalPercent}%</span>
@@ -739,6 +796,17 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   onChange={(e) => setTempFormula({ ...tempFormula, internalPercent: Number(e.target.value) })}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                  <select
+                    value={tempFormula.internalSource}
+                    onChange={(e) => setTempFormula({ ...tempFormula, internalSource: e.target.value })}
+                    className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
+                  >
+                    <option value="cod">Bayar di Tempat (Cash)</option>
+                    <option value="transfer">Transfer</option>
+                  </select>
+                </div>
               </div>
 
               <div className={`p-4 rounded-xl flex justify-between items-center ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-rose-50 border border-rose-100 text-rose-600' : 'bg-blue-50 border border-blue-100 text-blue-600'}`}>

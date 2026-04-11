@@ -15,9 +15,10 @@ export const INITIAL_SETTINGS = {
   bankName: 'BCA',
   bankAccountName: 'Kamila Mart Admin',
   bankAccountNumber: '1234567890',
-  marbotPercent: 60,
-  musholaPercent: 0,
-  internalPercent: 40
+  internalPercent: 40,
+  marbotSource: 'cod',
+  musholaSource: 'cod',
+  internalSource: 'transfer'
 };
 
 export const MENU_OPTIONS = [
