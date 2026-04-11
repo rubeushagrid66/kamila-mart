@@ -1721,6 +1721,24 @@ export default function AdminDashboard({
                 </div>
               </div>
 
+              {txSelectedStatus === 'Belum Bayar' && (
+                <div className="mb-6 p-6 bg-amber-50/50 border border-amber-100 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-amber-100 text-amber-600 rounded-xl shadow-sm">
+                      <DollarSign size={24} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Total Tagihan Belum Dibayar</p>
+                      <p className="text-2xl font-black text-slate-900">{formatIDR(filteredTransactions.reduce((acc, tx) => acc + (tx.total || 0), 0))}</p>
+                    </div>
+                  </div>
+                  <div className="text-right flex flex-col items-center sm:items-end">
+                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Ringkasan Pesanan</p>
+                    <p className="text-sm font-bold text-slate-600">{filteredTransactions.length} Transaksi Menunggu Pembayaran</p>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
                 <TransactionList
                   transactions={filteredTransactions.slice(0, visibleTransactions)}
