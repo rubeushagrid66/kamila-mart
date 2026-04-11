@@ -1522,15 +1522,31 @@ export default function AdminDashboard({
             continue;
           }
 
+          const lowerNote = (rawRow.notes || "").toLowerCase();
+          const lowerMethodInput = (rawRow.method || "").toLowerCase();
+          
+          // Determine method
+          let finalMethod = 'cod';
+          if (lowerMethodInput.includes('transfer') || lowerNote.includes('transfer')) {
+            finalMethod = 'transfer';
+          }
+
+          // Determine payment status
+          let finalPaymentStatus = 'Sudah Bayar';
+          if (lowerNote.includes('belum bayar')) {
+            finalPaymentStatus = 'Belum Bayar';
+          }
+
           importedTransactions.push({
             date: date.toISOString(),
             time: date.toLocaleString('id-ID'),
             customer: rawRow.customer || 'Imported Customer',
             phone: rawRow.phone || '',
-            address: rawRow.address || (rawRow.customer && rawRow.customer.includes('.') ? rawRow.customer : ''), // Fallback address to Nomor Rumah if it looks like one
+            address: rawRow.address || (rawRow.customer && rawRow.customer.includes('.') ? rawRow.customer : ''), 
             items: transactionItems,
             total: parseCurrency(rawRow.total) || transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0),
-            method: (rawRow.method || '').toLowerCase().includes('transfer') ? 'transfer' : 'cod',
+            method: finalMethod,
+            paymentStatus: finalPaymentStatus,
             notes: rawRow.notes || 'Imported from CSV'
           });
 
