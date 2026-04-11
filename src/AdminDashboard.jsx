@@ -11,6 +11,23 @@ import Footer from './Footer';
 
 // --- MODAL PRODUK ---
 function ProductModal({ product, onClose, onSave }) {
+  const [formData, setFormData] = useState(product ? {
+    ...product,
+    vendorPayments: product.vendorPayments || [],
+    keterangan: product.keterangan || '',
+    status: product.status || 'aktif'
+  } : {
+    customId: '',
+    name: '',
+    category: '',
+    cost: '',
+    price: '',
+    stock: '',
+    vendorPayments: [],
+    status: 'aktif',
+    keterangan: ''
+  });
+
   const [newPayment, setNewPayment] = useState({
     month: new Date().getMonth(),
     year: new Date().getFullYear(),
