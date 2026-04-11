@@ -26,6 +26,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy": "git add . && git commit -m 'Auto-deploy from script' && git push origin main",
     "lint": "echo 'No linter configured yet'"
   },
   "engines": {

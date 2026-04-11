@@ -33,7 +33,8 @@ function AppContent() {
     adminPhone: '',
     bankName: '',
     bankAccountName: '',
-    bankAccountNumber: ''
+    bankAccountNumber: '',
+    vercelDeployHook: ''
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);

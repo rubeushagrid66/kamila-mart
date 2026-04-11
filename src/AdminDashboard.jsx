@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, Users,
   Edit, Edit2, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
@@ -9,8 +10,51 @@ import {
 import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
 import Footer from './Footer';
 
+// --- SHARED COMPONENTS ---
+
+function TableSkeleton({ rows = 5, cols = 5 }) {
+  return (
+    <div className="space-y-6 p-8 animate-in fade-in duration-500">
+      <div className="flex justify-between items-center mb-8">
+        <div className="h-10 bg-slate-100 rounded-xl w-48 animate-pulse"></div>
+        <div className="h-10 bg-slate-100 rounded-xl w-32 animate-pulse"></div>
+      </div>
+      <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-slate-50/50 p-6 border-b border-slate-100 flex gap-4">
+          {[...Array(cols)].map((_, i) => (
+            <div key={i} className="h-4 bg-slate-200 rounded-md flex-1 animate-pulse"></div>
+          ))}
+        </div>
+        <div className="divide-y divide-slate-50">
+          {[...Array(rows)].map((_, i) => (
+            <div key={i} className="p-6 flex gap-4">
+              {[...Array(cols)].map((_, j) => (
+                <div key={j} className="h-4 bg-slate-100 rounded-md flex-1 animate-pulse"></div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GridSkeleton({ count = 3 }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-in fade-in duration-500">
+      {[...Array(count)].map((_, i) => (
+        <div key={i} className="h-32 bg-white border border-slate-100 rounded-2xl p-8 space-y-4 animate-pulse">
+          <div className="h-3 bg-slate-100 rounded w-1/2"></div>
+          <div className="h-8 bg-slate-50 rounded w-3/4"></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // --- MODAL PRODUK ---
 function ProductModal({ product, onClose, onSave }) {
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState(product ? {
     ...product,
     vendorPayments: product.vendorPayments || [],
@@ -70,20 +114,25 @@ function ProductModal({ product, onClose, onSave }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.cost || !formData.price || !formData.stock) {
       alert("Mohon lengkapi semua field!");
       return;
     }
-    onSave({
-      ...formData,
-      id: product?.id,
-      cost: Number(formData.cost),
-      price: Number(formData.price),
-      stock: Number(formData.stock),
-      keterangan: formData.keterangan || ''
-    });
+    setIsSaving(true);
+    try {
+      await onSave({
+        ...formData,
+        id: product?.id,
+        cost: Number(formData.cost),
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        keterangan: formData.keterangan || ''
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -326,9 +375,17 @@ function ProductModal({ product, onClose, onSave }) {
             </button>
             <button
               type="submit"
-              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
+              disabled={isSaving}
+              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
             >
-              Simpan Produk
+              {isSaving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                'Simpan Produk'
+              )}
             </button>
           </div>
         </form>
@@ -346,8 +403,9 @@ function UserModal({ user, onClose, onSave }) {
     permissions: ['dashboard', 'transactions', 'products', 'finance', 'settings', 'users']
   });
   const [errors, setErrors] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -360,11 +418,16 @@ function UserModal({ user, onClose, onSave }) {
       return;
     }
 
-    const dataToSave = { ...formData };
-    if (user?.id) dataToSave.id = user.id;
-    else delete dataToSave.id;
+    setIsSaving(true);
+    try {
+      const dataToSave = { ...formData };
+      if (user?.id) dataToSave.id = user.id;
+      else delete dataToSave.id;
 
-    onSave(dataToSave);
+      await onSave(dataToSave);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const togglePermission = (perm) => {
@@ -447,8 +510,19 @@ function UserModal({ user, onClose, onSave }) {
 
           <div className="pt-6 flex gap-3">
             <button type="button" onClick={onClose} className="flex-1 py-4 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-xl transition-all">Batal</button>
-            <button type="submit" className={`${UI_BUTTON.base} ${UI_BUTTON.primary} flex-[2] py-4 ${UI_RADIUS.inner}`}>
-              {user ? 'Update User' : 'Simpan User'}
+            <button
+              type="submit"
+              disabled={isSaving}
+              className={`flex-[2] py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
+            >
+              {isSaving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                user ? 'Update User' : 'Simpan User'
+              )}
             </button>
           </div>
         </form>
@@ -458,11 +532,12 @@ function UserModal({ user, onClose, onSave }) {
 }
 
 // --- FINANCE VIEW ---
-function FinanceView({ transactions, products, selectedYear, setSelectedYear }) {
+function FinanceView({ transactions, products, selectedYear, setSelectedYear, isLoading = false }) {
   const years = [2024, 2025, 2026];
   const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
   const stats = useMemo(() => {
+    if (isLoading) return [];
     return months.map((monthName, index) => {
       const monthTx = (transactions || []).filter(t => {
         const d = (t.date instanceof Date) ? t.date : new Date(t.date);
@@ -500,6 +575,15 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear }) 
     totalTx: acc.totalTx + curr.totalTx,
     itemsSold: acc.itemsSold + curr.itemsSold
   }), { profit: 0, revenue: 0, totalTx: 0, itemsSold: 0 });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <GridSkeleton count={3} />
+        <TableSkeleton rows={8} cols={6} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -630,7 +714,7 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear }) 
 }
 
 // --- PROFIT REPORT VIEW ---
-function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear, setSelectedYear }) {
+function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear, setSelectedYear, isLoading = false }) {
   const [editingMonthFormula, setEditingMonthFormula] = useState(null);
   const [editingFormula, setEditingFormula] = useState(false);
   const [tempFormula, setTempFormula] = useState({
@@ -647,6 +731,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
   const stats = useMemo(() => {
+    if (isLoading) return [];
     return months.map((monthName, index) => {
       const monthTxAll = transactions.filter(t => {
         const d = (t.date instanceof Date) ? t.date : new Date(t.date);
@@ -752,6 +837,15 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
   const marbotS = settings?.marbotSource || 'cod';
   const musholaS = settings?.musholaSource || 'cod';
   const internalS = settings?.internalSource || 'transfer';
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <GridSkeleton count={4} />
+        <TableSkeleton rows={8} cols={6} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -1226,6 +1320,8 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
     notes: ''
   });
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const [selectedProduct, setSelectedProduct] = useState('');
   const [quantity, setQuantity] = useState(1);
 
@@ -1274,18 +1370,23 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
 
   const total = formData.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.customer || !formData.phone || formData.items.length === 0) {
       alert("Mohon lengkapi data pelanggan dan item!");
       return;
     }
 
-    onSave({
-      ...formData,
-      total,
-      time: new Date(formData.date).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
-    });
+    setIsSaving(true);
+    try {
+      await onSave({
+        ...formData,
+        total,
+        time: new Date(formData.date).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -1433,9 +1534,17 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
             </button>
             <button
               type="submit"
-              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all`}
+              disabled={isSaving}
+              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
             >
-              Simpan Transaksi
+              {isSaving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                'Simpan Transaksi'
+              )}
             </button>
           </div>
         </form>
@@ -1464,7 +1573,7 @@ function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", 
 }
 
 // --- BALANCE REPORT VIEW ---
-function BalanceReport({ transactions, products }) {
+function BalanceReport({ transactions, products, isLoading = false }) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   const balanceData = useMemo(() => {
@@ -1532,6 +1641,15 @@ function BalanceReport({ transactions, products }) {
     }))].filter(Boolean).sort((a,b) => b-a);
     return uniqueYears.length > 0 ? uniqueYears : [new Date().getFullYear()];
   }, [transactions]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <GridSkeleton count={2} />
+        <TableSkeleton rows={8} cols={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -1654,6 +1772,25 @@ export default function AdminDashboard({
 
   const handleSettingsSave = () => {
     saveSettings(settings);
+  };
+
+  const handleTriggerDeploy = async () => {
+    if (!settings.vercelDeployHook) {
+      toast.error('Silakan atur Vercel Deploy Hook URL terlebih dahulu di pengaturan.');
+      return;
+    }
+    
+    const loadingToast = toast.loading('Memulai deployment ke Vercel...');
+    try {
+      const response = await fetch(settings.vercelDeployHook, { method: 'POST' });
+      if (response.ok) {
+        toast.success('Deployment berhasil dipicu! Situs akan diperbarui dalam beberapa menit.', { id: loadingToast });
+      } else {
+        throw new Error('Gagal memicu deployment');
+      }
+    } catch (error) {
+      toast.error('Gagal memicu deployment. Pastikan URL Hook benar.', { id: loadingToast });
+    }
   };
 
   // Filter menu based on permissions
@@ -2076,7 +2213,7 @@ export default function AdminDashboard({
             </div>
           )}
 
-          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} selectedYear={selectedYear} setSelectedYear={setSelectedYear} />}
+          {adminTab === 'finance' && <FinanceView transactions={transactions} products={products} selectedYear={selectedYear} setSelectedYear={setSelectedYear} isLoading={isLoading} />}
 
           {adminTab === 'profit_report' && (
             <ProfitReportView
@@ -2088,6 +2225,7 @@ export default function AdminDashboard({
               saveSettings={saveSettings}
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
+              isLoading={isLoading}
             />
           )}
 
@@ -2095,6 +2233,7 @@ export default function AdminDashboard({
             <BalanceReport
               transactions={transactions}
               products={products}
+              isLoading={isLoading}
             />
           )}
 
@@ -2194,7 +2333,11 @@ export default function AdminDashboard({
               </div>
 
               <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
-                {/* Desktop Table View */}
+                {isLoading ? (
+                  <TableSkeleton rows={8} cols={6} />
+                ) : (
+                  <>
+                    {/* Desktop Table View */}
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
@@ -2302,7 +2445,11 @@ export default function AdminDashboard({
               </div>
 
               <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
-                <div className="hidden md:block overflow-x-auto">
+                {isLoading ? (
+                  <TableSkeleton rows={5} cols={4} />
+                ) : (
+                  <>
+                    <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                       <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
@@ -2366,11 +2513,13 @@ export default function AdminDashboard({
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
-          )}
+          </div>
+        )}
 
           {adminTab === 'settings' && (
             <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${UI_SPACING.section}`}>
@@ -2466,6 +2615,46 @@ export default function AdminDashboard({
                 <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18} /></div>
+                      Auto-Deployment (Vercel)
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm shadow-emerald-500/50"></div>
+                        <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Sistem Aktif</p>
+                      </div>
+                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Setiap perubahan kode yang Anda push ke GitHub akan secara otomatis memperbarui website ini. Anda juga bisa memicu build manual menggunakan Deploy Hook.</p>
+                      
+                      <div className="space-y-4 pt-4 border-t border-slate-50">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Vercel Deploy Hook URL</label>
+                          <input
+                            type="text"
+                            value={settings.vercelDeployHook || ''}
+                            onChange={(e) => setSettings({ ...settings, vercelDeployHook: e.target.value })}
+                            placeholder="https://api.vercel.com/v1/integrations/deploy/..."
+                            className="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs font-mono outline-none focus:border-blue-300 transition-all"
+                          />
+                        </div>
+                        <button
+                          onClick={handleTriggerDeploy}
+                          className="w-full py-3 bg-slate-900 text-white font-bold text-xs rounded-xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                        >
+                          <TrendingUp size={14} /> Picu Build Manual
+                        </button>
+                      </div>
+
+                      <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Perintah Git Manual:</p>
+                        <code className="text-[10px] font-mono font-bold text-blue-600 bg-white px-2 py-1 rounded border border-slate-100 block truncate">npm run deploy</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={18} /></div>
                       Pengelolaan Data
                     </h3>
@@ -2489,7 +2678,7 @@ export default function AdminDashboard({
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
