@@ -1968,12 +1968,13 @@ export default function AdminDashboard({
       const getOrAutoCreateProduct = async (name, rowData) => {
         const lowerName = name.toLowerCase();
         const customId = rowData.custom_id || '';
+        const lowerCustomId = customId.toLowerCase();
         
-        // Match by BOTH name and customId to honor user's request for separate products
+        // Match by BOTH name and customId (case-insensitive for code) to avoid duplicates
         let product = existingProducts.find(p => 
-          p.name.toLowerCase() === lowerName && (customId === '' || p.customId === customId)
+          p.name.toLowerCase() === lowerName && (customId === '' || (p.customId && p.customId.toLowerCase() === lowerCustomId))
         ) || Array.from(newlyCreatedProducts.values()).find(p => 
-          p.name.toLowerCase() === lowerName && (customId === '' || p.customId === customId)
+          p.name.toLowerCase() === lowerName && (customId === '' || (p.customId && p.customId.toLowerCase() === lowerCustomId))
         );
         
         if (product) return product;
