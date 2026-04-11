@@ -294,12 +294,13 @@ function AppContent() {
 
       setTransactions(prev => {
         const index = prev.findIndex(t => t.id === targetId);
+        const preparedTx = { id: targetId, ...dataToSave, date: dataToSave.date instanceof Date ? dataToSave.date : new Date(dataToSave.date) };
         if (index > -1) {
           const newTx = [...prev];
-          newTx[index] = { id: targetId, ...dataToSave };
+          newTx[index] = preparedTx;
           return newTx;
         }
-        return [...prev, { id: targetId, ...dataToSave }];
+        return [preparedTx, ...prev];
       });
 
       if (!silent) {

@@ -1627,6 +1627,10 @@ export default function AdminDashboard({
       const yearMatch = txSelectedYear === 'all' || d.getFullYear() === txSelectedYear;
       const statusMatch = txSelectedStatus === 'all' || (t.paymentStatus || 'Sudah Bayar') === txSelectedStatus;
       return monthMatch && yearMatch && statusMatch;
+    }).sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB - dateA;
     });
   }, [transactions, txSelectedMonth, txSelectedYear, txSelectedStatus]);
 
