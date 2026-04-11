@@ -11,39 +11,39 @@ import Footer from './Footer';
 
 // --- MODAL PRODUK ---
 function ProductModal({ product, onClose, onSave }) {
-  const [tambahStok, setTambahStok] = useState('');
-  const [formData, setFormData] = useState(product ? { ...product, tempVendorStatus: product.vendorStatus || 'Belum Bayar' } : {
-    customId: '',
-    name: '',
-    category: '',
-    cost: '',
-    price: '',
-    stock: '',
-    status: 'aktif',
-    keterangan: '',
-    vendorPayments: product?.vendorPayments || []
-  });
-
   const [newPayment, setNewPayment] = useState({
     month: new Date().getMonth(),
     year: new Date().getFullYear(),
-    status: 'Sudah Bayar',
+    status: 'Belum Bayar',
     source: 'cod',
-    amount: ''
+    qty: '',
+    amount: 0
   });
 
+  const handleNewPaymentQtyChange = (val) => {
+    const qty = val === '' ? '' : Number(val);
+    const cost = Number(formData.cost) || 0;
+    setNewPayment({
+      ...newPayment,
+      qty,
+      amount: qty !== '' ? qty * cost : 0
+    });
+  };
+
   const addVendorPayment = () => {
-    if (!newPayment.amount) return;
+    if (!newPayment.qty || !newPayment.amount) return;
     const payment = {
       ...newPayment,
       id: Date.now(),
-      amount: Number(newPayment.amount)
+      amount: Number(newPayment.amount),
+      qty: Number(newPayment.qty)
     };
     setFormData(prev => ({
       ...prev,
+      stock: Number(prev.stock) + Number(newPayment.qty),
       vendorPayments: [...(prev.vendorPayments || []), payment]
     }));
-    setNewPayment({ ...newPayment, amount: '' });
+    setNewPayment({ ...newPayment, qty: '', amount: 0 });
   };
 
   const removeVendorPayment = (id) => {
@@ -151,141 +151,126 @@ function ProductModal({ product, onClose, onSave }) {
             />
           </div>
 
-          {product && (
-            <div className="p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-5 animate-in fade-in slide-in-from-top-4 duration-500">
-              <div className="space-y-2">
-                <label className={UI_TEXT.label}>Tambah Stok Baru</label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="number"
-                      value={tambahStok}
-                      onChange={(e) => setTambahStok(e.target.value)}
-                      placeholder="Contoh: 10"
-                      className={`w-full p-4 bg-white border border-blue-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const amount = Number(tambahStok);
-                      if (amount > 0) {
-                        setFormData({
-                          ...formData,
-                          stock: Number(formData.stock) + amount
-                        });
-                        setTambahStok('');
-                      }
-                    }}
-                    className={`px-6 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-xs hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-500/20`}
-                  >
-                    Tambah
-                  </button>
-                </div>
-                <p className="text-[10px] text-blue-500 font-medium italic">Angka ini akan ditambahkan ke Stok Tersedia di atas.</p>
-              </div>
-            </div>
-          )}
-
           <div className="space-y-4 pt-6 border-t border-slate-100">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-              <CreditCard size={14} /> Riwayat Pembayaran Vendor
+            <h4 className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2 w-fit">
+              <Plus size={14} /> Tambah Stok & Pembayaran
             </h4>
             
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase">Tahun</label>
+            <div className={`p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-6 animate-in fade-in duration-500`}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Jumlah Stok Baru</label>
+                  <input
+                    type="number"
+                    value={newPayment.qty}
+                    onChange={(e) => handleNewPaymentQtyChange(e.target.value)}
+                    placeholder="Contoh: 10"
+                    className={`w-full p-4 bg-white border border-blue-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-black text-sm text-slate-900 shadow-sm`}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Pembayaran</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
+                    <input
+                      readOnly
+                      value={newPayment.amount}
+                      className={`w-full p-4 pl-12 bg-slate-100/50 border border-slate-100 ${UI_RADIUS.inner} font-black text-sm text-slate-400 shadow-inner`}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tahun</label>
                   <select
                     value={newPayment.year}
                     onChange={(e) => setNewPayment({ ...newPayment, year: Number(e.target.value) })}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
                     {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase">Bulan</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Bulan</label>
                   <select
                     value={newPayment.month}
                     onChange={(e) => setNewPayment({ ...newPayment, month: Number(e.target.value) })}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
-                    {["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"].map((m, i) => (
+                    {["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"].map((m, i) => (
                       <option key={i} value={i}>{m}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase">Status</label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</label>
                   <select
                     value={newPayment.status}
                     onChange={(e) => setNewPayment({ ...newPayment, status: e.target.value })}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
-                    <option value="Belum Bayar">Belum Bayar</option>
-                    <option value="Sudah Bayar">Sudah Bayar</option>
+                    <option value="Belum Bayar">🔴 Belum Bayar</option>
+                    <option value="Sudah Bayar">🟢 Sudah Bayar</option>
                   </select>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase">Sumber</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sumber Dana (Jika Lunas)</label>
                   <select
                     value={newPayment.source}
                     onChange={(e) => setNewPayment({ ...newPayment, source: e.target.value })}
-                    className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400"
+                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
-                    <option value="cod">Cash</option>
-                    <option value="transfer">Transfer</option>
+                    <option value="cod">💵 Bayar di Tempat (Cash)</option>
+                    <option value="transfer">🏦 Transfer</option>
                   </select>
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-2.5 text-slate-400 text-[10px] font-bold">Rp</span>
-                  <input
-                    type="number"
-                    value={newPayment.amount}
-                    onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
-                    placeholder="Total Bayar"
-                    className="w-full p-2 pl-8 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-blue-400 font-bold"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={addVendorPayment}
-                  className="px-4 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all"
-                >
-                  Catat
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={addVendorPayment}
+                className={`w-full py-4 bg-blue-600 text-white font-black text-sm ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2`}
+              >
+                <Plus size={18} /> Tambah & Catat Transaksi
+              </button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-4">
+                <CreditCard size={14} /> Riwayat Pembayaran Vendor
+              </h4>
               {(formData.vendorPayments || []).length === 0 ? (
-                <p className="text-center py-4 text-[10px] text-slate-400 font-medium bg-slate-50 rounded-xl border border-dashed border-slate-200">Belum ada riwayat pembayaran</p>
+                <p className="text-center py-8 text-[10px] text-slate-400 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">Belum ada riwayat stock</p>
               ) : (
-                <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
-                  {formData.vendorPayments.map(p => (
-                    <div key={p.id} className="flex justify-between items-center p-3 bg-white border border-slate-100 rounded-xl shadow-sm group hover:border-blue-200 transition-all">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-black text-slate-900">{formatIDR(p.amount)}</span>
-                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${p.status === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{p.status}</span>
+                <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto pr-1">
+                  {[...(formData.vendorPayments || [])].reverse().map(p => (
+                    <div key={p.id} className="flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-blue-200 transition-all">
+                      <div>
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="text-xs font-black text-slate-900">{formatIDR(p.amount)}</span>
+                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                            {p.status}
+                          </span>
                         </div>
-                        <p className="text-[9px] text-slate-400 font-medium">
-                          {["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][p.month]} {p.year} • {p.source === 'cod' ? 'Cash' : 'Transfer'}
-                        </p>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                          <span>{p.qty} UNIT</span>
+                          <span>•</span>
+                          <span>{["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][p.month]} {p.year}</span>
+                          <span>•</span>
+                          <span>{p.source === 'cod' ? 'CASH' : 'TRANSFER'}</span>
+                        </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeVendorPayment(p.id)}
-                        className="p-1.5 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all opacity-0 group-hover:opacity-100"
+                        className="p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                       >
-                        <Trash2 size={12} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   ))}
