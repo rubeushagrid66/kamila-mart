@@ -1943,8 +1943,8 @@ export default function AdminDashboard({
       const parseCurrency = (val) => {
         if (!val) return 0;
         if (typeof val === 'number') return val;
-        // Strip Rp, dots (thousands), and whitespace
-        const clean = val.replace(/Rp/gi, '').replace(/\./g, '').trim();
+        // Strip Rp, dots (thousands), and ALL whitespace
+        const clean = val.replace(/Rp/gi, '').replace(/\./g, '').replace(/\s/g, '').trim();
         return Number(clean) || 0;
       };
 
