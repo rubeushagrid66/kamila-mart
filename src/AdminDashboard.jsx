@@ -2110,7 +2110,7 @@ export default function AdminDashboard({
             time: date.toLocaleString('id-ID'),
             customer: rawRow.customer || 'Imported Customer',
             phone: rawRow.phone || '',
-            address: rawRow.address_home || rawRow.address || '', 
+            address: rawRow.address_home || rawRow.address || rawRow.customer || '', 
             items: transactionItems,
             total: parseCurrency(rawRow.total) || transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0),
             method: finalMethod,
