@@ -1889,18 +1889,20 @@ export default function AdminDashboard({
       const rawHeaders = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
 
       const headerMap = {
-        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date', 'waktu': 'date', 'tanggal pesanan': 'date',
-        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer', 'nama pelanggan': 'customer', 'nomor rumah': 'customer',
+        'tanggal': 'date', 'date': 'date', 'tgl': 'date', 'time': 'date', 'waktu': 'date', 'tanggal pesanan': 'date', 'tanggal pesanan (dd/mm/yyyy)': 'date',
+        'pelanggan': 'customer', 'customer': 'customer', 'nama': 'customer', 'nama pelanggan': 'customer',
+        'nomor rumah': 'address_home',
         'whatsapp': 'phone', 'phone': 'phone', 'wa': 'phone', 'no': 'phone', 'telepon': 'phone', 'no hp': 'phone',
         'alamat': 'address', 'address': 'address', 'rumah': 'address',
-        'items': 'items', 'barang': 'items', 'produk': 'items', 'nama produk': 'items', 'nama barang': 'name_col', 'pesanan': 'items',
+        'items': 'items', 'barang': 'items', 'produk': 'category_col', 'nama produk': 'items', 'nama barang': 'name_col', 'pesanan': 'items',
         'jumlah': 'qty_col', 'qty': 'qty_col', 'total': 'total', 'harga': 'total', 'price': 'total', 'total harga jual': 'total',
         'metode': 'method', 'method': 'method', 'pembayaran': 'method', 'cara bayar': 'method', 'cara pembayaran': 'method',
         'catatan': 'notes', 'notes': 'notes', 'keterangan': 'notes', 'memo': 'notes',
-        'modal': 'cost_col', 'harga modal': 'cost_col', 'pokok': 'cost_col',
+        'modal': 'cost_col', 'harga modal': 'cost_col', 'pokok': 'cost_col', 'total harga modal': 'total_cost_col',
         'jual': 'price_col', 'harga jual': 'price_col',
         'kode': 'custom_id', 'kode barang': 'custom_id', 'sku': 'custom_id', 'id': 'custom_id',
-        'kategori': 'category_col', 'category': 'category_col'
+        'kategori': 'category_col', 'category': 'category_col',
+        'status': 'status_col', 'bulan': 'month_col', 'tahun': 'year_col', 'status pembayarans': 'status_col'
       };
 
       const mappedHeaders = rawHeaders.map(h => headerMap[h] || h);
@@ -1979,14 +1981,15 @@ export default function AdminDashboard({
         
         if (product) return product;
 
-        // Auto-create product
-        const cost = parseCurrency(rowData.cost_col) || 0;
-        const price = parseCurrency(rowData.price_col) || (parseCurrency(rowData.total) / (Number(rowData.qty_col) || 1)) || 0;
+        // Calculate cost/price using unit or total values
+        const qty = Number(rowData.qty_col) || 1;
+        const cost = parseCurrency(rowData.cost_col) || (rowData.total_cost_col ? (parseCurrency(rowData.total_cost_col) / qty) : 0);
+        const price = parseCurrency(rowData.price_col) || (parseCurrency(rowData.total) / qty) || 0;
         
         const newProduct = {
           name: name,
           customId: customId,
-          category: rowData.category_col || 'Imported',
+          category: (rowData.category_col && rowData.category_col.toLowerCase() !== 'no data') ? rowData.category_col : 'Umum',
           cost: cost || (price * 0.8),
           price: price,
           stock: 100, // Initial stock for imported product
@@ -2019,6 +2022,24 @@ export default function AdminDashboard({
           mappedHeaders.forEach((h, idx) => { rawRow[h] = values[idx]; });
 
           const date = parseDate(rawRow.date);
+
+          // Consistency Check for Bulan & Tahun reference (match with Tanggal Pesanan)
+          if (rawRow.month_col || rawRow.year_col) {
+            const monthsIndo = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
+            if (rawRow.month_col) {
+              const mVal = String(rawRow.month_col).toLowerCase();
+              const expectedMIdx = date.getMonth();
+              const expectedMName = monthsIndo[expectedMIdx];
+              const expectedMNum = String(expectedMIdx + 1);
+              if (mVal !== expectedMNum && !mVal.includes(expectedMName.substring(0, 3))) {
+                console.warn(`Baris ${i+1}: Bulan "${rawRow.month_col}" tidak cocok dengan tanggal ${rawRow.date}`);
+              }
+            }
+            if (rawRow.year_col && String(rawRow.year_col) !== String(date.getFullYear())) {
+              console.warn(`Baris ${i+1}: Tahun "${rawRow.year_col}" tidak cocok dengan tanggal ${rawRow.date}`);
+            }
+          }
+
           const transactionItems = [];
 
           // Support independent columns: Nama Barang + Jumlah
@@ -2065,18 +2086,23 @@ export default function AdminDashboard({
           }
 
           const lowerNote = (rawRow.notes || "").toLowerCase();
-          const lowerMethodInput = (rawRow.method || "").toLowerCase();
-          
+
           // Determine method
+          const lowerMethodInput = (rawRow.method || "").toLowerCase();
           let finalMethod = 'cod';
           if (lowerMethodInput.includes('transfer') || lowerNote.includes('transfer')) {
             finalMethod = 'transfer';
+          } else if (lowerMethodInput.includes('tempat') || lowerMethodInput.includes('cash') || lowerMethodInput.includes('tunai') || lowerMethodInput.includes('cod')) {
+            finalMethod = 'cod';
           }
 
           // Determine payment status
+          const lowerStatusInput = (rawRow.status_col || "").toLowerCase();
           let finalPaymentStatus = 'Sudah Bayar';
-          if (lowerNote.includes('belum bayar')) {
+          if (lowerStatusInput.includes('belum') || lowerNote.includes('belum bayar')) {
             finalPaymentStatus = 'Belum Bayar';
+          } else if (lowerStatusInput.includes('sudah') || lowerStatusInput.includes('lunas') || lowerStatusInput.includes('paid')) {
+            finalPaymentStatus = 'Sudah Bayar';
           }
 
           importedTransactions.push({
@@ -2084,7 +2110,7 @@ export default function AdminDashboard({
             time: date.toLocaleString('id-ID'),
             customer: rawRow.customer || 'Imported Customer',
             phone: rawRow.phone || '',
-            address: rawRow.address || '', 
+            address: rawRow.address_home || rawRow.address || '', 
             items: transactionItems,
             total: parseCurrency(rawRow.total) || transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0),
             method: finalMethod,
