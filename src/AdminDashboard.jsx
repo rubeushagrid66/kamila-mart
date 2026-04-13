@@ -1943,9 +1943,36 @@ export default function AdminDashboard({
       const parseCurrency = (val) => {
         if (!val) return 0;
         if (typeof val === 'number') return val;
-        // Strip Rp, dots (thousands), and ALL whitespace
-        const clean = val.replace(/Rp/gi, '').replace(/\./g, '').replace(/\s/g, '').trim();
-        return Number(clean) || 0;
+        let str = String(val);
+        // Strip "Rp" or "Rp " (with or without space) case-insensitively
+        str = str.replace(/Rp\s*/gi, '');
+        // Strip ALL remaining whitespace (tabs, non-breaking spaces, etc.)
+        str = str.replace(/[\s\u00A0]+/g, '');
+        // Handle comma as decimal separator (e.g., "10.000,00" -> "10000.00")
+        if (str.includes(',') && str.includes('.')) {
+          // Dots are thousands, comma is decimal: "10.000,50" -> "10000.50"
+          str = str.replace(/\./g, '').replace(',', '.');
+        } else if (str.includes('.')) {
+          // Check if dot is a thousands separator (e.g., "10.000") vs decimal (e.g., "100.50")
+          const parts = str.split('.');
+          if (parts.length === 2 && parts[1].length === 3) {
+            // Likely thousands separator: "10.000" -> "10000"
+            str = str.replace(/\./g, '');
+          }
+          // Otherwise keep dot as-is (normal decimal)
+        } else if (str.includes(',')) {
+          // Comma-only: treat as decimal (e.g., "10000,50" -> "10000.50")
+          str = str.replace(',', '.');
+        }
+        return Number(str) || 0;
+      };
+
+      const parseQty = (val) => {
+        if (!val) return 0;
+        if (typeof val === 'number') return val;
+        // Strip non-numeric except dots and commas, then parse
+        const clean = String(val).replace(/[^\d.,]/g, '').replace(',', '.');
+        return Math.round(Number(clean)) || 0;
       };
 
       const splitCSVLine = (line, delim) => {
@@ -1982,7 +2009,7 @@ export default function AdminDashboard({
         if (product) return product;
 
         // Calculate cost/price using unit or total values
-        const qty = Number(rowData.qty_col) || 1;
+        const qty = parseQty(rowData.qty_col) || 1;
         const cost = parseCurrency(rowData.cost_col) || (rowData.total_cost_col ? (parseCurrency(rowData.total_cost_col) / qty) : 0);
         const price = parseCurrency(rowData.price_col) || (parseCurrency(rowData.total) / qty) || 0;
         
@@ -2045,17 +2072,28 @@ export default function AdminDashboard({
           // Support independent columns: Nama Barang + Jumlah
           if (rawRow.name_col) {
             const name = rawRow.name_col;
-            const qty = Number(rawRow.qty_col) || 1;
+            const qty = parseQty(rawRow.qty_col) || 1;
             const product = await getOrAutoCreateProduct(name, rawRow);
 
             if (product) {
+              // Use CSV price data when available, fallback to product DB price
+              const csvTotal = parseCurrency(rawRow.total);
+              const csvUnitPrice = parseCurrency(rawRow.price_col);
+              const csvUnitCost = parseCurrency(rawRow.cost_col);
+              const csvTotalCost = parseCurrency(rawRow.total_cost_col);
+
+              // Priority: 1) explicit unit price from CSV, 2) total/qty from CSV, 3) product DB price
+              const itemPrice = csvUnitPrice || (csvTotal && qty ? Math.round(csvTotal / qty) : 0) || product.price;
+              // Priority: 1) explicit unit cost from CSV, 2) total cost/qty from CSV, 3) product DB cost
+              const itemCost = csvUnitCost || (csvTotalCost && qty ? Math.round(csvTotalCost / qty) : 0) || product.cost;
+
               transactionItems.push({
-                id: product.id || `temp-${name}`, // fallback id if save hasn't returned it yet
+                id: product.id || `temp-${name}`,
                 name: product.name,
                 qty: qty,
-                price: product.price,
-                cost: product.cost,
-                profit: (product.price - product.cost) * qty
+                price: itemPrice,
+                cost: itemCost,
+                profit: (itemPrice - itemCost) * qty
               });
             } else {
               skippedCount++;
@@ -2071,9 +2109,13 @@ export default function AdminDashboard({
               const name = (match ? match[2] : itemPart).trim();
               const product = await getOrAutoCreateProduct(name, rawRow);
               if (product) {
+                const csvUnitPrice = parseCurrency(rawRow.price_col);
+                const csvUnitCost = parseCurrency(rawRow.cost_col);
+                const finalPrice = csvUnitPrice || product.price;
+                const finalCost = csvUnitCost || product.cost;
                 transactionItems.push({
-                  id: product.id || `temp-${name}`, name: product.name, qty, price: product.price, cost: product.cost,
-                  profit: (product.price - product.cost) * qty
+                  id: product.id || `temp-${name}`, name: product.name, qty, price: finalPrice, cost: finalCost,
+                  profit: (finalPrice - finalCost) * qty
                 });
               }
             }
@@ -2105,6 +2147,10 @@ export default function AdminDashboard({
             finalPaymentStatus = 'Sudah Bayar';
           }
 
+          // Calculate total: use exact CSV total if provided, otherwise sum items (price × qty)
+          const csvTotalValue = parseCurrency(rawRow.total);
+          const calculatedTotal = transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0);
+
           importedTransactions.push({
             date: date.toISOString(),
             time: date.toLocaleString('id-ID'),
@@ -2112,7 +2158,7 @@ export default function AdminDashboard({
             phone: rawRow.phone || '',
             address: rawRow.address_home || rawRow.address || rawRow.customer || '', 
             items: transactionItems,
-            total: parseCurrency(rawRow.total) || transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0),
+            total: csvTotalValue || calculatedTotal,
             method: finalMethod,
             paymentStatus: finalPaymentStatus,
             notes: rawRow.notes || 'Imported from CSV'
