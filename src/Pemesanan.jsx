@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Truck, Minus, Plus, Send, Wallet, CreditCard, CheckCircle2, Info, Phone } from 'lucide-react';
 import { formatIDR, UI_RADIUS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
+import Footer from './Footer';
 
 export default function Pemesanan({ settings, products, cart, setCart, showSuccess, setShowSuccess, onNewTransaction }) {
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', address: '', paymentMethod: 'cod' });
@@ -235,6 +236,8 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
           </div>
         </section>
       </div>
+
+      <Footer />
 
       {/* Floating Cart Bar */}
       <div className="fixed bottom-6 left-0 right-0 px-6 max-w-xl mx-auto z-30">

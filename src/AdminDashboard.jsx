@@ -2833,6 +2833,7 @@ export default function AdminDashboard({
             </div>
           )}
         </div>
+        <Footer />
       </main>
 
       {/* Modal CRUD Produk */}
