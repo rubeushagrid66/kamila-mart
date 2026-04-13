@@ -1948,21 +1948,35 @@ export default function AdminDashboard({
         str = str.replace(/Rp\s*/gi, '');
         // Strip ALL remaining whitespace (tabs, non-breaking spaces, etc.)
         str = str.replace(/[\s\u00A0]+/g, '');
-        // Handle comma as decimal separator (e.g., "10.000,00" -> "10000.00")
+        // Handle Indonesian currency formats:
+        // Google Sheets exports: "17,000" "108,000" "120,000" (comma = thousands)
+        // Manual input:         "17.000" "108.000" "120.000" (dot = thousands)
+        // European decimal:     "10.000,50" (dot = thousands, comma = decimal)
+        
         if (str.includes(',') && str.includes('.')) {
-          // Dots are thousands, comma is decimal: "10.000,50" -> "10000.50"
+          // Both present: dots are thousands, comma is decimal: "10.000,50" -> "10000.50"
           str = str.replace(/\./g, '').replace(',', '.');
+        } else if (str.includes(',')) {
+          // Comma only: check if it's thousands separator or decimal
+          // "17,000" "108,000" -> thousands (3 digits after comma)
+          // "10000,50" -> decimal (2 digits after comma)
+          if (/,\d{3}$/.test(str)) {
+            // Comma followed by exactly 3 digits at end = thousands separator
+            str = str.replace(/,/g, '');
+          } else {
+            // Otherwise treat comma as decimal
+            str = str.replace(',', '.');
+          }
         } else if (str.includes('.')) {
-          // Check if dot is a thousands separator (e.g., "10.000") vs decimal (e.g., "100.50")
+          // Dot only: check if thousands separator
+          // "10.000" "108.000" -> thousands (3 digits after dot)
+          // "100.50" -> decimal (2 digits after dot)
           const parts = str.split('.');
-          if (parts.length === 2 && parts[1].length === 3) {
-            // Likely thousands separator: "10.000" -> "10000"
+          if (parts.length >= 2 && parts[parts.length - 1].length === 3) {
+            // Likely thousands separator: "10.000" -> "10000", "1.000.000" -> "1000000"
             str = str.replace(/\./g, '');
           }
-          // Otherwise keep dot as-is (normal decimal)
-        } else if (str.includes(',')) {
-          // Comma-only: treat as decimal (e.g., "10000,50" -> "10000.50")
-          str = str.replace(',', '.');
+          // Otherwise keep dot as-is (normal decimal like "100.50")
         }
         return Number(str) || 0;
       };
