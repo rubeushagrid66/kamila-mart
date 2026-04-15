@@ -1577,18 +1577,15 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
 
 // --- STAT CARD ---
 function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", isLoading = false }) {
+  if (isLoading) return <div className="h-32 bg-white border border-slate-100 rounded-[2rem] animate-pulse"></div>;
   return (
-    <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-white shadow-sm flex items-center gap-5 transition-all hover:shadow-md group`}>
-      <div className={`w-14 h-14 ${color} ${UI_RADIUS.inner} flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform`}>
-        <Icon size={24} />
+    <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 group hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1.5 transition-all duration-500">
+      <div className={`p-4.5 ${color} rounded-2xl group-hover:rotate-6 transition-all duration-500 shadow-sm`}>
+        <Icon size={26} strokeWidth={2.5} />
       </div>
-      <div className="min-w-0 flex-1">
-        <p className={`${UI_TEXT.label} mb-1 opacity-70`}>{label}</p>
-        {isLoading ? (
-          <div className="h-8 w-24 bg-slate-100 animate-pulse rounded-lg mt-1" />
-        ) : (
-          <p className={`text-2xl font-black tracking-tight ${val.toString().startsWith('-') ? 'text-rose-500' : 'text-slate-900'}`}>{val}</p>
-        )}
+      <div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-2.5">{label}</p>
+        <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter">{val}</p>
       </div>
     </div>
   );
@@ -1705,8 +1702,8 @@ function BalanceReport({ transactions, products, isLoading = false }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard label="Total Cash (COD)" val={formatIDR(summary.cod)} icon={CreditCard} color="bg-amber-50 text-amber-600" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard label="Total Cash (COD)" val={formatIDR(summary.cod)} icon={Wallet} color="bg-amber-50 text-amber-600" />
         <StatCard label="Total Transfer" val={formatIDR(summary.transfer)} icon={ArrowUpRight} color="bg-indigo-50 text-indigo-600" />
         <StatCard label="Hutang Vendor (Belum Bayar)" val={formatIDR(debt)} icon={EyeOff} color="bg-rose-50 text-rose-600" />
         <StatCard label="Saldo Bersih (Net)" val={formatIDR(summary.total - debt)} icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
