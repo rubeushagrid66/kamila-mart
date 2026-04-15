@@ -572,7 +572,8 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
         revenue += (tx.total || 0);
         (tx.items || []).forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
-          const cost = productInfo ? productInfo.cost : (item.price * 0.8);
+          // Prioritize historical cost stored in the transaction item
+          const cost = item.cost !== undefined ? item.cost : (productInfo ? productInfo.cost : (item.price * 0.8));
           profit += ((item.price || 0) - cost) * (item.qty || 0);
           itemsSold += (item.qty || 0);
         });
@@ -764,7 +765,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         const isUnpaid = tx.paymentStatus === 'Belum Bayar';
         tx.items.forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
-          const cost = productInfo ? productInfo.cost : (item.price * 0.8);
+          // Prioritize historical cost stored in the transaction item
+          const cost = item.cost !== undefined ? item.cost : (productInfo ? productInfo.cost : (item.price * 0.8));
           const itemProfit = (item.price - cost) * item.qty;
           if (isUnpaid) {
             unrealizedProfit += itemProfit;
@@ -2038,7 +2040,8 @@ export default function AdminDashboard({
         };
 
         try {
-          await saveProduct(newProduct);
+          const savedId = await saveProduct(newProduct);
+          newProduct.id = savedId;
           newlyCreatedProducts.set(`${lowerName}-${customId}`, newProduct);
           return newProduct;
         } catch (e) {
@@ -2168,7 +2171,7 @@ export default function AdminDashboard({
           importedTransactions.push({
             date: date.toISOString(),
             time: date.toLocaleString('id-ID'),
-            customer: rawRow.customer || 'Imported Customer',
+            customer: rawRow.customer || rawRow.address_home || 'Imported Customer',
             phone: rawRow.phone || '',
             address: rawRow.address_home || rawRow.address || rawRow.customer || '', 
             items: transactionItems,
