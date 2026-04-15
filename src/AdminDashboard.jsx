@@ -560,7 +560,7 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
     return months.map((monthName, index) => {
       const monthTx = (transactions || []).filter(t => {
         const d = (t.date instanceof Date) ? t.date : new Date(t.date);
-        const isPaid = t.paymentStatus !== 'Belum Bayar';
+        const isPaid = t.paymentStatus === 'Sudah Bayar';
         return d.getFullYear() === selectedYear && d.getMonth() === index && isPaid;
       });
 
@@ -762,16 +762,16 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
       let unrealizedProfit = 0;
 
       monthTxAll.forEach(tx => {
-        const isUnpaid = tx.paymentStatus === 'Belum Bayar';
+        const isPaid = tx.paymentStatus === 'Sudah Bayar';
         tx.items.forEach(item => {
           const productInfo = products.find(p => p.id === item.id);
           // Prioritize historical cost stored in the transaction item
           const cost = item.cost !== undefined ? item.cost : (productInfo ? productInfo.cost : (item.price * 0.8));
           const itemProfit = (item.price - cost) * item.qty;
-          if (isUnpaid) {
-            unrealizedProfit += itemProfit;
-          } else {
+          if (isPaid) {
             profit += itemProfit;
+          } else {
+            unrealizedProfit += itemProfit;
           }
         });
       });
@@ -1609,7 +1609,7 @@ function BalanceReport({ transactions, products, isLoading = false }) {
 
     // Add Revenues (Sudah Bayar)
     (transactions || []).forEach(tx => {
-      if ((tx.paymentStatus || 'Sudah Bayar') !== 'Sudah Bayar') return;
+      if (tx.paymentStatus !== 'Sudah Bayar') return;
 
       const d = tx.date instanceof Date ? tx.date : new Date(tx.date);
       if (isNaN(d.getTime())) return;
@@ -2155,13 +2155,13 @@ export default function AdminDashboard({
             finalMethod = 'cod';
           }
 
-          // Determine payment status
+          // Determine payment status - Default to 'Belum Bayar' for safety if unspecified
           const lowerStatusInput = (rawRow.status_col || "").toLowerCase();
-          let finalPaymentStatus = 'Sudah Bayar';
-          if (lowerStatusInput.includes('belum') || lowerNote.includes('belum bayar')) {
-            finalPaymentStatus = 'Belum Bayar';
-          } else if (lowerStatusInput.includes('sudah') || lowerStatusInput.includes('lunas') || lowerStatusInput.includes('paid')) {
+          let finalPaymentStatus = 'Belum Bayar';
+          if (lowerStatusInput.includes('sudah') || lowerStatusInput.includes('lunas') || lowerStatusInput.includes('paid')) {
             finalPaymentStatus = 'Sudah Bayar';
+          } else if (lowerStatusInput.includes('belum') || lowerNote.includes('belum bayar')) {
+            finalPaymentStatus = 'Belum Bayar';
           }
 
           // Calculate total: use exact CSV total if provided, otherwise sum items (price × qty)
