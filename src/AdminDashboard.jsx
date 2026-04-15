@@ -8,6 +8,7 @@ import {
   Plus, Download, FileText, Archive, EyeOff, CheckCircle2
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
 import Footer from './Footer';
 
 // --- SHARED COMPONENTS ---
@@ -1747,6 +1748,202 @@ function BalanceReport({ transactions, products, isLoading = false }) {
   );
 }
 
+// --- DASHBOARD CHARTS ---
+
+function DashboardCharts({ transactions, products }) {
+  const [range, setRange] = useState(6);
+
+  const chartData = useMemo(() => {
+    const data = [];
+    const now = new Date();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    for (let i = range - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const m = d.getMonth();
+      const y = d.getFullYear();
+
+      const monthTx = (transactions || []).filter(tx => {
+        const txD = tx.date instanceof Date ? tx.date : new Date(tx.date);
+        return txD.getMonth() === m && txD.getFullYear() === y;
+      });
+
+      let paid = 0;
+      let unpaid = 0;
+      let profit = 0;
+
+      monthTx.forEach(tx => {
+        if (tx.paymentStatus === 'Sudah Bayar') {
+          paid++;
+          (tx.items || []).forEach(item => {
+            const product = products?.find(p => p.id === item.id);
+            const cost = item.cost !== undefined ? item.cost : (product ? product.cost : (item.price * 0.8));
+            profit += (item.price - cost) * (item.qty || 0);
+          });
+        } else {
+          unpaid++;
+        }
+      });
+
+      data.push({
+        name: `${months[m]}`,
+        "Sudah Bayar": paid,
+        "Belum Bayar": unpaid,
+        profit: Math.round(profit)
+      });
+    }
+    return data;
+  }, [transactions, products, range]);
+
+  const CustomTooltip = ({ active, payload, label, mode }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 border border-slate-100 shadow-xl rounded-2xl animate-in fade-in zoom-in duration-200">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center gap-3 mb-1">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></div>
+              <p className="text-xs font-bold text-slate-700">
+                {entry.name}: <span className="text-slate-900">{mode === 'money' ? formatIDR(entry.value) : entry.value}</span>
+              </p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className={UI_TEXT.h2}>Analitik Performa</h3>
+          <p className="text-xs text-slate-500 font-medium">Tren transaksi dan pertumbuhan keuntungan</p>
+        </div>
+        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+          {[3, 6, 12].map(n => (
+            <button
+              key={n}
+              onClick={() => setRange(n)}
+              className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              {n} Bulan
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Status Comparison Chart */}
+        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">Status Pembayaran</p>
+              <h4 className="text-lg font-black text-slate-900">Perbandingan Transaksi</h4>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full shadow-sm"></div>
+                <span className="text-[10px] font-bold text-slate-400">Sudah Bayar</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-rose-500 rounded-full shadow-sm"></div>
+                <span className="text-[10px] font-bold text-slate-400">Belum Bayar</span>
+              </div>
+            </div>
+          </div>
+          <div className="h-[280px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: '700' }} 
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: '700' }} 
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line 
+                  type="monotone" 
+                  dataKey="Sudah Bayar" 
+                  stroke="#3B82F6" 
+                  strokeWidth={4} 
+                  dot={{ r: 4, fill: '#3B82F6', strokeWidth: 2, stroke: '#fff' }} 
+                  activeDot={{ r: 6, strokeWidth: 0 }} 
+                  animationDuration={1500}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Belum Bayar" 
+                  stroke="#F43F5E" 
+                  strokeWidth={4} 
+                  dot={{ r: 4, fill: '#F43F5E', strokeWidth: 2, stroke: '#fff' }} 
+                  activeDot={{ r: 6, strokeWidth: 0 }} 
+                  animationDuration={1500}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Profit Growth Chart */}
+        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Pertumbuhan Profit</p>
+              <h4 className="text-lg font-black text-slate-900">Total Profit Bersih</h4>
+            </div>
+            <div className="flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full gap-1.5 animate-pulse">
+              <TrendingUp size={12} />
+              <span className="text-[10px] font-black uppercase tracking-tight">Real-time</span>
+            </div>
+          </div>
+          <div className="h-[280px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: '700' }} 
+                  dy={10}
+                />
+                <YAxis 
+                  hide 
+                />
+                <Tooltip content={<CustomTooltip mode="money" />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="profit" 
+                  stroke="#10B981" 
+                  strokeWidth={4} 
+                  fillOpacity={1} 
+                  fill="url(#colorProfit)" 
+                  animationDuration={2000}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- MAIN ADMIN LAYOUT ---
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
@@ -2357,6 +2554,8 @@ export default function AdminDashboard({
                 <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" isLoading={isLoading} />
                 <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" isLoading={isLoading} />
               </div>
+
+              <DashboardCharts transactions={transactions} products={products} />
 
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
