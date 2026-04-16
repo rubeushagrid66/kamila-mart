@@ -28,6 +28,11 @@ function AppContent() {
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [settings, setSettings] = useState({
+    martName: 'Kamila Mart',
+    adminPhone: '',
+    bankName: '',
+    bankAccountName: '',
     bankAccountNumber: '',
     vercelDeployHook: '',
     autoDeploy: false
