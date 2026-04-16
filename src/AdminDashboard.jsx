@@ -1813,17 +1813,17 @@ function DashboardCharts({ transactions, products }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h3 className={UI_TEXT.h2}>Analitik Performa</h3>
-          <p className="text-xs text-slate-500 font-medium">Tren transaksi dan pertumbuhan keuntungan</p>
+          <p className="text-xs text-slate-500 font-medium tracking-tight">Tren transaksi dan pertumbuhan keuntungan</p>
         </div>
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <div className="flex bg-slate-100/50 p-1 rounded-xl border border-slate-200 w-full sm:w-auto overflow-x-auto">
           {[3, 6, 12].map(n => (
             <button
               key={n}
               onClick={() => setRange(n)}
-              className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
               {n} Bulan
             </button>
@@ -1833,13 +1833,13 @@ function DashboardCharts({ transactions, products }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Comparison Chart */}
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
-          <div className="flex justify-between items-start">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
               <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">Status Pembayaran</p>
-              <h4 className="text-lg font-black text-slate-900">Perbandingan Transaksi</h4>
+              <h4 className="text-lg font-black text-slate-900 leading-tight">Perbandingan Transaksi</h4>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full shadow-sm"></div>
                 <span className="text-[10px] font-bold text-slate-400">Sudah Bayar</span>
@@ -1891,13 +1891,13 @@ function DashboardCharts({ transactions, products }) {
         </div>
 
         {/* Profit Growth Chart */}
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
-          <div className="flex justify-between items-start">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
               <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Pertumbuhan Profit</p>
-              <h4 className="text-lg font-black text-slate-900">Total Profit Bersih</h4>
+              <h4 className="text-lg font-black text-slate-900 leading-tight">Total Profit Bersih</h4>
             </div>
-            <div className="flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full gap-1.5 animate-pulse">
+            <div className="flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full gap-1.5 self-start sm:self-center">
               <TrendingUp size={12} />
               <span className="text-[10px] font-black uppercase tracking-tight">Real-time</span>
             </div>
@@ -2525,12 +2525,17 @@ export default function AdminDashboard({
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
         <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex flex-col flex-1">
           <header className="mb-12">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h2 className={UI_TEXT.h2}>{MENU_OPTIONS.find(m => m.id === adminTab)?.label} {adminTab === 'dashboard' ? `(${(transactions || []).length})` : adminTab === 'transactions' ? `(${filteredTransactions.length})` : ''}</h2>
-                <p className={UI_TEXT.caption}>Manage your mart operations efficiently.</p>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <h2 className={`${UI_TEXT.h2} truncate`}>
+                  {MENU_OPTIONS.find(m => m.id === adminTab)?.label} 
+                  <span className="ml-2 text-blue-600/50">
+                    {adminTab === 'dashboard' ? `(${(transactions || []).length})` : adminTab === 'transactions' ? `(${filteredTransactions.length})` : ''}
+                  </span>
+                </h2>
+                <p className={`${UI_TEXT.caption} truncate`}>Kelola operasional mart Anda dengan efisien.</p>
               </div>
-              <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all`}><Menu size={24} /></button>
+              <button onClick={() => setMobileMenuOpen(true)} className={`p-3 bg-white ${UI_RADIUS.inner} border border-slate-200 md:hidden shadow-sm text-slate-600 active:scale-95 transition-all shrink-0`}><Menu size={24} /></button>
             </div>
           </header>
 
@@ -2545,9 +2550,9 @@ export default function AdminDashboard({
               <DashboardCharts transactions={transactions} products={products} />
 
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
-                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline">Lihat Selengkapnya</button>
+                  <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline bg-blue-50 px-3 py-1.5 rounded-lg transition-colors hover:bg-blue-100">Lihat Selengkapnya</button>
                 </div>
                 <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
                   <TransactionList
