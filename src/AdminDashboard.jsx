@@ -1946,7 +1946,7 @@ export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
   handleLogout, onCustomerView, transactions, isLoading, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions, clearAllProducts,
-  monthlyReports, saveMonthlyReport, currentUserData
+  monthlyReports, saveMonthlyReport, currentUserData, triggerDeployHook
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
   const navigate = useNavigate();
@@ -2218,10 +2218,9 @@ export default function AdminDashboard({
         
         if (product) return product;
 
-        // Calculate cost/price using unit or total values
-        const qty = parseQty(rowData.qty_col) || 1;
-        const cost = parseCurrency(rowData.cost_col) || (rowData.total_cost_col ? (parseCurrency(rowData.total_cost_col) / qty) : 0);
-        const price = parseCurrency(rowData.price_col) || (parseCurrency(rowData.total) / qty) || 0;
+        // Calculate cost/price using unit values as per instructions
+        const cost = parseCurrency(rowData.cost_col) || 0;
+        const price = parseCurrency(rowData.price_col) || 0;
         
         const newProduct = {
           name: name,
@@ -2287,16 +2286,9 @@ export default function AdminDashboard({
             const product = await getOrAutoCreateProduct(name, rawRow);
 
             if (product) {
-              // Use CSV price data when available, fallback to product DB price
-              const csvTotal = parseCurrency(rawRow.total);
-              const csvUnitPrice = parseCurrency(rawRow.price_col);
-              const csvUnitCost = parseCurrency(rawRow.cost_col);
-              const csvTotalCost = parseCurrency(rawRow.total_cost_col);
-
-              // Priority: 1) explicit unit price from CSV, 2) total/qty from CSV, 3) product DB price
-              const itemPrice = csvUnitPrice || (csvTotal && qty ? Math.round(csvTotal / qty) : 0) || product.price;
-              // Priority: 1) explicit unit cost from CSV, 2) total cost/qty from CSV, 3) product DB cost
-              const itemCost = csvUnitCost || (csvTotalCost && qty ? Math.round(csvTotalCost / qty) : 0) || product.cost;
+              // Use unit values from CSV as primary source
+              const itemPrice = parseCurrency(rawRow.price_col) || product.price;
+              const itemCost = parseCurrency(rawRow.cost_col) || product.cost;
 
               transactionItems.push({
                 id: product.id || `temp-${name}`,
@@ -2320,10 +2312,8 @@ export default function AdminDashboard({
               const name = (match ? match[2] : itemPart).trim();
               const product = await getOrAutoCreateProduct(name, rawRow);
               if (product) {
-                const csvUnitPrice = parseCurrency(rawRow.price_col);
-                const csvUnitCost = parseCurrency(rawRow.cost_col);
-                const finalPrice = csvUnitPrice || product.price;
-                const finalCost = csvUnitCost || product.cost;
+                const finalPrice = parseCurrency(rawRow.price_col) || product.price;
+                const finalCost = parseCurrency(rawRow.cost_col) || product.cost;
                 transactionItems.push({
                   id: product.id || `temp-${name}`, name: product.name, qty, price: finalPrice, cost: finalCost,
                   profit: (finalPrice - finalCost) * qty
@@ -2358,9 +2348,9 @@ export default function AdminDashboard({
             finalPaymentStatus = 'Belum Bayar';
           }
 
-          // Calculate total: use exact CSV total if provided, otherwise sum items (price × qty)
-          const csvTotalValue = parseCurrency(rawRow.total);
+          // Take Total Jual as result of (Quantity × Price) per instruction
           const calculatedTotal = transactionItems.reduce((sum, it) => sum + (it.price * it.qty), 0);
+          const sheetTotal = parseCurrency(rawRow.total);
 
           importedTransactions.push({
             date: date.toISOString(),
@@ -2369,7 +2359,7 @@ export default function AdminDashboard({
             phone: rawRow.phone || '',
             address: rawRow.address_home || rawRow.address || rawRow.customer || '', 
             items: transactionItems,
-            total: csvTotalValue || calculatedTotal,
+            total: sheetTotal || calculatedTotal, // Uses column value but falls back to multiplication
             method: finalMethod,
             paymentStatus: finalPaymentStatus,
             notes: rawRow.notes || 'Imported from CSV'
@@ -2984,9 +2974,22 @@ export default function AdminDashboard({
                     <div className="space-y-4">
                       <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm shadow-emerald-500/50"></div>
-                        <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Sistem Aktif</p>
+                        <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">{settings.vercelDeployHook ? 'Hook Terhubung' : 'Pipa Deploy Aktif'}</p>
                       </div>
-                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Setiap perubahan kode yang Anda push ke GitHub akan secara otomatis memperbarui website ini. Anda juga bisa memicu build manual menggunakan Deploy Hook.</p>
+                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Setiap perubahan kode yang Anda push ke GitHub akan secara otomatis memperbarui website ini.</p>
+                      
+                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 mt-4">
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">Auto-Deploy (Trigger Hook)</p>
+                          <p className="text-[10px] text-slate-500">Picu build Vercel otomatis jika data dashboard berubah.</p>
+                        </div>
+                        <button 
+                          onClick={() => setSettings({ ...settings, autoDeploy: !settings.autoDeploy })}
+                          className={`w-12 h-6 rounded-full transition-all relative ${settings.autoDeploy ? 'bg-blue-600' : 'bg-slate-300'}`}
+                        >
+                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.autoDeploy ? 'left-7' : 'left-1'}`}></div>
+                        </button>
+                      </div>
                       
                       <div className="space-y-4 pt-4 border-t border-slate-50">
                         <div className="space-y-1.5">

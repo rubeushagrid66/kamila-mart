@@ -28,13 +28,9 @@ function AppContent() {
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [settings, setSettings] = useState({
-    martName: 'Kamila Mart',
-    adminPhone: '',
-    bankName: '',
-    bankAccountName: '',
     bankAccountNumber: '',
-    vercelDeployHook: ''
+    vercelDeployHook: '',
+    autoDeploy: false
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -199,6 +195,7 @@ function AppContent() {
       const targetId = id || doc(collection(db, 'products')).id;
 
       await setDoc(doc(db, 'products', targetId), dataToSave, { merge: true });
+      if (settings.autoDeploy) triggerDeployHook();
 
       setProducts(prev => {
         const index = prev.findIndex(p => p.id === targetId);
@@ -341,6 +338,7 @@ function AppContent() {
       // But for massive imports, onSnapshot might be overwhelming.
 
       toast.success(`Berhasil mengimpor ${transactionsArray.length} transaksi!`);
+      if (settings.autoDeploy) triggerDeployHook();
     } catch (error) {
       console.error('Error saving transactions bulk:', error);
       toast.error('Gagal menyimpan beberapa transaksi');
@@ -437,9 +435,20 @@ function AppContent() {
       await setDoc(settingsRef, settingsData);
       setSettings(settingsData);
       toast.success('Pengaturan berhasil disimpan!');
+      if (settingsData.autoDeploy) triggerDeployHook();
     } catch (error) {
       console.error('Error saving settings:', error);
       toast.error('Gagal menyimpan pengaturan');
+    }
+  };
+
+  const triggerDeployHook = async () => {
+    if (!settings.vercelDeployHook) return;
+    try {
+      await fetch(settings.vercelDeployHook, { method: 'POST' });
+      console.log('Auto-deployment triggered via hook');
+    } catch (error) {
+      console.error('Failed to trigger auto-deployment:', error);
     }
   };
 
@@ -544,6 +553,7 @@ function AppContent() {
                 settings={settings}
                 setSettings={setSettings}
                 saveSettings={saveSettings}
+                triggerDeployHook={triggerDeployHook}
                 mobileMenuOpen={mobileMenuOpen}
                 setMobileMenuOpen={setMobileMenuOpen}
                 handleLogout={handleLogout}
