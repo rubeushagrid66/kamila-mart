@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, Users,
   Edit, Edit2, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
-  Plus, Download, FileText, Archive, EyeOff, CheckCircle2
+  Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
