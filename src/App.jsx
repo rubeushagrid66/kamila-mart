@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit, increment, writeBatch } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import Pemesanan from './Pemesanan';
 import AdminDashboard from './AdminDashboard';
 import toast, { Toaster } from 'react-hot-toast';
 function AppContent() {
+  const lastDeployRef = useRef(0);
   const [user, setUser] = useState(null);
   const [customUser, setCustomUser] = useState(() => {
     const saved = localStorage.getItem('kamila_custom_user');
@@ -35,7 +36,7 @@ function AppContent() {
     bankAccountName: '',
     bankAccountNumber: '',
     vercelDeployHook: '',
-    autoDeploy: false
+    autoDeploy: true
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -159,16 +160,37 @@ function AppContent() {
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
             const newTx = change.doc.data();
+            
+            // Play notification sound
+            try {
+              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+              audio.play().catch(e => console.log('Audio play blocked:', e));
+            } catch (err) {
+              console.warn('Sound error:', err);
+            }
+
             toast.success(`Pesanan Baru dari ${newTx.customer || 'Pelanggan'}!`, {
-              duration: 5000,
+              duration: 8000,
               icon: '🛒'
             });
 
             if (Notification.permission === "granted") {
-              new Notification("Pesanan Baru!", {
-                body: `${newTx.customer} baru saja memesan Rp ${newTx.total?.toLocaleString('id-ID')}`,
-                icon: "/favicon.ico"
+              const productNames = newTx.items?.length > 0 
+                ? (newTx.items[0].name + (newTx.items.length > 1 ? ` dan ${newTx.items.length - 1} produk lainnya` : ''))
+                : 'Produk';
+                
+              const notification = new Notification("Pesanan Baru!", {
+                body: `Pesanan baru dari ${newTx.customer || 'Pelanggan'} untuk ${productNames}`,
+                icon: "/favicon.ico",
+                tag: change.doc.id,
+                requireInteraction: true // Keep it on screen longer on supported browsers
               });
+
+              notification.onclick = () => {
+                window.focus();
+                navigate(`/dashboard/transactions?detail=${change.doc.id}`);
+                notification.close();
+              };
             }
           }
         });
@@ -294,6 +316,8 @@ function AppContent() {
         await Promise.all(stockUpdates);
         // --------------------
       }
+
+      if (settings.autoDeploy) triggerDeployHook();
 
       setTransactions(prev => {
         const index = prev.findIndex(t => t.id === targetId);
@@ -425,8 +449,7 @@ function AppContent() {
     try {
       const reportRef = doc(db, 'monthly_reports', reportId);
       await setDoc(reportRef, data, { merge: true });
-      // State will be updated by onSnapshot if we set it up, 
-      // otherwise we update manually. Let's setup onSnapshot.
+      if (settings.autoDeploy) triggerDeployHook();
     } catch (error) {
       console.error('Error saving monthly report:', error);
       toast.error('Gagal menyimpan laporan bulanan');
@@ -449,8 +472,15 @@ function AppContent() {
 
   const triggerDeployHook = async () => {
     if (!settings.vercelDeployHook) return;
+    
+    // Antispam build (cooldown 30s)
+    const now = Date.now();
+    if (now - lastDeployRef.current < 30000) return;
+    lastDeployRef.current = now;
+
     try {
       await fetch(settings.vercelDeployHook, { method: 'POST' });
+      toast.success('Website sedang diperbarui secara otomatis...', { icon: '🚀', duration: 4000 });
       console.log('Auto-deployment triggered via hook');
     } catch (error) {
       console.error('Failed to trigger auto-deployment:', error);

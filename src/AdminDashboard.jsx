@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, Users,
   Edit, Edit2, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
-  Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet
+  Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet, Bell
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
@@ -1952,7 +1952,20 @@ export default function AdminDashboard({
   const navigate = useNavigate();
   const setAdminTab = (newTab) => navigate(`/dashboard/${newTab}`);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTx, setSelectedTx] = useState(null);
+
+  // Auto-open transaction detail if "detail" param is present
+  useEffect(() => {
+    const detailId = searchParams.get('detail');
+    if (detailId && transactions?.length > 0) {
+      const tx = transactions.find(t => t.id === detailId);
+      if (tx) {
+        setSelectedTx(tx);
+        // We don't necessarily clear the param so the URL remains shareable/reloadable
+      }
+    }
+  }, [searchParams, transactions]);
   const [editingUser, setEditingUser] = useState(null);
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -2524,6 +2537,60 @@ export default function AdminDashboard({
 
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
         <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex flex-col flex-1">
+          {/* Status Notifikasi */}
+          <div className={`mb-8 p-6 ${Notification.permission === 'granted' ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100'} border rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm transition-all`}>
+            <div className="flex items-center gap-5 text-center sm:text-left flex-col sm:flex-row">
+              <div className={`p-4 bg-white ${Notification.permission === 'granted' ? 'text-emerald-600' : 'text-amber-600'} rounded-2xl shadow-sm border ${Notification.permission === 'granted' ? 'border-emerald-100' : 'border-amber-100'}`}>
+                <Bell size={24} className={Notification.permission === 'granted' ? '' : 'animate-bounce'} />
+              </div>
+              <div>
+                <h4 className={`text-sm font-black uppercase tracking-tight mb-1 ${Notification.permission === 'granted' ? 'text-emerald-900' : 'text-amber-900'}`}>
+                  Status Notifikasi: {Notification.permission === 'granted' ? 'Aktif' : 'Belum Aktif'}
+                </h4>
+                <p className={`text-xs font-medium max-w-sm ${Notification.permission === 'granted' ? 'text-emerald-700/70' : 'text-amber-700/70'}`}>
+                  {Notification.permission === 'granted' 
+                    ? 'Browser diizinkan mengirim notifikasi saat ada pesanan baru masuk.' 
+                    : 'Aktifkan agar Anda mendapatkan pemberitahuan langsung saat ada pesanan baru.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3 w-full sm:w-auto">
+              {Notification.permission !== 'granted' ? (
+                <button 
+                  onClick={() => {
+                    Notification.requestPermission().then(res => {
+                      if (res === 'granted') toast.success('Notifikasi berhasil diaktifkan!');
+                      else if (res === 'denied') toast.error('Izin notifikasi ditolak. Silakan aktifkan via pengaturan browser.');
+                      window.location.reload(); 
+                    });
+                  }}
+                  className="px-8 py-3.5 bg-amber-600 text-white text-xs font-black rounded-2xl hover:bg-amber-700 hover:shadow-lg hover:shadow-amber-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
+                >
+                  Aktifkan Sekarang
+                </button>
+              ) : (
+                <button 
+                  onClick={() => {
+                    // Test notification
+                    new Notification("Percobaan Notifikasi", {
+                      body: "Ini adalah contoh notifikasi pesanan baru. Jika Anda melihat ini, sistem bekerja dengan baik!",
+                      icon: "/favicon.ico"
+                    });
+                    // Test sound
+                    try {
+                      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                      audio.play();
+                    } catch(e) {}
+                    toast.success('Notifikasi percobaan dikirim!');
+                  }}
+                  className="px-8 py-3.5 bg-emerald-600 text-white text-xs font-black rounded-2xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
+                >
+                  Uji Coba Notifikasi
+                </button>
+              )}
+            </div>
+          </div>
+
           <header className="mb-12">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
