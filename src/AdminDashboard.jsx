@@ -4,8 +4,8 @@ import toast from 'react-hot-toast';
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Menu, LogOut, User, Users,
   Edit, Edit2, TrendingUp, CreditCard, Eye, X, Calendar, DollarSign, PieChart,
-  ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone,
-  Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet, Bell
+  ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone, MessageCircle, Send,
+  Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet, Bell, RefreshCw
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
@@ -3040,7 +3040,7 @@ export default function AdminDashboard({
                 <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
-                      <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18} /></div>
+                      <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><RefreshCw size={18} /></div>
                       Auto-Deployment (Vercel)
                     </h3>
                     <div className="space-y-4">
@@ -3048,44 +3048,67 @@ export default function AdminDashboard({
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm shadow-emerald-500/50"></div>
                         <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">{settings.vercelDeployHook ? 'Hook Terhubung' : 'Pipa Deploy Aktif'}</p>
                       </div>
-                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Setiap perubahan kode yang Anda push ke GitHub akan secara otomatis memperbarui website ini.</p>
                       
-                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 mt-4">
-                        <div>
-                          <p className="text-xs font-bold text-slate-900">Auto-Deploy (Trigger Hook)</p>
-                          <p className="text-[10px] text-slate-500">Picu build Vercel otomatis jika data dashboard berubah.</p>
+                      <div className="space-y-3 pt-2">
+                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                          <div>
+                            <p className="text-xs font-bold text-slate-900">Auto-Deploy (Trigger Hook)</p>
+                            <p className="text-[10px] text-slate-500">Picu build Vercel otomatis jika data dashboard berubah.</p>
+                          </div>
+                          <button 
+                            onClick={() => setSettings({ ...settings, autoDeploy: !settings.autoDeploy })}
+                            className={`w-12 h-6 rounded-full transition-all relative ${settings.autoDeploy ? 'bg-blue-600' : 'bg-slate-300'}`}
+                          >
+                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.autoDeploy ? 'left-7' : 'left-1'}`}></div>
+                          </button>
                         </div>
-                        <button 
-                          onClick={() => setSettings({ ...settings, autoDeploy: !settings.autoDeploy })}
-                          className={`w-12 h-6 rounded-full transition-all relative ${settings.autoDeploy ? 'bg-blue-600' : 'bg-slate-300'}`}
-                        >
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.autoDeploy ? 'left-7' : 'left-1'}`}></div>
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-4 pt-4 border-t border-slate-50">
+                        
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Vercel Deploy Hook URL</label>
+                          <label className={UI_TEXT.label}>Vercel Deploy Hook URL</label>
                           <input
-                            type="text"
+                            placeholder="https://api.vercel.com/v1/integrations/deploy/..."
                             value={settings.vercelDeployHook || ''}
                             onChange={(e) => setSettings({ ...settings, vercelDeployHook: e.target.value })}
-                            placeholder="https://api.vercel.com/v1/integrations/deploy/..."
-                            className="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs font-mono outline-none focus:border-blue-300 transition-all"
+                            className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm font-mono`}
                           />
                         </div>
-                        <button
-                          onClick={handleTriggerDeploy}
-                          className="w-full py-3 bg-slate-900 text-white font-bold text-xs rounded-xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
-                        >
-                          <TrendingUp size={14} /> Picu Build Manual
-                        </button>
                       </div>
 
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Perintah Git Manual:</p>
                         <code className="text-[10px] font-mono font-bold text-blue-600 bg-white px-2 py-1 rounded border border-slate-100 block truncate">npm run deploy</code>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><MessageCircle size={18} /></div>
+                      Notifikasi Telegram (Bot)
+                    </h3>
+                    <div className="space-y-5">
+                      <div className="space-y-1.5">
+                        <label className={UI_TEXT.label}>Telegram Bot Token</label>
+                        <input
+                          type="password"
+                          placeholder="Contoh: 123456789:ABCdef..."
+                          value={settings.telegramBotToken || ''}
+                          onChange={(e) => setSettings({ ...settings, telegramBotToken: e.target.value })}
+                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI_TEXT.label}>Telegram Chat ID (Admin)</label>
+                        <input
+                          placeholder="Contoh: 987654321"
+                          value={settings.telegramChatId || ''}
+                          onChange={(e) => setSettings({ ...settings, telegramChatId: e.target.value })}
+                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Buka <a href="https://t.me/botfather" target="_blank" className="text-blue-600 underline">@BotFather</a> untuk membuat bot dan <a href="https://t.me/userinfobot" target="_blank" className="text-blue-600 underline">@userinfobot</a> untuk mendapatkan Chat ID Anda.</p>
                     </div>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import Login from './Login';
 import Pemesanan from './Pemesanan';
 import AdminDashboard from './AdminDashboard';
 import toast, { Toaster } from 'react-hot-toast';
+import { formatIDR } from './utils';
 function AppContent() {
   const lastDeployRef = useRef(0);
   const [user, setUser] = useState(null);
@@ -303,18 +304,45 @@ function AppContent() {
 
       await setDoc(doc(db, 'transactions', targetId), dataToSave, { merge: true });
 
-      if (isNew && !skipStockUpdate) {
-        // --- REDUCE STOCK ---
-        const stockUpdates = (dataToSave.items || []).map(async (item) => {
-          if (item.id) {
-            const productRef = doc(db, 'products', item.id.toString());
-            await updateDoc(productRef, {
-              stock: increment(-item.qty)
-            });
-          }
-        });
-        await Promise.all(stockUpdates);
-        // --------------------
+      if (isNew) {
+        // --- SEND TELEGRAM NOTIFICATION ---
+        if (settings.telegramBotToken && settings.telegramChatId) {
+          const itemsText = (dataToSave.items || []).map(it => `${it.name} (${it.qty})`).join(', ');
+          const totalAmount = formatIDR(dataToSave.total);
+          const detailLink = `${window.location.origin}/dashboard/transactions?detail=${targetId}`;
+          
+          const message = `<b>Ada pesanan baru!</b>\n\n` +
+            `📦 <b>Produk:</b> ${itemsText}\n` +
+            `👤 <b>Pelanggan:</b> ${dataToSave.customer}\n` +
+            `💳 <b>Metode:</b> ${String(dataToSave.method).toUpperCase()}\n` +
+            `💰 <b>Total:</b> ${totalAmount}\n\n` +
+            `<a href="${detailLink}">Klik di sini untuk detail pesanan</a>`;
+
+          fetch(`https://api.telegram.org/bot${settings.telegramBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: settings.telegramChatId,
+              text: message,
+              parse_mode: 'HTML'
+            })
+          }).catch(e => console.error('Telegram error:', e));
+        }
+        // ------------------------------------
+
+        if (!skipStockUpdate) {
+          // --- REDUCE STOCK ---
+          const stockUpdates = (dataToSave.items || []).map(async (item) => {
+            if (item.id) {
+              const productRef = doc(db, 'products', item.id.toString());
+              await updateDoc(productRef, {
+                stock: increment(-item.qty)
+              });
+            }
+          });
+          await Promise.all(stockUpdates);
+          // --------------------
+        }
       }
 
       if (settings.autoDeploy) triggerDeployHook();
