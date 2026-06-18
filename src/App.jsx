@@ -70,7 +70,7 @@ function AppContent() {
       try {
         // Detect if mobile for longer timeout
         const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-        const timeout = isMobile ? 12000 : 8000;
+        const timeout = isMobile ? 15000 : 8000; // Increased to 15s for very slow connections
         
         const productsSnap = await fetchWithTimeout(collection(db, 'products'), timeout);
         if (mounted) setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -89,6 +89,7 @@ function AppContent() {
 
     const init = async () => {
       setLoading(true);
+      console.log('[App] Initializing...');
 
       // Request notification permission
       if ("Notification" in window && Notification.permission === "default") {
@@ -107,6 +108,7 @@ function AppContent() {
 
       // Setup Auth Listener
       unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        console.log('[App] Auth state changed:', currentUser?.email || 'not logged in');
         if (currentUser) {
           if (mounted) {
             setUser(currentUser);
@@ -118,7 +120,10 @@ function AppContent() {
             setIsFirstLoad(true);
           }
         }
-        if (mounted) setLoading(false);
+        if (mounted) {
+          console.log('[App] Setting loading to false');
+          setLoading(false);
+        }
       });
     };
 
@@ -128,7 +133,7 @@ function AppContent() {
       mounted = false;
       unsubscribe();
     };
-  }, [customUser]); // Added customUser dependency to properly handle logout/fallback state
+  }, [customUser]);
 
   // DATA SYNC EFFECT: Setup real-time listeners whenever a user is logged in
   useEffect(() => {
@@ -138,6 +143,7 @@ function AppContent() {
       return;
     }
 
+    console.log('[App] Setting up data listeners for user:', user.email);
     let mounted = true;
 
     // --- Setup real-time listener for transactions ---
@@ -188,7 +194,7 @@ function AppContent() {
                 body: `Pesanan baru dari ${newTx.customer || 'Pelanggan'} untuk ${productNames}`,
                 icon: "/favicon.ico",
                 tag: change.doc.id,
-                requireInteraction: true // Keep it on screen longer on supported browsers
+                requireInteraction: true
               });
 
               notification.onclick = () => {
@@ -382,21 +388,12 @@ function AppContent() {
 
         chunk.forEach(tx => {
           const { id, ...dataToSave } = tx;
-          // Note: we assume IDs are already generated or provided for bulk imports to ensure idempotency if needed
           const docRef = id ? doc(db, 'transactions', id.toString()) : doc(collection(db, 'transactions'));
           batch.set(docRef, dataToSave, { merge: true });
         });
 
         await batch.commit();
       }
-
-      // 2. (Optional) Bulk stock update if needed, but for historical data we usually skip
-      // In this app, we skip stock update for bulk imports as per implementation plan
-
-      // 3. Update global state once at the end (the listener will also pick it up, 
-      // but manual update ensures immediate UI sync if listener is slow)
-      // Actually, since we have onSnapshot, it will trigger anyway.
-      // But for massive imports, onSnapshot might be overwhelming.
 
       toast.success(`Berhasil mengimpor ${transactionsArray.length} transaksi!`);
       if (settings.autoDeploy) triggerDeployHook();
@@ -527,31 +524,33 @@ function AppContent() {
     const password = fd.get('password');
 
     let email = usernameInput;
-    // Add domain if they only typed username (since Firebase requires email)
     if (email && !email.includes('@')) {
       email = `${email}@kamilamart.com`;
     }
 
     try {
-      // 1. Try Firebase Auth first
+      console.log('[App] Attempting Firebase login...');
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Login berhasil (Firebase)!');
       setCustomUser(null);
-      setMobileMenuOpen(false); // Close mobile menu before redirect
+      setMobileMenuOpen(false);
+      console.log('[App] Firebase login successful, navigating to dashboard');
       navigate('/dashboard/dashboard');
     } catch (firebaseError) {
       console.warn('Firebase login failed, trying Firestore fallback...', firebaseError.code);
 
-      // 2. Fallback to Firestore users collection
+      // Fallback to Firestore users collection
       const foundUser = users.find(u => u.username === usernameInput && u.password === password);
 
       if (foundUser) {
+        console.log('[App] Firestore fallback successful');
         setCustomUser(foundUser);
-        setUser({ email: `${foundUser.username}@kamilamart.com` }); // Mock user object for routing
-        setMobileMenuOpen(false); // Close mobile menu before redirect
+        setUser({ email: `${foundUser.username}@kamilamart.com` });
+        setMobileMenuOpen(false);
         toast.success(`Login berhasil sebagai ${foundUser.name} !`);
         navigate('/dashboard/dashboard');
       } else {
+        console.error('[App] Login failed - invalid credentials');
         toast.error('Gagal login: Username atau Password salah');
       }
     }
@@ -563,7 +562,7 @@ function AppContent() {
       setUser(null);
       setCustomUser(null);
       setAdminTab('dashboard');
-      setMobileMenuOpen(false); // Close mobile menu on logout
+      setMobileMenuOpen(false);
       toast.success('Logout berhasil!');
       navigate('/');
     } catch (error) {
@@ -578,6 +577,7 @@ function AppContent() {
   };
 
   if (loading) {
+    console.log('[App] Loading state: true - showing loading screen');
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
         <div className="text-center">
