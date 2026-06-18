@@ -68,10 +68,14 @@ function AppContent() {
 
     const loadPublicData = async () => {
       try {
-        const productsSnap = await fetchWithTimeout(collection(db, 'products'));
+        // Detect if mobile for longer timeout
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        const timeout = isMobile ? 12000 : 8000;
+        
+        const productsSnap = await fetchWithTimeout(collection(db, 'products'), timeout);
         if (mounted) setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
-        const settingsSnap = await fetchWithTimeout(collection(db, 'settings'));
+        const settingsSnap = await fetchWithTimeout(collection(db, 'settings'), timeout);
         if (mounted && settingsSnap.docs.length > 0) {
           setSettings(settingsSnap.docs[0].data());
         }
@@ -533,7 +537,8 @@ function AppContent() {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Login berhasil (Firebase)!');
       setCustomUser(null);
-      navigate('/dashboard');
+      setMobileMenuOpen(false); // Close mobile menu before redirect
+      navigate('/dashboard/dashboard');
     } catch (firebaseError) {
       console.warn('Firebase login failed, trying Firestore fallback...', firebaseError.code);
 
@@ -543,8 +548,9 @@ function AppContent() {
       if (foundUser) {
         setCustomUser(foundUser);
         setUser({ email: `${foundUser.username}@kamilamart.com` }); // Mock user object for routing
+        setMobileMenuOpen(false); // Close mobile menu before redirect
         toast.success(`Login berhasil sebagai ${foundUser.name} !`);
-        navigate('/dashboard');
+        navigate('/dashboard/dashboard');
       } else {
         toast.error('Gagal login: Username atau Password salah');
       }
@@ -557,6 +563,7 @@ function AppContent() {
       setUser(null);
       setCustomUser(null);
       setAdminTab('dashboard');
+      setMobileMenuOpen(false); // Close mobile menu on logout
       toast.success('Logout berhasil!');
       navigate('/');
     } catch (error) {
@@ -598,7 +605,7 @@ function AppContent() {
         <Route
           path="/login"
           element={
-            user ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} onBack={() => navigate('/')} />
+            user ? <Navigate to="/dashboard/dashboard" replace /> : <Login onLogin={handleLogin} onBack={() => navigate('/')} />
           }
         />
         <Route
