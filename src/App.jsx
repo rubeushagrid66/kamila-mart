@@ -185,7 +185,7 @@ function AppContent() {
               icon: '🛒'
             });
 
-            if (Notification.permission === "granted") {
+            if ("Notification" in window && Notification.permission === "granted") {
               const productNames = newTx.items?.length > 0 
                 ? (newTx.items[0].name + (newTx.items.length > 1 ? ` dan ${newTx.items.length - 1} produk lainnya` : ''))
                 : 'Produk';

@@ -1954,6 +1954,23 @@ export default function AdminDashboard({
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTx, setSelectedTx] = useState(null);
+  const [isBannerVisible, setIsBannerVisible] = useState(true);
+
+  useEffect(() => {
+    const hiddenUntil = localStorage.getItem('hideNotificationBannerUntil');
+    if (hiddenUntil && new Date().getTime() < parseInt(hiddenUntil, 10)) {
+      setIsBannerVisible(false);
+    }
+  }, []);
+
+  const handleCloseBanner = () => {
+    const hideUntil = new Date().getTime() + (24 * 60 * 60 * 1000); // 24 hours
+    localStorage.setItem('hideNotificationBannerUntil', hideUntil.toString());
+    setIsBannerVisible(false);
+  };
+
+  const isNotificationSupported = typeof window !== 'undefined' && 'Notification' in window;
+  const notificationPermission = isNotificationSupported ? Notification.permission : 'denied';
 
   // Auto-open transaction detail if "detail" param is present
   useEffect(() => {
@@ -2538,58 +2555,66 @@ export default function AdminDashboard({
       <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
         <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex flex-col flex-1">
           {/* Status Notifikasi */}
-          <div className={`mb-8 p-6 ${Notification.permission === 'granted' ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100'} border rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm transition-all`}>
-            <div className="flex items-center gap-5 text-center sm:text-left flex-col sm:flex-row">
-              <div className={`p-4 bg-white ${Notification.permission === 'granted' ? 'text-emerald-600' : 'text-amber-600'} rounded-2xl shadow-sm border ${Notification.permission === 'granted' ? 'border-emerald-100' : 'border-amber-100'}`}>
-                <Bell size={24} className={Notification.permission === 'granted' ? '' : 'animate-bounce'} />
+          {isBannerVisible && isNotificationSupported && (
+            <div className={`mb-8 p-6 ${notificationPermission === 'granted' ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100'} border rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm transition-all relative`}>
+              <button 
+                onClick={handleCloseBanner}
+                className={`absolute top-4 right-4 p-1.5 rounded-full transition-colors ${notificationPermission === 'granted' ? 'text-emerald-400 hover:bg-emerald-100 hover:text-emerald-600' : 'text-amber-400 hover:bg-amber-100 hover:text-amber-600'}`}
+              >
+                <X size={18} />
+              </button>
+              <div className="flex items-center gap-5 text-center sm:text-left flex-col sm:flex-row">
+                <div className={`p-4 bg-white ${notificationPermission === 'granted' ? 'text-emerald-600' : 'text-amber-600'} rounded-2xl shadow-sm border ${notificationPermission === 'granted' ? 'border-emerald-100' : 'border-amber-100'}`}>
+                  <Bell size={24} className={notificationPermission === 'granted' ? '' : 'animate-bounce'} />
+                </div>
+                <div>
+                  <h4 className={`text-sm font-black uppercase tracking-tight mb-1 pr-6 ${notificationPermission === 'granted' ? 'text-emerald-900' : 'text-amber-900'}`}>
+                    Status Notifikasi: {notificationPermission === 'granted' ? 'Aktif' : 'Belum Aktif'}
+                  </h4>
+                  <p className={`text-xs font-medium max-w-sm ${notificationPermission === 'granted' ? 'text-emerald-700/70' : 'text-amber-700/70'}`}>
+                    {notificationPermission === 'granted' 
+                      ? 'Browser diizinkan mengirim notifikasi saat ada pesanan baru masuk.' 
+                      : 'Aktifkan agar Anda mendapatkan pemberitahuan langsung saat ada pesanan baru.'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className={`text-sm font-black uppercase tracking-tight mb-1 ${Notification.permission === 'granted' ? 'text-emerald-900' : 'text-amber-900'}`}>
-                  Status Notifikasi: {Notification.permission === 'granted' ? 'Aktif' : 'Belum Aktif'}
-                </h4>
-                <p className={`text-xs font-medium max-w-sm ${Notification.permission === 'granted' ? 'text-emerald-700/70' : 'text-amber-700/70'}`}>
-                  {Notification.permission === 'granted' 
-                    ? 'Browser diizinkan mengirim notifikasi saat ada pesanan baru masuk.' 
-                    : 'Aktifkan agar Anda mendapatkan pemberitahuan langsung saat ada pesanan baru.'}
-                </p>
+              <div className="flex gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                {notificationPermission !== 'granted' ? (
+                  <button 
+                    onClick={() => {
+                      Notification.requestPermission().then(res => {
+                        if (res === 'granted') toast.success('Notifikasi berhasil diaktifkan!');
+                        else if (res === 'denied') toast.error('Izin notifikasi ditolak. Silakan aktifkan via pengaturan browser.');
+                        window.location.reload(); 
+                      });
+                    }}
+                    className="px-8 py-3.5 bg-amber-600 text-white text-xs font-black rounded-2xl hover:bg-amber-700 hover:shadow-lg hover:shadow-amber-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
+                  >
+                    Aktifkan Sekarang
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => {
+                      // Test notification
+                      new Notification("Percobaan Notifikasi", {
+                        body: "Ini adalah contoh notifikasi pesanan baru. Jika Anda melihat ini, sistem bekerja dengan baik!",
+                        icon: "/favicon.ico"
+                      });
+                      // Test sound
+                      try {
+                        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                        audio.play();
+                      } catch(e) {}
+                      toast.success('Notifikasi percobaan dikirim!');
+                    }}
+                    className="px-8 py-3.5 bg-emerald-600 text-white text-xs font-black rounded-2xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
+                  >
+                    Uji Coba Notifikasi
+                  </button>
+                )}
               </div>
             </div>
-            <div className="flex gap-3 w-full sm:w-auto">
-              {Notification.permission !== 'granted' ? (
-                <button 
-                  onClick={() => {
-                    Notification.requestPermission().then(res => {
-                      if (res === 'granted') toast.success('Notifikasi berhasil diaktifkan!');
-                      else if (res === 'denied') toast.error('Izin notifikasi ditolak. Silakan aktifkan via pengaturan browser.');
-                      window.location.reload(); 
-                    });
-                  }}
-                  className="px-8 py-3.5 bg-amber-600 text-white text-xs font-black rounded-2xl hover:bg-amber-700 hover:shadow-lg hover:shadow-amber-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
-                >
-                  Aktifkan Sekarang
-                </button>
-              ) : (
-                <button 
-                  onClick={() => {
-                    // Test notification
-                    new Notification("Percobaan Notifikasi", {
-                      body: "Ini adalah contoh notifikasi pesanan baru. Jika Anda melihat ini, sistem bekerja dengan baik!",
-                      icon: "/favicon.ico"
-                    });
-                    // Test sound
-                    try {
-                      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-                      audio.play();
-                    } catch(e) {}
-                    toast.success('Notifikasi percobaan dikirim!');
-                  }}
-                  className="px-8 py-3.5 bg-emerald-600 text-white text-xs font-black rounded-2xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
-                >
-                  Uji Coba Notifikasi
-                </button>
-              )}
-            </div>
-          </div>
+          )}
 
           <header className="mb-12">
             <div className="flex items-start justify-between gap-4">
