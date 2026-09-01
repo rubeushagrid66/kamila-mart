@@ -2056,6 +2056,23 @@ export default function AdminDashboard({
     currentUserData?.permissions?.includes(m.id) || m.id === 'dashboard'
   );
 
+  // Merge the logged-in account (Firebase Auth) into the user list so it is always visible.
+  // Auth accounts have no document in the "users" collection, so we synthesize a read-only row.
+  const allUsers = useMemo(() => {
+    const list = [...(users || [])];
+    const cu = currentUserData;
+    if (cu?.username && !list.some(u => u.username === cu.username)) {
+      list.unshift({
+        id: `__auth_${cu.username}`,
+        name: cu.name || cu.username,
+        username: cu.username,
+        permissions: cu.permissions || [],
+        isAuthAccount: true,
+      });
+    }
+    return list;
+  }, [users, currentUserData]);
+
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -2636,7 +2653,7 @@ export default function AdminDashboard({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <StatCard label="Total Transaksi" val={(transactions || []).length} icon={ShoppingCart} isLoading={isLoading} />
                 <StatCard label="Total Produk" val={(products || []).length} icon={Package} color="bg-emerald-50 text-emerald-600" isLoading={isLoading} />
-                <StatCard label="Total User" val={(users || []).length} icon={Users} color="bg-amber-50 text-amber-600" isLoading={isLoading} />
+                <StatCard label="Total User" val={allUsers.length} icon={Users} color="bg-amber-50 text-amber-600" isLoading={isLoading} />
               </div>
 
               <DashboardCharts transactions={transactions} products={products} />
@@ -2911,23 +2928,34 @@ export default function AdminDashboard({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
-                      {users.map((u, idx) => (
+                      {allUsers.map((u, idx) => (
                         <tr key={u.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
                           <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
-                          <td className="py-4 px-6 font-bold text-slate-900">{u.name}</td>
+                          <td className="py-4 px-6 font-bold text-slate-900">
+                            <div className="flex items-center gap-2">
+                              {u.name}
+                              {u.isAuthAccount && (
+                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase tracking-tighter">Akun Login</span>
+                              )}
+                            </div>
+                          </td>
                           <td className="py-4 px-6 font-mono text-[11px] text-slate-500">@{u.username}</td>
                           <td className="py-4 px-6">
                             <div className="flex flex-wrap gap-1">
-                              {u.permissions.map(p => (
+                              {(u.permissions || []).map(p => (
                                 <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
                               ))}
                             </div>
                           </td>
                           <td className="py-4 px-6 text-center">
-                            <div className="flex justify-center gap-2">
-                              <button onClick={() => setEditingUser(u)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
-                              <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
-                            </div>
+                            {u.isAuthAccount ? (
+                              <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Akun Sistem</span>
+                            ) : (
+                              <div className="flex justify-center gap-2">
+                                <button onClick={() => setEditingUser(u)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
+                                <button onClick={() => handleDeleteUser(u.id)} className="p-2 text-slate-300 hover:text-rose-600 hover:bg-white rounded-lg transition-all"><Trash2 size={16} /></button>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -2937,7 +2965,7 @@ export default function AdminDashboard({
 
                 {/* Mobile Card View */}
                 <div className="md:hidden divide-y divide-slate-50">
-                  {users.map(u => (
+                  {allUsers.map(u => (
                     <div key={u.id} className="p-5 flex flex-col gap-4">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
@@ -2945,19 +2973,28 @@ export default function AdminDashboard({
                             <Users size={18} />
                           </div>
                           <div>
-                            <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{u.name}</h3>
+                            <h3 className="font-extrabold text-slate-900 text-sm leading-tight flex items-center gap-2">
+                              {u.name}
+                              {u.isAuthAccount && (
+                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase tracking-tighter">Akun Login</span>
+                              )}
+                            </h3>
                             <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
                           </div>
                         </div>
-                        <div className="flex gap-1">
-                          <button onClick={() => setEditingUser(u)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
-                          <button onClick={() => handleDeleteUser(u.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
-                        </div>
+                        {u.isAuthAccount ? (
+                          <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest pt-1">Akun Sistem</span>
+                        ) : (
+                          <div className="flex gap-1">
+                            <button onClick={() => setEditingUser(u)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
+                            <button onClick={() => handleDeleteUser(u.id)} className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={16} /></button>
+                          </div>
+                        )}
                       </div>
                       <div className="space-y-2 pt-4 border-t border-slate-50">
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
                         <div className="flex flex-wrap gap-1">
-                          {u.permissions.map(p => (
+                          {(u.permissions || []).map(p => (
                             <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
                           ))}
                         </div>
