@@ -1595,17 +1595,15 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
 }
 
 // --- STAT CARD ---
-function StatCard({ label, val, icon: Icon, color = "bg-blue-50 text-blue-600", isLoading = false }) {
-  if (isLoading) return <div className="h-32 bg-white border border-slate-100 rounded-[2rem] animate-pulse"></div>;
+function StatCard({ label, val, icon: Icon, color = "text-blue-600", isLoading = false }) {
+  if (isLoading) return <div className="h-28 bg-white border border-slate-200 rounded-2xl animate-pulse"></div>;
   return (
-    <div className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 group hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1.5 transition-all duration-500">
-      <div className={`p-4.5 ${color} rounded-2xl group-hover:rotate-6 transition-all duration-500 shadow-sm`}>
-        <Icon size={26} strokeWidth={2.5} />
+    <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 flex flex-col gap-2.5">
+      <div className="flex items-center gap-2">
+        {Icon && <Icon size={15} strokeWidth={2} className="text-slate-400" />}
+        <p className="text-xs font-medium text-slate-600">{label}</p>
       </div>
-      <div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-2.5">{label}</p>
-        <p className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter">{val}</p>
-      </div>
+      <p className="text-2xl font-semibold text-slate-900 tracking-tight tabular-nums">{val}</p>
     </div>
   );
 }

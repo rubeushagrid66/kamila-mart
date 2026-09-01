@@ -579,7 +579,7 @@ function AppContent() {
   if (loading) {
     console.log('[App] Loading state: true - showing loading screen');
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600 font-medium">Memuat data...</p>
@@ -589,7 +589,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
       <Toaster position="top-center" />
       <Routes>
         <Route
