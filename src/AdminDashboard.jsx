@@ -1870,35 +1870,35 @@ function DashboardCharts({ transactions, products }) {
           <div className="h-[280px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAECF1" />
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: '700' }} 
+                  tick={{ fill: '#5B6472', fontSize: 11, fontWeight: '600' }} 
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: '700' }} 
+                  tick={{ fill: '#5B6472', fontSize: 11, fontWeight: '600' }} 
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="Sudah Bayar" 
-                  stroke="#3B82F6" 
+                  stroke="#2A4B8D" 
                   strokeWidth={4} 
-                  dot={{ r: 4, fill: '#3B82F6', strokeWidth: 2, stroke: '#fff' }} 
+                  dot={{ r: 4, fill: '#2A4B8D', strokeWidth: 2, stroke: '#fff' }} 
                   activeDot={{ r: 6, strokeWidth: 0 }} 
                   animationDuration={1500}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="Belum Bayar" 
-                  stroke="#F43F5E" 
+                  stroke="#B43B31" 
                   strokeWidth={4} 
-                  dot={{ r: 4, fill: '#F43F5E', strokeWidth: 2, stroke: '#fff' }} 
+                  dot={{ r: 4, fill: '#B43B31', strokeWidth: 2, stroke: '#fff' }} 
                   activeDot={{ r: 6, strokeWidth: 0 }} 
                   animationDuration={1500}
                 />
@@ -1924,16 +1924,16 @@ function DashboardCharts({ transactions, products }) {
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#1F7A54" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#1F7A54" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAECF1" />
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: '700' }} 
+                  tick={{ fill: '#5B6472', fontSize: 11, fontWeight: '600' }} 
                   dy={10}
                 />
                 <YAxis 
@@ -1943,7 +1943,7 @@ function DashboardCharts({ transactions, products }) {
                 <Area 
                   type="monotone" 
                   dataKey="profit" 
-                  stroke="#10B981" 
+                  stroke="#1F7A54" 
                   strokeWidth={4} 
                   fillOpacity={1} 
                   fill="url(#colorProfit)" 
