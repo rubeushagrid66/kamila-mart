@@ -17,16 +17,16 @@ function TableSkeleton({ rows = 5, cols = 5 }) {
   return (
     <div className="space-y-6 p-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-center mb-8">
-        <div className="h-10 bg-slate-100 rounded-xl w-48 animate-pulse"></div>
-        <div className="h-10 bg-slate-100 rounded-xl w-32 animate-pulse"></div>
+        <div className="h-10 bg-slate-100 rounded-lg w-48 animate-pulse"></div>
+        <div className="h-10 bg-slate-100 rounded-lg w-32 animate-pulse"></div>
       </div>
-      <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
-        <div className="bg-slate-50/50 p-6 border-b border-slate-100 flex gap-4">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-slate-50/50 p-6 border-b border-slate-200 flex gap-4">
           {[...Array(cols)].map((_, i) => (
             <div key={i} className="h-4 bg-slate-200 rounded-md flex-1 animate-pulse"></div>
           ))}
         </div>
-        <div className="divide-y divide-slate-50">
+        <div className="divide-y divide-slate-100">
           {[...Array(rows)].map((_, i) => (
             <div key={i} className="p-6 flex gap-4">
               {[...Array(cols)].map((_, j) => (
@@ -44,7 +44,7 @@ function GridSkeleton({ count = 3 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-in fade-in duration-500">
       {[...Array(count)].map((_, i) => (
-        <div key={i} className="h-32 bg-white border border-slate-100 rounded-2xl p-8 space-y-4 animate-pulse">
+        <div key={i} className="h-32 bg-white border border-slate-200 rounded-2xl p-8 space-y-4 animate-pulse">
           <div className="h-3 bg-slate-100 rounded w-1/2"></div>
           <div className="h-8 bg-slate-50 rounded w-3/4"></div>
         </div>
@@ -154,9 +154,9 @@ function ProductModal({ product, onClose, onSave }) {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className={`bg-white w-full max-w-lg ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300`}>
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+        <div className="p-6 border-b border-slate-200 flex justify-between items-center">
           <h3 className="font-bold text-slate-900">{product ? 'Edit Produk' : 'Tambah Produk Baru'}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[85vh] overflow-y-auto">
@@ -167,7 +167,7 @@ function ProductModal({ product, onClose, onSave }) {
               value={formData.customId}
               onChange={(e) => setFormData({ ...formData, customId: e.target.value })}
               placeholder="Contoh: ATK-001"
-              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
 
@@ -178,7 +178,7 @@ function ProductModal({ product, onClose, onSave }) {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Contoh: Aqua Galon 19L"
-              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
 
@@ -189,7 +189,7 @@ function ProductModal({ product, onClose, onSave }) {
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               placeholder="Contoh: Galon, Gas, ATK"
-              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
 
@@ -197,26 +197,26 @@ function ProductModal({ product, onClose, onSave }) {
             <div className="space-y-2">
               <label className={UI_TEXT.label}>Harga Beli (Modal)</label>
               <div className="relative">
-                <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
+                <span className="absolute left-4 top-4 text-slate-500 text-xs font-bold">Rp</span>
                 <input
                   required
                   type="number"
                   value={formData.cost}
                   onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                  className={`w-full p-4 pl-12 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+                  className={`w-full p-4 pl-12 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
                 />
               </div>
             </div>
             <div className="space-y-2">
               <label className={UI_TEXT.label}>Harga Jual</label>
               <div className="relative">
-                <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
+                <span className="absolute left-4 top-4 text-slate-500 text-xs font-bold">Rp</span>
                 <input
                   required
                   type="number"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className={`w-full p-4 pl-12 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-black text-sm text-blue-600`}
+                  className={`w-full p-4 pl-12 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-semibold text-sm text-blue-600`}
                 />
               </div>
             </div>
@@ -229,35 +229,35 @@ function ProductModal({ product, onClose, onSave }) {
               value={formData.stock}
               onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
               placeholder="0"
-              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
           </div>
 
-          <div className="space-y-4 pt-6 border-t border-slate-100">
-            <h4 className="text-[11px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2 w-fit">
+          <div className="space-y-4 pt-6 border-t border-slate-200">
+            <h4 className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2 w-fit">
               <Plus size={14} /> Tambah Stok & Pembayaran
             </h4>
             
             <div className={`p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-6 animate-in fade-in duration-500`}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Jumlah Stok Baru</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Jumlah Stok Baru</label>
                   <input
                     type="number"
                     value={newPayment.qty}
                     onChange={(e) => handleNewPaymentQtyChange(e.target.value)}
                     placeholder="Contoh: 10"
-                    className={`w-full p-4 bg-white border border-blue-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-black text-sm text-slate-900 shadow-sm`}
+                    className={`w-full p-4 bg-white border border-blue-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-semibold text-sm text-slate-900 shadow-sm`}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Total Pembayaran</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Total Pembayaran</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
+                    <span className="absolute left-4 top-4 text-slate-500 text-xs font-bold">Rp</span>
                     <input
                       readOnly
                       value={newPayment.amount}
-                      className={`w-full p-4 pl-12 bg-slate-100/50 border border-slate-100 ${UI_RADIUS.inner} font-black text-sm text-slate-400 shadow-inner`}
+                      className={`w-full p-4 pl-12 bg-slate-100/50 border border-slate-200 ${UI_RADIUS.inner} font-semibold text-sm text-slate-500 shadow-inner`}
                     />
                   </div>
                 </div>
@@ -265,21 +265,21 @@ function ProductModal({ product, onClose, onSave }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Tahun</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Tahun</label>
                   <select
                     value={newPayment.year}
                     onChange={(e) => setNewPayment({ ...newPayment, year: Number(e.target.value) })}
-                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                    className={`w-full p-4 bg-white border border-slate-200 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
                     {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Bulan</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Bulan</label>
                   <select
                     value={newPayment.month}
                     onChange={(e) => setNewPayment({ ...newPayment, month: Number(e.target.value) })}
-                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                    className={`w-full p-4 bg-white border border-slate-200 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
                     {["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"].map((m, i) => (
                       <option key={i} value={i}>{m}</option>
@@ -290,22 +290,22 @@ function ProductModal({ product, onClose, onSave }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Status</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Status</label>
                   <select
                     value={newPayment.status}
                     onChange={(e) => setNewPayment({ ...newPayment, status: e.target.value })}
-                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                    className={`w-full p-4 bg-white border border-slate-200 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
                     <option value="Belum Bayar">🔴 Belum Bayar</option>
                     <option value="Sudah Bayar">🟢 Sudah Bayar</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Sumber Dana (Jika Lunas)</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest">Sumber Dana (Jika Lunas)</label>
                   <select
                     value={newPayment.source}
                     onChange={(e) => setNewPayment({ ...newPayment, source: e.target.value })}
-                    className={`w-full p-4 bg-white border border-slate-100 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
+                    className={`w-full p-4 bg-white border border-slate-200 ${UI_RADIUS.inner} text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/10`}
                   >
                     <option value="cod">💵 Bayar di Tempat (Cash)</option>
                     <option value="transfer">🏦 Transfer</option>
@@ -316,34 +316,34 @@ function ProductModal({ product, onClose, onSave }) {
               <button
                 type="button"
                 onClick={addVendorPayment}
-                className={`w-full py-4 bg-blue-600 text-white font-black text-sm ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2`}
+                className={`w-full py-4 bg-blue-600 text-white font-semibold text-sm ${UI_RADIUS.inner} shadow-lg hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2`}
               >
                 <Plus size={18} /> Tambah & Catat Transaksi
               </button>
             </div>
 
             <div className="space-y-3">
-              <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-4">
+              <h4 className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest flex items-center gap-2 mt-4">
                 <CreditCard size={14} /> Riwayat Pembayaran Vendor
               </h4>
               {(formData.vendorPayments || []).length === 0 ? (
-                <p className="text-center py-8 text-[11px] text-slate-400 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">Belum ada riwayat stock</p>
+                <p className="text-center py-8 text-[11px] text-slate-500 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">Belum ada riwayat stock</p>
               ) : (
                 <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto pr-1">
                   {[...(formData.vendorPayments || [])].reverse().map(p => (
-                    <div key={p.id} className="flex justify-between items-center p-4 bg-white border border-slate-100 rounded-2xl shadow-sm group hover:border-blue-200 transition-all">
+                    <div key={p.id} className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-2xl shadow-sm group hover:border-blue-200 transition-all">
                       <div>
                         <div className="flex items-center gap-3 mb-1">
-                          <span className="text-xs font-black text-slate-900">{formatIDR(p.amount)}</span>
+                          <span className="text-xs font-semibold text-slate-900">{formatIDR(p.amount)}</span>
                           <button
                             type="button"
                             onClick={() => toggleVendorPaymentStatus(p.id)}
-                            className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter cursor-pointer hover:scale-105 transition-all ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
+                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-tighter cursor-pointer hover:scale-105 transition-all ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
                           >
                             {p.status}
                           </button>
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold uppercase tracking-tight">
+                        <div className="flex items-center gap-2 text-[11px] text-slate-500 font-bold uppercase tracking-tight">
                           <span>{p.qty} UNIT</span>
                           <span>•</span>
                           <span>{["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][p.month]} {p.year}</span>
@@ -354,7 +354,7 @@ function ProductModal({ product, onClose, onSave }) {
                       <button
                         type="button"
                         onClick={() => removeVendorPayment(p.id)}
-                        className="p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                        className="p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -369,7 +369,7 @@ function ProductModal({ product, onClose, onSave }) {
             <select
               value={formData.status || 'aktif'}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             >
               <option value="aktif">Aktif (Tampil)</option>
               <option value="tidak_aktif">Tidak Aktif (Sembunyi)</option>
@@ -382,7 +382,7 @@ function ProductModal({ product, onClose, onSave }) {
               onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
               placeholder="Contoh: Dikirim vendor 5 April, catatan khusus produk..."
               rows={3}
-              className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 text-sm text-slate-700 resize-none`}
+              className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 text-sm text-slate-700 resize-none`}
             />
           </div>
           <div className="pt-4 flex gap-3">
@@ -396,7 +396,7 @@ function ProductModal({ product, onClose, onSave }) {
             <button
               type="submit"
               disabled={isSaving}
-              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
+              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
             >
               {isSaving ? (
                 <>
@@ -462,9 +462,9 @@ function UserModal({ user, onClose, onSave }) {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className={`bg-white w-full max-w-lg ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300`}>
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white z-10">
+        <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-white z-10">
           <h3 className="font-bold text-slate-900">{user ? 'Edit User' : 'Tambah User Baru'}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
@@ -477,7 +477,7 @@ function UserModal({ user, onClose, onSave }) {
                 setErrors({ ...errors, name: '' });
               }}
               placeholder="Masukkan nama lengkap"
-              className={`w-full p-4 bg-slate-50 border ${errors.name ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border ${errors.name ? 'border-rose-400' : 'border-slate-200'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
             {errors.name && <p className="text-[11px] text-rose-500 font-bold ml-1">{errors.name}</p>}
           </div>
@@ -491,7 +491,7 @@ function UserModal({ user, onClose, onSave }) {
                 setErrors({ ...errors, username: '' });
               }}
               placeholder="Username akun"
-              className={`w-full p-4 bg-slate-50 border ${errors.username ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border ${errors.username ? 'border-rose-400' : 'border-slate-200'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
             {errors.username && <p className="text-[11px] text-rose-500 font-bold ml-1">{errors.username}</p>}
           </div>
@@ -506,16 +506,16 @@ function UserModal({ user, onClose, onSave }) {
                 setErrors({ ...errors, password: '' });
               }}
               placeholder="Password akun"
-              className={`w-full p-4 bg-slate-50 border ${errors.password ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
+              className={`w-full p-4 bg-slate-50 border ${errors.password ? 'border-rose-400' : 'border-slate-200'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
             {errors.password && <p className="text-[11px] text-rose-500 font-bold ml-1">{errors.password}</p>}
           </div>
 
-          <div className="space-y-4 pt-4 border-t border-slate-50">
+          <div className="space-y-4 pt-4 border-t border-slate-200">
             <p className={UI_TEXT.label}>Hak Akses Modul</p>
             <div className="grid grid-cols-2 gap-3">
               {['dashboard', 'transactions', 'products', 'finance', 'profit_report', 'balance_report', 'settings', 'users'].map(perm => (
-                <label key={perm} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(perm) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-100'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
+                <label key={perm} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(perm) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-200'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
                   <input
                     type="checkbox"
                     checked={formData.permissions.includes(perm)}
@@ -528,11 +528,11 @@ function UserModal({ user, onClose, onSave }) {
             </div>
           </div>
 
-          <div className="space-y-4 pt-4 border-t border-slate-50">
+          <div className="space-y-4 pt-4 border-t border-slate-200">
             <p className={UI_TEXT.label}>Hak Akses Khusus</p>
             <div className="grid grid-cols-1 gap-3">
               {EXTRA_PERMISSIONS.map(cap => (
-                <label key={cap.id} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(cap.id) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-100'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
+                <label key={cap.id} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(cap.id) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-200'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
                   <input
                     type="checkbox"
                     checked={formData.permissions.includes(cap.id)}
@@ -546,11 +546,11 @@ function UserModal({ user, onClose, onSave }) {
           </div>
 
           <div className="pt-6 flex gap-3">
-            <button type="button" onClick={onClose} className="flex-1 py-4 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-xl transition-all">Batal</button>
+            <button type="button" onClick={onClose} className="flex-1 py-4 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-lg transition-all">Batal</button>
             <button
               type="submit"
               disabled={isSaving}
-              className={`flex-[2] py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
+              className={`flex-[2] py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
             >
               {isSaving ? (
                 <>
@@ -625,10 +625,10 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
+      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-200 shadow-sm`}>
         <div className="flex gap-2">
-          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
-            <Calendar size={16} className="ml-2 text-slate-400" />
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-200">
+            <Calendar size={16} className="ml-2 text-slate-500" />
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -643,29 +643,29 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className={`p-8 bg-slate-900 text-white ${UI_RADIUS.outer} shadow-xl relative overflow-hidden`}>
           <div className="relative z-10">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Keuntungan ({selectedYear})</p>
-            <p className="text-3xl font-black tracking-tighter">{formatIDR(yearlyTotal.profit)}</p>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Keuntungan ({selectedYear})</p>
+            <p className="text-3xl font-semibold tracking-tighter">{formatIDR(yearlyTotal.profit)}</p>
           </div>
           <DollarSign size={80} className="absolute -bottom-4 -right-4 text-white/5" />
         </div>
-        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-emerald-600">Omzet Berhasil</p>
-          <p className="text-2xl font-black text-slate-900 tracking-tighter">{formatIDR(yearlyTotal.revenue)}</p>
+        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-200 shadow-sm`}>
+          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 text-emerald-600">Omzet Berhasil</p>
+          <p className="text-2xl font-semibold text-slate-900 tracking-tighter">{formatIDR(yearlyTotal.revenue)}</p>
         </div>
-        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
-          <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.totalTx} Pesanan</p>
+        <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-200 shadow-sm`}>
+          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
+          <p className="text-2xl font-semibold text-slate-900 tracking-tighter">{yearlyTotal.totalTx} Pesanan</p>
         </div>
       </div>
 
-      <div className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden`}>
-        <div className="p-6 border-b border-slate-50 flex items-center gap-2">
+      <div className={`bg-white ${UI_RADIUS.outer} border border-slate-200 shadow-sm overflow-hidden`}>
+        <div className="p-6 border-b border-slate-200 flex items-center gap-2">
           <PieChart size={18} className="text-blue-600" />
-          <h4 className="text-sm font-bold text-slate-800">Rincian Laba Rugi Bulanan</h4>
+          <h4 className="text-sm font-bold text-slate-900">Rincian Laba Rugi Bulanan</h4>
         </div>
 
         {/* Mobile View: Cards */}
-        <div className="grid grid-cols-1 gap-0 self-stretch md:hidden divide-y divide-slate-50">
+        <div className="grid grid-cols-1 gap-0 self-stretch md:hidden divide-y divide-slate-100">
           {stats.map((s, i) => (
             <div key={i} className={`p-5 space-y-4 hover:bg-slate-50/30 transition-colors ${s.profit > 0 ? '' : 'opacity-60'}`}>
               <div className="flex justify-between items-center">
@@ -678,31 +678,31 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Jumlah Item</p>
+                <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-200">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Jumlah Item</p>
                   <div className="flex gap-2">
                     <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px] font-bold">{s.totalTx} Transaksi</span>
                   </div>
                 </div>
-                <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Keuntungan</p>
-                  <p className="font-black text-slate-900 text-[13px]">{formatIDR(s.profit)}</p>
+                <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-200">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Keuntungan</p>
+                  <p className="font-semibold text-slate-900 text-sm">{formatIDR(s.profit)}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-50">
+              <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-200">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transaksi</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Transaksi</span>
                   <span className="text-xs font-bold text-slate-700">{s.totalTx}</span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terjual</span>
-                  <span className="text-xs font-black text-blue-600">{s.itemsSold} unit</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Terjual</span>
+                  <span className="text-xs font-semibold text-blue-600">{s.itemsSold} unit</span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center pt-1 px-1">
-                <span className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">Total Omzet</span>
+                <span className="text-slate-500 text-[11px] font-bold uppercase tracking-widest">Total Omzet</span>
                 <span className="text-slate-600 font-bold text-sm tracking-tight">{formatIDR(s.revenue)}</span>
               </div>
             </div>
@@ -713,7 +713,7 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left min-w-[1000px]">
             <thead>
-              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 <th className="px-6 py-4">Bulan</th>
                 <th className="px-6 py-4 text-center">Transaksi</th>
                 <th className="px-6 py-4 text-center text-blue-600">Terjual</th>
@@ -722,7 +722,7 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
                 <th className="px-6 py-4 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {stats.map((s, i) => (
                 <tr key={i} className={`text-sm hover:bg-slate-50/30 transition-colors ${s.profit > 0 ? '' : 'opacity-60'}`}>
                   <td className="px-6 py-4 font-bold text-slate-700">{s.monthName}</td>
@@ -730,10 +730,10 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
                     <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[11px] font-bold">{s.totalTx}</span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[11px] font-black">{s.itemsSold}</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[11px] font-semibold">{s.itemsSold}</span>
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-500">{formatIDR(s.revenue)}</td>
-                  <td className="px-6 py-4 font-black text-slate-900">{formatIDR(s.profit)}</td>
+                  <td className="px-6 py-4 font-semibold text-slate-900">{formatIDR(s.profit)}</td>
                   <td className="px-6 py-4 text-right">
                     {s.profit > 0 ? (
                       <div className="flex items-center justify-end text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[11px] font-bold uppercase">Profit</span></div>
@@ -888,10 +888,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
+      <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 ${UI_RADIUS.outer} border border-slate-200 shadow-sm`}>
         <div className="flex gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100 px-3">
-            <Calendar size={14} className="text-slate-400" />
+          <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-lg border border-slate-200 px-3">
+            <Calendar size={14} className="text-slate-500" />
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -912,18 +912,18 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
               });
               setEditingFormula(true);
             }}
-            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-bold text-xs ${UI_RADIUS.inner} shadow-lg shadow-blue-500/20 active:scale-95 transition-all`}
+            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-bold text-xs ${UI_RADIUS.inner} shadow-lg active:scale-95 transition-all`}
           >
             <Settings size={14} /> Atur Formula
           </button>
         </div>
       </div>
 
-      <div className={`bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm overflow-hidden`}>
+      <div className={`bg-white ${UI_RADIUS.outer} border border-slate-200 shadow-sm overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[1200px]">
             <thead>
-              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
+              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">
                 <th className="px-6 py-4">Bulan</th>
                 <th className="px-6 py-4">Total Profit</th>
                 <th className="px-6 py-4">Realisasi Profit</th>
@@ -934,12 +934,12 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 <th className="px-6 py-4">Catatan</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {stats.map((s) => (
                 <tr key={s.id} className="text-sm hover:bg-slate-50/30 transition-colors">
                   <td className="px-6 py-5 font-bold text-slate-700">{s.monthName}</td>
-                  <td className="px-6 py-5 font-black text-slate-900">{formatIDR(s.profit)}</td>
-                  <td className="px-6 py-5 font-black text-rose-600">{formatIDR(s.unrealizedProfit)}</td>
+                  <td className="px-6 py-5 font-semibold text-slate-900">{formatIDR(s.profit)}</td>
+                  <td className="px-6 py-5 font-semibold text-rose-600">{formatIDR(s.unrealizedProfit)}</td>
                   <td className="px-6 py-5 text-center">
                     <button
                       onClick={() => {
@@ -955,7 +955,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                       }}
                       className="group flex flex-col items-center justify-center p-2 hover:bg-slate-100 rounded-lg transition-all"
                     >
-                      <span className="text-[11px] font-bold text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.musholaPercent}:{s.internalPercent}</span>
+                      <span className="text-[11px] font-bold text-slate-500 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.musholaPercent}:{s.internalPercent}</span>
                       <Settings size={10} className="text-slate-300 group-hover:text-blue-500 mt-0.5" />
                     </button>
                   </td>
@@ -966,7 +966,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                     <input
                       disabled={!canEditNotes}
                       title={!canEditNotes ? 'Anda tidak memiliki izin untuk mengubah catatan' : undefined}
-                      className={`w-full p-2 rounded-lg border text-xs outline-none transition-all font-medium ${canEditNotes ? 'bg-slate-50 border-slate-100 focus:border-blue-300' : 'bg-slate-100 border-slate-100 text-slate-400 cursor-not-allowed'}`}
+                      className={`w-full p-2 rounded-lg border text-xs outline-none transition-all font-medium ${canEditNotes ? 'bg-slate-50 border-slate-200 focus:border-blue-300' : 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'}`}
                       placeholder={canEditNotes ? 'Add note...' : 'Terkunci'}
                       value={s.notes}
                       onChange={(e) => saveMonthlyReport(s.id, { notes: e.target.value })}
@@ -983,14 +983,14 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
           <div className={`bg-white w-full max-w-md ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 p-8 space-y-6`}>
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-black text-slate-900 text-lg tracking-tight">
+              <h3 className="font-semibold text-slate-900 text-lg tracking-tight">
                 {editingMonthFormula ? `Set Formula: ${editingMonthFormula.monthName}` : 'Atur Formula Master (Update)'}
               </h3>
               <button onClick={() => { setEditingFormula(false); setEditingMonthFormula(null); }} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={20} /></button>
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Marbot (Sumber Dana Diatur)</span>
                   <span className="text-emerald-600">{tempFormula.marbotPercent}%</span>
@@ -1001,8 +1001,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   onChange={(e) => setTempFormula({ ...tempFormula, marbotPercent: Number(e.target.value) })}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Sumber Dana</span>
                   <select
                     value={tempFormula.marbotSource}
                     onChange={(e) => setTempFormula({ ...tempFormula, marbotSource: e.target.value })}
@@ -1014,7 +1014,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Mushola (%)</span>
                   <span className="text-amber-600">{tempFormula.musholaPercent}%</span>
@@ -1025,8 +1025,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   onChange={(e) => setTempFormula({ ...tempFormula, musholaPercent: Number(e.target.value) })}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Sumber Dana</span>
                   <select
                     value={tempFormula.musholaSource}
                     onChange={(e) => setTempFormula({ ...tempFormula, musholaSource: e.target.value })}
@@ -1038,7 +1038,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-4">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-widest">
                   <span>Internal (%)</span>
                   <span className="text-blue-600">{tempFormula.internalPercent}%</span>
@@ -1049,8 +1049,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   onChange={(e) => setTempFormula({ ...tempFormula, internalPercent: Number(e.target.value) })}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Sumber Dana</span>
                   <select
                     value={tempFormula.internalSource}
                     onChange={(e) => setTempFormula({ ...tempFormula, internalSource: e.target.value })}
@@ -1062,9 +1062,9 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                 </div>
               </div>
 
-              <div className={`p-4 rounded-xl flex justify-between items-center ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-rose-50 border border-rose-100 text-rose-600' : 'bg-blue-50 border border-blue-100 text-blue-600'}`}>
+              <div className={`p-4 rounded-lg flex justify-between items-center ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-rose-50 border border-rose-100 text-rose-600' : 'bg-blue-50 border border-blue-100 text-blue-600'}`}>
                 <span className="text-xs font-bold uppercase">Total Alokasi</span>
-                <span className="font-black text-lg">{Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent)}%</span>
+                <span className="font-semibold text-lg">{Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent)}%</span>
               </div>
 
               {Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 && (
@@ -1072,13 +1072,13 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
               )}
 
               {!editingMonthFormula && (
-                <div onClick={() => setApplyToAll(!applyToAll)} className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${applyToAll ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-100'}`}>
+                <div onClick={() => setApplyToAll(!applyToAll)} className={`p-4 rounded-lg border transition-all cursor-pointer flex items-center gap-3 ${applyToAll ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
                   <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${applyToAll ? 'bg-amber-500 border-amber-500 text-white' : 'bg-white border-slate-200'}`}>
                     {applyToAll && <CheckCircle2 size={12} />}
                   </div>
                   <div className="flex-1">
-                    <p className={`text-[11px] font-black uppercase tracking-widest ${applyToAll ? 'text-amber-700' : 'text-slate-500'}`}>Apply to All Months</p>
-                    <p className="text-[10px] text-slate-400 font-medium">Terapkan formula ini ke seluruh bulan di tahun {selectedYear}</p>
+                    <p className={`text-[11px] font-semibold uppercase tracking-widest ${applyToAll ? 'text-amber-700' : 'text-slate-500'}`}>Apply to All Months</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Terapkan formula ini ke seluruh bulan di tahun {selectedYear}</p>
                   </div>
                 </div>
               )}
@@ -1087,7 +1087,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
             <button
               onClick={handleSaveFormula}
               disabled={Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100}
-              className={`w-full py-4 text-white font-black text-sm ${UI_RADIUS.inner} shadow-lg transition-all ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'}`}
+              className={`w-full py-4 text-white font-semibold text-sm ${UI_RADIUS.inner} shadow-lg transition-all ${Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
             >
               Simpan Formula
             </button>
@@ -1174,7 +1174,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm animate-pulse flex flex-col gap-4`}>
+              <div key={i} className={`p-5 bg-white border border-slate-200 ${UI_RADIUS.inner} shadow-sm animate-pulse flex flex-col gap-4`}>
                 <div className="h-4 w-3/4 bg-slate-100 rounded" />
                 <div className="h-10 w-full bg-slate-50 rounded" />
               </div>
@@ -1183,11 +1183,11 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
         ) : (
           <>
             {transactions.map(t => (
-              <div key={t.id} className={`p-5 bg-white border border-slate-100 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
+              <div key={t.id} className={`p-5 bg-white border border-slate-200 ${UI_RADIUS.inner} shadow-sm space-y-4`}>
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                       <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
+                       <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{t.time}</p>
                        <button
                          onClick={(e) => { e.stopPropagation(); onToggleStatus && onToggleStatus(t); }}
                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded border transition-colors ${
@@ -1199,7 +1199,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
                          {t.paymentStatus || 'Sudah Bayar'}
                        </button>
                     </div>
-                    <p className="font-extrabold text-slate-900 text-base mt-1">{t.customer}</p>
+                    <p className="font-semibold text-slate-900 text-base mt-1">{t.customer}</p>
                     <p className="text-[11px] text-slate-500 mt-1 leading-tight font-medium">{t.address}</p>
                   </div>
                   <button
@@ -1210,7 +1210,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
                   </button>
                 </div>
 
-                <div className="space-y-2 border-t border-slate-50 pt-4">
+                <div className="space-y-2 border-t border-slate-200 pt-4">
                   {t.items.map((item, idx) => (
                     <div key={idx} className="flex justify-between items-center text-xs">
                       <span className="text-slate-600 font-medium">{item.qty}x {item.name}</span>
@@ -1219,18 +1219,18 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
                   ))}
                 </div>
 
-                <div className={`flex justify-between items-center bg-slate-50/50 p-4 ${UI_RADIUS.inner} border border-slate-50`}>
+                <div className={`flex justify-between items-center bg-slate-50/50 p-4 ${UI_RADIUS.inner} border border-slate-200`}>
                   <div className="flex flex-col">
-                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Total Bayar</span>
-                    <span className="text-blue-600 font-black text-xl tracking-tight">{formatIDR(t.total)}</span>
+                    <span className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest">Total Bayar</span>
+                    <span className="text-blue-600 font-semibold text-xl tracking-tight">{formatIDR(t.total)}</span>
                   </div>
-                  <span className={`px-2.5 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[11px] font-black text-slate-500 uppercase tracking-tighter shadow-sm`}>
+                  <span className={`px-2.5 py-1 bg-white border border-slate-200 ${UI_RADIUS.inner} text-[11px] font-semibold text-slate-500 uppercase tracking-tighter shadow-sm`}>
                     {t.method === 'transfer' ? 'Transfer' : 'Cash'}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
-                  <p className="text-[11px] font-bold text-slate-400">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
+                  <p className="text-[11px] font-bold text-slate-500">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
                   <div className="flex gap-1">
                     <button
                       onClick={() => onEdit(t)}
@@ -1250,7 +1250,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
             ))}
             {transactions.length === 0 && (
               <div className={`text-center py-10 bg-slate-50/50 ${UI_RADIUS.inner} border border-dashed border-slate-200`}>
-                <p className="text-slate-400 text-xs font-medium">Tidak ada transaksi ditemukan</p>
+                <p className="text-slate-500 text-xs font-medium">Tidak ada transaksi ditemukan</p>
               </div>
             )}
           </>
@@ -1260,7 +1260,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left min-w-[1000px]">
           <thead>
-            <tr className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+            <tr className="bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-200">
               <th className="py-4 px-4 text-center">No</th>
               <th className="py-4 px-4">Tanggal pesanan</th>
               <th className="py-4 px-4">Nomor Rumah</th>
@@ -1273,25 +1273,25 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
               <th className="py-4 px-4 text-center">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-slate-100">
             {flattenedItems.map((item, i) => (
-              <tr key={`${item.txId}-${i}`} className="text-[12px] hover:bg-slate-50/50 transition-colors group">
-                <td className="py-4 px-4 text-center text-slate-400 font-medium">{item.no}</td>
+              <tr key={`${item.txId}-${i}`} className="text-xs hover:bg-slate-50/50 transition-colors group">
+                <td className="py-4 px-4 text-center text-slate-500 font-medium">{item.no}</td>
                 <td className="py-4 px-4 whitespace-nowrap font-medium text-slate-600">{item.tanggalPesanan}</td>
-                <td className="py-4 px-4 font-extrabold text-slate-900">{item.nomorRumah}</td>
+                <td className="py-4 px-4 font-semibold text-slate-900">{item.nomorRumah}</td>
                 <td className="py-4 px-4 font-mono text-[11px] text-slate-500">{item.kodeBarang}</td>
-                <td className="py-4 px-4 font-bold text-slate-800">{item.namaBarang}</td>
-                <td className="py-4 px-4 text-center font-black text-blue-600">{item.jumlah}</td>
-                <td className="py-4 px-4 text-right font-black text-blue-600">{formatIDR(item.totalHargaJual)}</td>
+                <td className="py-4 px-4 font-bold text-slate-900">{item.namaBarang}</td>
+                <td className="py-4 px-4 text-center font-semibold text-blue-600">{item.jumlah}</td>
+                <td className="py-4 px-4 text-right font-semibold text-blue-600">{formatIDR(item.totalHargaJual)}</td>
                 <td className="py-4 px-4">
-                  <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                  <span className={`px-2 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     {item.caraPembayaran}
                   </span>
                 </td>
                 <td className="py-4 px-4 text-center">
                   <button
                     onClick={() => onToggleStatus && onToggleStatus(item.originalTx)}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter cursor-pointer transition-colors border ${
+                    className={`px-2 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-tighter cursor-pointer transition-colors border ${
                       (item.originalTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
                         ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
                         : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
@@ -1335,7 +1335,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
         </table>
         {flattenedItems.length === 0 && (
           <div className="text-center py-10">
-            <p className="text-slate-400 text-xs font-medium">Tidak ada data transaksi ditemukan</p>
+            <p className="text-slate-500 text-xs font-medium">Tidak ada data transaksi ditemukan</p>
           </div>
         )}
       </div>
@@ -1433,51 +1433,51 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className={`bg-white w-full max-w-2xl ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto`}>
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+        <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white z-10">
           <h3 className="font-bold text-slate-900">{transaction ? 'Edit Transaksi' : 'Tambah Transaksi Manual'}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Pelanggan</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Nama Pelanggan</label>
               <input
                 required
                 value={formData.customer}
                 onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
-                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm`}
+                className={`w-full p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm`}
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">WhatsApp</label>
               <input
                 required
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm`}
+                className={`w-full p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm`}
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Alamat</label>
+            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Alamat</label>
             <textarea
               required
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm resize-none`}
+              className={`w-full p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 text-sm resize-none`}
               rows="2"
             />
           </div>
 
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Item Transaksi</p>
+          <div className="space-y-4 pt-4 border-t border-slate-200">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Item Transaksi</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
-                className={`flex-1 p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
+                className={`flex-1 p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none text-sm`}
               >
                 <option value="">Pilih Produk</option>
                 {products.map(p => (
@@ -1490,7 +1490,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
                   min="1"
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value))}
-                  className={`w-20 p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm font-bold text-center`}
+                  className={`w-20 p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none text-sm font-bold text-center`}
                 />
                 <button
                   type="button"
@@ -1502,10 +1502,10 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
               </div>
             </div>
 
-            <div className="bg-slate-50 border border-slate-100 overflow-hidden md:rounded-xl">
+            <div className="bg-slate-50 border border-slate-200 overflow-hidden md:rounded-lg">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-[11px]">
-                  <thead className="bg-white border-b border-slate-100 text-slate-400 font-bold uppercase tracking-tighter">
+                  <thead className="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase tracking-tighter">
                     <tr>
                       <th className="py-3 px-4">Nama Barang</th>
                       <th className="py-3 px-2 text-center">Qty</th>
@@ -1519,8 +1519,8 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
                     {formData.items.map((item, idx) => (
                       <tr key={idx} className="bg-white/50">
                         <td className="py-3 px-4 font-bold text-slate-700">{item.name}</td>
-                        <td className="py-3 px-2 text-center font-black text-blue-600">{item.qty}</td>
-                        <td className="py-3 px-2 text-right text-slate-400">{formatIDR(item.cost * item.qty)}</td>
+                        <td className="py-3 px-2 text-center font-semibold text-blue-600">{item.qty}</td>
+                        <td className="py-3 px-2 text-right text-slate-500">{formatIDR(item.cost * item.qty)}</td>
                         <td className="py-3 px-2 text-right font-bold text-slate-900">{formatIDR(item.price * item.qty)}</td>
                         <td className="py-3 px-2 text-right font-bold text-emerald-600">{formatIDR(item.profit)}</td>
                         <td className="py-3 px-4 text-center text-rose-500">
@@ -1532,37 +1532,37 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
                 </table>
               </div>
               {formData.items.length === 0 && (
-                <div className="py-8 text-center text-slate-400 italic text-xs">Belum ada item ditambahkan</div>
+                <div className="py-8 text-center text-slate-500 italic text-xs">Belum ada item ditambahkan</div>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-200 pt-4">
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Metode</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Metode</label>
               <select
                 value={formData.method}
                 onChange={(e) => setFormData({ ...formData, method: e.target.value })}
-                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
+                className={`w-full p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none text-sm`}
               >
                 <option value="cod">Bayar di Tempat</option>
                 <option value="transfer">Transfer Bank</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Tanggal</label>
               <input
                 type="datetime-local"
                 value={formData.date.slice(0, 16)}
                 onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value).toISOString() })}
-                className={`w-full p-3 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none text-sm`}
+                className={`w-full p-3 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none text-sm`}
               />
             </div>
           </div>
 
           <div className={`p-4 bg-blue-50 ${UI_RADIUS.inner} flex justify-between items-center`}>
             <span className="font-bold text-blue-900/50 text-xs uppercase tracking-widest">Total Bayar</span>
-            <span className="text-xl font-black text-blue-600">{formatIDR(total)}</span>
+            <span className="text-xl font-semibold text-blue-600">{formatIDR(total)}</span>
           </div>
 
           <div className="flex gap-3">
@@ -1576,7 +1576,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
             <button
               type="submit"
               disabled={isSaving}
-              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
+              className={`flex-1 py-3.5 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold text-sm shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
             >
               {isSaving ? (
                 <>
@@ -1600,7 +1600,7 @@ function StatCard({ label, val, icon: Icon, color = "text-blue-600", isLoading =
   return (
     <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 flex flex-col gap-2.5">
       <div className="flex items-center gap-2">
-        {Icon && <Icon size={15} strokeWidth={2} className="text-slate-400" />}
+        {Icon && <Icon size={15} strokeWidth={2} className="text-slate-500" />}
         <p className="text-xs font-medium text-slate-600">{label}</p>
       </div>
       <p className="text-2xl font-semibold text-slate-900 tracking-tight tabular-nums">{val}</p>
@@ -1701,17 +1701,17 @@ function BalanceReport({ transactions, products, isLoading = false }) {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+      <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
-          <h3 className="text-xl font-black text-slate-900 tracking-tight mb-1">Total Saldo Masuk</h3>
+          <h3 className="text-xl font-semibold text-slate-900 tracking-tight mb-1">Total Saldo Masuk</h3>
           <p className="text-xs text-slate-500 font-medium tracking-wide">Akumulasi seluruh pembayaran "Sudah Bayar"</p>
         </div>
-        <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
+        <div className="flex bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
           {years.map(y => (
             <button
               key={y}
               onClick={() => setSelectedYear(y)}
-              className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all ${selectedYear === y ? 'bg-white text-blue-600 shadow-sm shadow-blue-500/10' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`px-6 py-2.5 rounded-lg text-xs font-semibold transition-all ${selectedYear === y ? 'bg-white text-blue-600 shadow-sm shadow-blue-500/10' : 'text-slate-500 hover:text-slate-600'}`}
             >
               {y}
             </button>
@@ -1726,33 +1726,33 @@ function BalanceReport({ transactions, products, isLoading = false }) {
         <StatCard label="Saldo Bersih (Net)" val={formatIDR(summary.total - debt)} icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
       </div>
 
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50">
-                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Bulan</th>
-                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Bayar di Tempat (Cash)</th>
-                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Transfer</th>
-                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Total Balance</th>
+                <th className="py-5 px-8 text-[11px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-200">Bulan</th>
+                <th className="py-5 px-8 text-[11px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Bayar di Tempat (Cash)</th>
+                <th className="py-5 px-8 text-[11px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Transfer</th>
+                <th className="py-5 px-8 text-[11px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Total Balance</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               {balanceData.map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                   <td className="py-5 px-8 text-sm font-bold text-slate-900">{row.month}</td>
                   <td className="py-5 px-8 text-sm font-medium text-slate-600 text-right">{formatIDR(row.cod)}</td>
                   <td className="py-5 px-8 text-sm font-medium text-slate-600 text-right">{formatIDR(row.transfer)}</td>
-                  <td className="py-5 px-8 text-sm font-black text-blue-600 text-right">{formatIDR(row.total)}</td>
+                  <td className="py-5 px-8 text-sm font-semibold text-blue-600 text-right">{formatIDR(row.total)}</td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr className="bg-blue-50/30">
-                <td className="py-6 px-8 text-sm font-black text-slate-900">GRAND TOTAL</td>
-                <td className="py-6 px-8 text-sm font-black text-slate-900 text-right">{formatIDR(summary.cod)}</td>
-                <td className="py-6 px-8 text-sm font-black text-slate-900 text-right">{formatIDR(summary.transfer)}</td>
-                <td className="py-6 px-8 text-base font-black text-blue-600 text-right">{formatIDR(summary.total)}</td>
+                <td className="py-6 px-8 text-sm font-semibold text-slate-900">GRAND TOTAL</td>
+                <td className="py-6 px-8 text-sm font-semibold text-slate-900 text-right">{formatIDR(summary.cod)}</td>
+                <td className="py-6 px-8 text-sm font-semibold text-slate-900 text-right">{formatIDR(summary.transfer)}</td>
+                <td className="py-6 px-8 text-base font-semibold text-blue-600 text-right">{formatIDR(summary.total)}</td>
               </tr>
             </tfoot>
           </table>
@@ -1812,8 +1812,8 @@ function DashboardCharts({ transactions, products }) {
   const CustomTooltip = ({ active, payload, label, mode }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 border border-slate-100 shadow-xl rounded-2xl animate-in fade-in zoom-in duration-200">
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+        <div className="bg-white p-4 border border-slate-200 shadow-xl rounded-2xl animate-in fade-in zoom-in duration-200">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-2">{label}</p>
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center gap-3 mb-1">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></div>
@@ -1835,12 +1835,12 @@ function DashboardCharts({ transactions, products }) {
           <h3 className={UI_TEXT.h2}>Analitik Performa</h3>
           <p className="text-xs text-slate-500 font-medium tracking-tight">Tren transaksi dan pertumbuhan keuntungan</p>
         </div>
-        <div className="flex bg-slate-100/50 p-1 rounded-xl border border-slate-200 w-full sm:w-auto overflow-x-auto">
+        <div className="flex bg-slate-100/50 p-1 rounded-lg border border-slate-200 w-full sm:w-auto overflow-x-auto">
           {[3, 6, 12].map(n => (
             <button
               key={n}
               onClick={() => setRange(n)}
-              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-600'}`}
             >
               {n} Bulan
             </button>
@@ -1850,20 +1850,20 @@ function DashboardCharts({ transactions, products }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Comparison Chart */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+        <div className="bg-white p-6 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
-              <p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.1em] mb-1">Status Pembayaran</p>
-              <h4 className="text-lg font-black text-slate-900 leading-tight">Perbandingan Transaksi</h4>
+              <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[0.1em] mb-1">Status Pembayaran</p>
+              <h4 className="text-lg font-semibold text-slate-900 leading-tight">Perbandingan Transaksi</h4>
             </div>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full shadow-sm"></div>
-                <span className="text-[11px] font-bold text-slate-400">Sudah Bayar</span>
+                <span className="text-[11px] font-bold text-slate-500">Sudah Bayar</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-rose-500 rounded-full shadow-sm"></div>
-                <span className="text-[11px] font-bold text-slate-400">Belum Bayar</span>
+                <span className="text-[11px] font-bold text-slate-500">Belum Bayar</span>
               </div>
             </div>
           </div>
@@ -1908,15 +1908,15 @@ function DashboardCharts({ transactions, products }) {
         </div>
 
         {/* Profit Growth Chart */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
+        <div className="bg-white p-6 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
-              <p className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.1em] mb-1">Pertumbuhan Profit</p>
-              <h4 className="text-lg font-black text-slate-900 leading-tight">Total Profit Bersih</h4>
+              <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-[0.1em] mb-1">Pertumbuhan Profit</p>
+              <h4 className="text-lg font-semibold text-slate-900 leading-tight">Total Profit Bersih</h4>
             </div>
             <div className="flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full gap-1.5 self-start sm:self-center">
               <TrendingUp size={12} />
-              <span className="text-[11px] font-black uppercase tracking-tight">Real-time</span>
+              <span className="text-[11px] font-semibold uppercase tracking-tight">Real-time</span>
             </div>
           </div>
           <div className="h-[280px] w-full">
@@ -2549,7 +2549,7 @@ export default function AdminDashboard({
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-slate-50">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-slate-100 p-8 transform transition-transform duration-500 md:translate-x-0 flex flex-col ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-slate-200 p-8 transform transition-transform duration-500 md:translate-x-0 flex flex-col ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="mb-12">
           <h1 className={UI_TEXT.h1}>{settings.martName || 'Mart Admin'}</h1>
           <p className={UI_TEXT.caption}>Welcome back, <span className="text-blue-600 font-bold">{currentUserData?.name || 'Admin'}</span></p>
@@ -2571,7 +2571,7 @@ export default function AdminDashboard({
               <button
                 key={m.id}
                 onClick={() => { setAdminTab(m.id); setMobileMenuOpen(false); }}
-                className={`w-full flex items-start text-left gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-bold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
+                className={`w-full flex items-start text-left gap-3.5 px-5 py-4 ${UI_RADIUS.inner} transition-all font-bold text-sm ${adminTab === m.id ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
               >
                 <div className="w-6 flex justify-center shrink-0 pt-0.5">
                   <IconComponent size={20} />
@@ -2581,7 +2581,7 @@ export default function AdminDashboard({
             );
           })}
         </nav>
-        <div className="pt-8 mt-8 border-t border-slate-50 space-y-3">
+        <div className="pt-8 mt-8 border-t border-slate-200 space-y-3">
           <button onClick={onCustomerView} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} w-full`}><Eye size={18} /> View Store</button>
           <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2.5 px-5 py-4 text-rose-500 hover:bg-rose-50 font-bold text-xs transition active:scale-95"><LogOut size={18} /> Logout</button>
         </div>
@@ -2589,62 +2589,61 @@ export default function AdminDashboard({
 
       {mobileMenuOpen && <div className="fixed inset-0 bg-slate-900/40 z-30 md:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
 
-      <main className="flex-1 p-6 md:p-14 ml-0 md:ml-72 transition-all flex flex-col">
+      <main className="flex-1 p-6 md:p-8 ml-0 md:ml-72 transition-all flex flex-col">
         <div className="max-w-[1600px] w-full px-4 md:px-8 mx-auto flex flex-col flex-1">
           {/* Status Notifikasi */}
           {isBannerVisible && isNotificationSupported && (
-            <div className={`mb-8 p-6 ${notificationPermission === 'granted' ? 'bg-emerald-50 border-emerald-100' : 'bg-amber-50 border-amber-100'} border rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 animate-in fade-in slide-in-from-top-4 duration-500 shadow-sm transition-all relative`}>
-              <button 
+            <div className="mb-6 p-5 bg-white border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500 relative">
+              <button
                 onClick={handleCloseBanner}
-                className={`absolute top-4 right-4 p-1.5 rounded-full transition-colors ${notificationPermission === 'granted' ? 'text-emerald-400 hover:bg-emerald-100 hover:text-emerald-600' : 'text-amber-400 hover:bg-amber-100 hover:text-amber-600'}`}
+                className="absolute top-3 right-3 p-1.5 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
-              <div className="flex items-center gap-5 text-center sm:text-left flex-col sm:flex-row">
-                <div className={`p-4 bg-white ${notificationPermission === 'granted' ? 'text-emerald-600' : 'text-amber-600'} rounded-2xl shadow-sm border ${notificationPermission === 'granted' ? 'border-emerald-100' : 'border-amber-100'}`}>
-                  <Bell size={24} className={notificationPermission === 'granted' ? '' : 'animate-bounce'} />
+              <div className="flex items-center gap-4">
+                <div className="p-2.5 bg-slate-50 text-slate-500 rounded-lg border border-slate-200">
+                  <Bell size={20} />
                 </div>
-                <div>
-                  <h4 className={`text-sm font-black uppercase tracking-tight mb-1 pr-6 ${notificationPermission === 'granted' ? 'text-emerald-900' : 'text-amber-900'}`}>
-                    Status Notifikasi: {notificationPermission === 'granted' ? 'Aktif' : 'Belum Aktif'}
+                <div className="pr-6">
+                  <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                    <span className={`w-1.5 h-1.5 rounded-full ${notificationPermission === 'granted' ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                    Notifikasi {notificationPermission === 'granted' ? 'aktif' : 'belum aktif'}
                   </h4>
-                  <p className={`text-xs font-medium max-w-sm ${notificationPermission === 'granted' ? 'text-emerald-700/70' : 'text-amber-700/70'}`}>
-                    {notificationPermission === 'granted' 
-                      ? 'Browser diizinkan mengirim notifikasi saat ada pesanan baru masuk.' 
+                  <p className="text-xs text-slate-500 max-w-sm mt-0.5">
+                    {notificationPermission === 'granted'
+                      ? 'Browser diizinkan mengirim notifikasi saat ada pesanan baru masuk.'
                       : 'Aktifkan agar Anda mendapatkan pemberitahuan langsung saat ada pesanan baru.'}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+              <div className="flex gap-3 w-full sm:w-auto">
                 {notificationPermission !== 'granted' ? (
-                  <button 
+                  <button
                     onClick={() => {
                       Notification.requestPermission().then(res => {
                         if (res === 'granted') toast.success('Notifikasi berhasil diaktifkan!');
                         else if (res === 'denied') toast.error('Izin notifikasi ditolak. Silakan aktifkan via pengaturan browser.');
-                        window.location.reload(); 
+                        window.location.reload();
                       });
                     }}
-                    className="px-8 py-3.5 bg-amber-600 text-white text-xs font-black rounded-2xl hover:bg-amber-700 hover:shadow-lg hover:shadow-amber-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
+                    className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 active:scale-[0.98] transition-colors flex-1 sm:flex-none"
                   >
                     Aktifkan Sekarang
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => {
-                      // Test notification
                       new Notification("Percobaan Notifikasi", {
                         body: "Ini adalah contoh notifikasi pesanan baru. Jika Anda melihat ini, sistem bekerja dengan baik!",
                         icon: "/favicon.ico"
                       });
-                      // Test sound
                       try {
                         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
                         audio.play();
                       } catch(e) {}
                       toast.success('Notifikasi percobaan dikirim!');
                     }}
-                    className="px-8 py-3.5 bg-emerald-600 text-white text-xs font-black rounded-2xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:scale-95 transition-all flex-1 sm:flex-none"
+                    className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 active:scale-[0.98] transition-colors flex-1 sm:flex-none"
                   >
                     Uji Coba Notifikasi
                   </button>
@@ -2653,7 +2652,7 @@ export default function AdminDashboard({
             </div>
           )}
 
-          <header className="mb-12">
+          <header className="mb-8">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <h2 className={`${UI_TEXT.h2} truncate`}>
@@ -2683,7 +2682,7 @@ export default function AdminDashboard({
                   <h2 className={UI_TEXT.h2}>Pesanan Terbaru</h2>
                   <button onClick={() => setAdminTab('transactions')} className="text-blue-600 font-bold text-xs hover:underline bg-blue-50 px-3 py-1.5 rounded-lg transition-colors hover:bg-blue-100">Lihat Selengkapnya</button>
                 </div>
-                <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+                <div className={`bg-white border border-slate-200 shadow-sm overflow-hidden md:rounded-2xl`}>
                   <TransactionList
                     transactions={[...(transactions || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5)}
                     products={products}
@@ -2777,22 +2776,22 @@ export default function AdminDashboard({
               {txSelectedStatus === 'Belum Bayar' && (
                 <div className="mb-6 p-6 bg-amber-50/50 border border-amber-100 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 bg-amber-100 text-amber-600 rounded-xl shadow-sm">
+                    <div className="p-3 bg-amber-100 text-amber-600 rounded-lg shadow-sm">
                       <DollarSign size={24} />
                     </div>
                     <div>
-                      <p className="text-[11px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Total Tagihan Belum Dibayar</p>
-                      <p className="text-2xl font-black text-slate-900">{formatIDR(filteredTransactions.reduce((acc, tx) => acc + (tx.total || 0), 0))}</p>
+                      <p className="text-[11px] font-semibold text-amber-600 uppercase tracking-widest leading-none mb-1.5">Total Tagihan Belum Dibayar</p>
+                      <p className="text-2xl font-semibold text-slate-900">{formatIDR(filteredTransactions.reduce((acc, tx) => acc + (tx.total || 0), 0))}</p>
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-center sm:items-end">
-                    <p className="text-[11px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Ringkasan Pesanan</p>
+                    <p className="text-[11px] font-semibold text-amber-600 uppercase tracking-widest leading-none mb-1.5">Ringkasan Pesanan</p>
                     <p className="text-sm font-bold text-slate-600">{filteredTransactions.length} Transaksi Menunggu Pembayaran</p>
                   </div>
                 </div>
               )}
 
-              <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
+              <div className="bg-white border border-slate-200 shadow-sm overflow-hidden md:rounded-2xl">
                 <TransactionList
                   transactions={filteredTransactions.slice(0, visibleTransactions)}
                   products={products}
@@ -2803,7 +2802,7 @@ export default function AdminDashboard({
                 />
               </div>
               {filteredTransactions.length > visibleTransactions && (
-                <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-6 py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+                <button onClick={() => setVisibleTransactions(prev => prev + 20)} className={`w-full mt-6 py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-200 hover:bg-slate-50 transition-all`}>
                   Muat Lebih Banyak ({filteredTransactions.length - visibleTransactions} Tersisa)
                 </button>
               )}
@@ -2818,7 +2817,7 @@ export default function AdminDashboard({
                 </button>
               </div>
 
-              <div className="bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl">
+              <div className="bg-white border border-slate-200 shadow-sm overflow-hidden md:rounded-2xl">
                 {isLoading ? (
                   <TableSkeleton rows={8} cols={6} />
                 ) : (
@@ -2827,7 +2826,7 @@ export default function AdminDashboard({
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
-                      <tr className={`border-b border-slate-50 ${UI_TEXT.label} bg-slate-50/50`}>
+                      <tr className={`border-b border-slate-200 ${UI_TEXT.label} bg-slate-50/50`}>
                         <th className="py-4 px-6 border-b">No</th>
                         <th className="py-4 px-6 border-b">Kode Barang</th>
                         <th className="py-4 px-6 border-b">Nama Barang</th>
@@ -2839,29 +2838,29 @@ export default function AdminDashboard({
                         <th className="py-4 px-6 border-b text-center">Aksi</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody className="divide-y divide-slate-100">
                       {(products || []).slice(0, visibleProducts).map((p, idx) => (
                         <tr key={p.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
-                          <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
+                          <td className="py-4 px-6 text-slate-500 font-medium">{idx + 1}</td>
                           <td className="py-4 px-6 font-mono text-[11px] text-slate-700">{p.customId || `SKU-${p.id}`}</td>
                           <td className="py-4 px-6 font-bold text-slate-900">{p.name}</td>
                           <td className="py-4 px-6">
-                            <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[11px] font-black uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
+                            <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[11px] font-semibold uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
                           </td>
                           <td className="py-4 px-6 text-right font-medium text-slate-600">{formatIDR(p.cost)}</td>
-                          <td className="py-4 px-6 text-right font-black text-blue-600">{formatIDR(p.price)}</td>
+                          <td className="py-4 px-6 text-right font-semibold text-blue-600">{formatIDR(p.price)}</td>
                           <td className="py-4 px-6 text-center">
                             <div className="flex flex-col items-center">
                               <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
                               {p.vendorStatus && (
-                                <span className={`mt-1 px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                <span className={`mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                                   {p.vendorStatus}
                                 </span>
                               )}
                             </div>
                           </td>
                           <td className="py-4 px-6 text-center">
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
                               {p.status || 'aktif'}
                             </span>
                           </td>
@@ -2878,16 +2877,16 @@ export default function AdminDashboard({
                 </div>
 
                 {/* Mobile Card View */}
-                <div className="md:hidden divide-y divide-slate-50">
+                <div className="md:hidden divide-y divide-slate-100">
                   {(products || []).slice(0, visibleProducts).map((p) => (
                     <div key={p.id} className="p-5 flex flex-col gap-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
-                            <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase">{p.category || 'General'}</span>
+                            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
+                            <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-semibold uppercase">{p.category || 'General'}</span>
                           </div>
-                          <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{p.name}</h3>
+                          <h3 className="font-semibold text-slate-900 text-sm leading-tight">{p.name}</h3>
                         </div>
                         <div className="flex gap-1">
                           <button onClick={() => setEditingProduct(p)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
@@ -2895,16 +2894,16 @@ export default function AdminDashboard({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
                         <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
-                          <p className="text-sm font-black text-blue-600">{formatIDR(p.price)}</p>
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1">Harga Jual</p>
+                          <p className="text-sm font-semibold text-blue-600">{formatIDR(p.price)}</p>
                         </div>
                         <div className="text-right flex flex-col items-end">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
-                          <p className={`text-sm font-black ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
+                          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-1">Stok</p>
+                          <p className={`text-sm font-semibold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
                           {p.vendorStatus && (
-                            <span className={`mt-1 px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                            <span className={`mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                               {p.vendorStatus}
                             </span>
                           )}
@@ -2917,7 +2916,7 @@ export default function AdminDashboard({
             )}
             </div>
             {products.length > visibleProducts && (
-              <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-100 hover:bg-slate-50 transition-all`}>
+              <button onClick={() => setVisibleProducts(prev => prev + 20)} className={`w-full py-4 bg-white text-slate-500 font-bold text-xs ${UI_RADIUS.inner} border border-slate-200 hover:bg-slate-50 transition-all`}>
                 Muat Lebih Banyak ({products.length - visibleProducts} Tersisa)
               </button>
             )}
@@ -2932,7 +2931,7 @@ export default function AdminDashboard({
                 </button>
               </div>
 
-              <div className={`bg-white border border-slate-100 shadow-sm overflow-hidden md:rounded-2xl`}>
+              <div className={`bg-white border border-slate-200 shadow-sm overflow-hidden md:rounded-2xl`}>
                 {isLoading ? (
                   <TableSkeleton rows={5} cols={4} />
                 ) : (
@@ -2940,7 +2939,7 @@ export default function AdminDashboard({
                     <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
-                      <tr className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                      <tr className="bg-slate-50/50 text-[11px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-200">
                         <th className="py-4 px-6">No</th>
                         <th className="py-4 px-6">Nama</th>
                         <th className="py-4 px-6">Username</th>
@@ -2948,15 +2947,15 @@ export default function AdminDashboard({
                         <th className="py-4 px-6 text-center">Aksi</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody className="divide-y divide-slate-100">
                       {allUsers.map((u, idx) => (
                         <tr key={u.id} className="text-sm hover:bg-slate-50/50 transition-colors group">
-                          <td className="py-4 px-6 text-slate-400 font-medium">{idx + 1}</td>
+                          <td className="py-4 px-6 text-slate-500 font-medium">{idx + 1}</td>
                           <td className="py-4 px-6 font-bold text-slate-900">
                             <div className="flex items-center gap-2">
                               {u.name}
                               {u.isAuthAccount && (
-                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase tracking-tighter">Akun Login</span>
+                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-semibold uppercase tracking-tighter">Akun Login</span>
                               )}
                             </div>
                           </td>
@@ -2964,7 +2963,7 @@ export default function AdminDashboard({
                           <td className="py-4 px-6">
                             <div className="flex flex-wrap gap-1">
                               {(u.permissions || []).map(p => (
-                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
+                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-semibold uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
                               ))}
                             </div>
                           </td>
@@ -2985,22 +2984,22 @@ export default function AdminDashboard({
                 </div>
 
                 {/* Mobile Card View */}
-                <div className="md:hidden divide-y divide-slate-50">
+                <div className="md:hidden divide-y divide-slate-100">
                   {allUsers.map(u => (
                     <div key={u.id} className="p-5 flex flex-col gap-4">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                          <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
                             <Users size={18} />
                           </div>
                           <div>
-                            <h3 className="font-extrabold text-slate-900 text-sm leading-tight flex items-center gap-2">
+                            <h3 className="font-semibold text-slate-900 text-sm leading-tight flex items-center gap-2">
                               {u.name}
                               {u.isAuthAccount && (
-                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase tracking-tighter">Akun Login</span>
+                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-semibold uppercase tracking-tighter">Akun Login</span>
                               )}
                             </h3>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">@{u.username}</p>
                           </div>
                         </div>
                         {u.isAuthAccount ? (
@@ -3012,11 +3011,11 @@ export default function AdminDashboard({
                           </div>
                         )}
                       </div>
-                      <div className="space-y-2 pt-4 border-t border-slate-50">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
+                      <div className="space-y-2 pt-4 border-t border-slate-200">
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Hak Akses</p>
                         <div className="flex flex-wrap gap-1">
                           {(u.permissions || []).map(p => (
-                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
+                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-semibold uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
                           ))}
                         </div>
                       </div>
@@ -3038,7 +3037,7 @@ export default function AdminDashboard({
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Archive size={18} /></div>
@@ -3050,7 +3049,7 @@ export default function AdminDashboard({
                         <input
                           value={settings.martName}
                           onChange={(e) => setSettings({ ...settings, martName: e.target.value })}
-                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -3058,14 +3057,14 @@ export default function AdminDashboard({
                         <input
                           value={settings.adminPhone}
                           onChange={(e) => setSettings({ ...settings, adminPhone: e.target.value })}
-                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><DollarSign size={18} /></div>
@@ -3077,7 +3076,7 @@ export default function AdminDashboard({
                         <input
                           value={settings.bankName}
                           onChange={(e) => setSettings({ ...settings, bankName: e.target.value })}
-                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -3086,7 +3085,7 @@ export default function AdminDashboard({
                           <input
                             value={settings.bankAccountNumber}
                             onChange={(e) => setSettings({ ...settings, bankAccountNumber: e.target.value })}
-                            className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                            className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -3094,7 +3093,7 @@ export default function AdminDashboard({
                           <input
                             value={settings.bankAccountName}
                             onChange={(e) => setSettings({ ...settings, bankAccountName: e.target.value })}
-                            className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+                            className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
                           />
                         </div>
                       </div>
@@ -3102,7 +3101,7 @@ export default function AdminDashboard({
                   </div>
                 </div>
 
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8 text-rose-600`}>
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8 text-rose-600`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-rose-50 text-rose-600 rounded-lg"><TrendingUp size={18} /></div>
@@ -3112,7 +3111,7 @@ export default function AdminDashboard({
                       <p className="text-xs text-slate-500 leading-relaxed font-medium">Temukan dan perbaiki kesalahan umum pada data, seperti tahun yang salah (contoh: 2825 menjadi 2025).</p>
                       <button
                         onClick={repairYearTypos}
-                        className="w-full py-4 px-6 bg-blue-50 text-blue-600 font-bold text-sm rounded-xl hover:bg-blue-100 transition-all flex items-center justify-center gap-2 border border-blue-100 active:scale-95"
+                        className="w-full py-4 px-6 bg-blue-50 text-blue-600 font-bold text-sm rounded-lg hover:bg-blue-100 transition-all flex items-center justify-center gap-2 border border-blue-100 active:scale-95"
                       >
                         <CheckCircle2 size={18} /> Perbaiki Kesalahan Tahun (28xx)
                       </button>
@@ -3120,20 +3119,20 @@ export default function AdminDashboard({
                   </div>
                 </div>
 
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><RefreshCw size={18} /></div>
                       Auto-Deployment (Vercel)
                     </h3>
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm shadow-emerald-500/50"></div>
-                        <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">{settings.vercelDeployHook ? 'Hook Terhubung' : 'Pipa Deploy Aktif'}</p>
+                      <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-lg">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm"></div>
+                        <p className="text-xs font-semibold text-emerald-600 uppercase tracking-widest">{settings.vercelDeployHook ? 'Hook Terhubung' : 'Pipa Deploy Aktif'}</p>
                       </div>
                       
                       <div className="space-y-3 pt-2">
-                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
                           <div>
                             <p className="text-xs font-bold text-slate-900">Auto-Deploy (Trigger Hook)</p>
                             <p className="text-[11px] text-slate-500">Picu build Vercel otomatis jika data dashboard berubah.</p>
@@ -3152,20 +3151,20 @@ export default function AdminDashboard({
                             placeholder="https://api.vercel.com/v1/integrations/deploy/..."
                             value={settings.vercelDeployHook || ''}
                             onChange={(e) => setSettings({ ...settings, vercelDeployHook: e.target.value })}
-                            className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm font-mono`}
+                            className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all text-sm font-mono`}
                           />
                         </div>
                       </div>
 
-                      <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Perintah Git Manual:</p>
-                        <code className="text-[11px] font-mono font-bold text-blue-600 bg-white px-2 py-1 rounded border border-slate-100 block truncate">npm run deploy</code>
+                      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-2">Perintah Git Manual:</p>
+                        <code className="text-[11px] font-mono font-bold text-blue-600 bg-white px-2 py-1 rounded border border-slate-200 block truncate">npm run deploy</code>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><MessageCircle size={18} /></div>
@@ -3179,7 +3178,7 @@ export default function AdminDashboard({
                           placeholder="Contoh: 123456789:ABCdef..."
                           value={settings.telegramBotToken || ''}
                           onChange={(e) => setSettings({ ...settings, telegramBotToken: e.target.value })}
-                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
+                          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -3188,15 +3187,15 @@ export default function AdminDashboard({
                           placeholder="Contoh: 987654321"
                           value={settings.telegramChatId || ''}
                           onChange={(e) => setSettings({ ...settings, telegramChatId: e.target.value })}
-                          className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
+                          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
                         />
                       </div>
-                      <p className="text-[11px] text-slate-400 leading-relaxed font-medium">Buka <a href="https://t.me/botfather" target="_blank" className="text-blue-600 underline">@BotFather</a> untuk membuat bot dan <a href="https://t.me/userinfobot" target="_blank" className="text-blue-600 underline">@userinfobot</a> untuk mendapatkan Chat ID Anda.</p>
+                      <p className="text-[11px] text-slate-500 leading-relaxed font-medium">Buka <a href="https://t.me/botfather" target="_blank" className="text-blue-600 underline">@BotFather</a> untuk membuat bot dan <a href="https://t.me/userinfobot" target="_blank" className="text-blue-600 underline">@userinfobot</a> untuk mendapatkan Chat ID Anda.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-100 shadow-sm space-y-8`}>
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
                       <div className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Trash2 size={18} /></div>
@@ -3206,16 +3205,16 @@ export default function AdminDashboard({
                       <p className="text-xs text-slate-500 leading-relaxed font-medium">Gunakan tombol di bawah untuk menghapus seluruh data transaksi dari sistem. Aksi ini tidak dapat dibatalkan.</p>
                       <button
                         onClick={clearAllTransactions}
-                        className="w-full py-4 px-6 bg-rose-50 text-rose-600 font-bold text-sm rounded-xl hover:bg-rose-100 transition-all flex items-center justify-center gap-2 border border-rose-100 active:scale-95"
+                        className="w-full py-4 px-6 bg-rose-50 text-rose-600 font-bold text-sm rounded-lg hover:bg-rose-100 transition-all flex items-center justify-center gap-2 border border-rose-100 active:scale-95"
                       >
                         <Trash2 size={18} /> Hapus Seluruh Data Transaksi
                       </button>
 
-                      <div className="pt-4 mt-4 border-t border-slate-100/50">
+                      <div className="pt-4 mt-4 border-t border-slate-200/50">
                         <p className="text-xs text-slate-500 leading-relaxed font-medium mb-4">Hapus seluruh inventaris produk. Gunakan ini jika ingin mereset daftar produk dari awal.</p>
                         <button
                           onClick={clearAllProducts}
-                          className="w-full py-4 px-6 bg-slate-50 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2 border border-slate-100 active:scale-95"
+                          className="w-full py-4 px-6 bg-slate-50 text-slate-600 font-bold text-sm rounded-lg hover:bg-slate-100 transition-all flex items-center justify-center gap-2 border border-slate-200 active:scale-95"
                         >
                           <Package size={18} /> Hapus Seluruh Data Produk
                         </button>
@@ -3268,14 +3267,14 @@ export default function AdminDashboard({
             </div>
             
             <div className="text-center space-y-2">
-              <h4 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Memproses Data</h4>
+              <h4 className="text-lg font-semibold text-slate-900 uppercase tracking-tighter">Memproses Data</h4>
               <p className="text-xs text-slate-500 font-medium">Sedang menyinkronkan data dengan database...</p>
             </div>
 
             <div className="w-full space-y-4">
               <div className="flex justify-between items-end">
-                <span className="text-[11px] font-black text-blue-600 uppercase tracking-widest px-2 py-1 bg-blue-50 rounded-md">Progress Import</span>
-                <span className="text-sm font-black text-slate-900">{Math.round((importStatus.current / importStatus.total) * 100) || 0}%</span>
+                <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-widest px-2 py-1 bg-blue-50 rounded-md">Progress Import</span>
+                <span className="text-sm font-semibold text-slate-900">{Math.round((importStatus.current / importStatus.total) * 100) || 0}%</span>
               </div>
               
               <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner">
@@ -3285,15 +3284,15 @@ export default function AdminDashboard({
                 ></div>
               </div>
               
-              <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">
+              <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">
                 <span>{importStatus.current} Baris</span>
                 <span>{importStatus.total} Total</span>
               </div>
             </div>
 
             <div className="pt-2 flex items-center gap-3">
-              <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-sm shadow-rose-500/50"></div>
-              <p className="text-[11px] text-slate-400 font-black italic uppercase tracking-widest">Jangan tutup atau refresh halaman</p>
+              <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-sm"></div>
+              <p className="text-[11px] text-slate-500 font-semibold italic uppercase tracking-widest">Jangan tutup atau refresh halaman</p>
             </div>
           </div>
         </div>
@@ -3303,18 +3302,18 @@ export default function AdminDashboard({
       {selectedTx && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className={`bg-white w-full max-w-2xl ${UI_RADIUS.outer} shadow-2xl overflow-hidden animate-in zoom-in duration-300 max-h-[90vh] flex flex-col`}>
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center">
               <div>
-                <h3 className="font-extrabold text-slate-900">Detail Pesanan</h3>
+                <h3 className="font-semibold text-slate-900">Detail Pesanan</h3>
                 <p className={UI_TEXT.caption}>{selectedTx.time}</p>
               </div>
-              <button onClick={() => setSelectedTx(null)} className="p-2 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-lg transition-colors"><X size={20} /></button>
+              <button onClick={() => setSelectedTx(null)} className="p-2 bg-slate-50 text-slate-500 hover:text-slate-900 rounded-lg transition-colors"><X size={20} /></button>
             </div>
             <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-8">
                 <div>
                   <label className={UI_TEXT.label}>Pemesan</label>
-                  <p className="font-bold text-slate-800">{selectedTx.customer}</p>
+                  <p className="font-bold text-slate-900">{selectedTx.customer}</p>
                   <p className="text-xs text-slate-500 flex items-center gap-1 mt-1 font-medium"><Phone size={12} /> {selectedTx.phone}</p>
                 </div>
                 <div>
@@ -3361,12 +3360,12 @@ export default function AdminDashboard({
                     const productData = products.find(p => p.id === item.id);
                     const cost = productData?.cost || 0;
                     return (
-                      <div key={idx} className="space-y-2 pb-4 border-b border-slate-50 last:border-0">
+                      <div key={idx} className="space-y-2 pb-4 border-b border-slate-200 last:border-0">
                         <div className="flex justify-between items-center text-sm">
-                          <span className="font-extrabold text-slate-800">{item.qty}x {item.name}</span>
-                          <span className="font-black text-blue-600">{formatIDR(item.price * item.qty)}</span>
+                          <span className="font-semibold text-slate-900">{item.qty}x {item.name}</span>
+                          <span className="font-semibold text-blue-600">{formatIDR(item.price * item.qty)}</span>
                         </div>
-                        <div className="flex gap-4 text-[11px] text-slate-400 font-bold uppercase tracking-tight">
+                        <div className="flex gap-4 text-[11px] text-slate-500 font-bold uppercase tracking-tight">
                           <span>Modal: {formatIDR(cost)}</span>
                           <span>Total Modal: {formatIDR(cost * item.qty)}</span>
                           <span className="text-emerald-500">Net Profit: {formatIDR((item.price - cost) * item.qty)}</span>
@@ -3388,7 +3387,7 @@ export default function AdminDashboard({
                       }
                     }}
                     placeholder="Tulis catatan di sini... (otomatis tersimpan)"
-                    className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 transition-all resize-none h-24 font-medium`}
+                    className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/10 transition-all resize-none h-24 font-medium`}
                   />
                   <FileText size={14} className="absolute right-3 bottom-3 text-slate-300" />
                 </div>
@@ -3396,10 +3395,10 @@ export default function AdminDashboard({
 
               <div className={`p-5 bg-blue-50/50 ${UI_RADIUS.inner} border border-blue-50 flex justify-between items-center`}>
                 <span className="font-bold text-slate-500 text-xs">Total Pembayaran</span>
-                <span className="text-xl font-black text-blue-600 tracking-tight">{formatIDR(selectedTx.total)}</span>
+                <span className="text-xl font-semibold text-blue-600 tracking-tight">{formatIDR(selectedTx.total)}</span>
               </div>
             </div>
-            <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
+            <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-end">
               <button onClick={() => setSelectedTx(null)} className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner}`}>Tutup</button>
             </div>
           </div>

@@ -11,42 +11,42 @@ export default function LoginPage({ onLogin, onBack }) {
             <Lock size={28} />
           </div>
           <h2 className="text-xl font-bold text-slate-900">Portal Admin</h2>
-          <p className="text-slate-400 text-xs mt-1">Silakan masuk untuk mengelola toko</p>
+          <p className="text-slate-500 text-xs mt-1">Silakan masuk untuk mengelola toko</p>
         </div>
         <form onSubmit={onLogin} className="space-y-4">
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Username</label>
             <div className="relative">
-              <User size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <User size={16} className="absolute left-3.5 top-3.5 text-slate-500" />
               <input 
                 required 
                 name="username" 
-                className={`w-full p-3.5 pl-11 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium`} 
+                className={`w-full p-3.5 pl-11 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium`} 
               />
             </div>
           </div>
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Password</label>
             <div className="relative">
-              <Key size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
+              <Key size={16} className="absolute left-3.5 top-3.5 text-slate-500" />
               <input 
                 required 
                 name="password" 
                 type="password" 
-                className={`w-full p-3.5 pl-11 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium`} 
+                className={`w-full p-3.5 pl-11 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium`} 
               />
             </div>
           </div>
           <button 
             type="submit" 
-            className={`w-full py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-[0.98]`}
+            className={`w-full py-4 bg-blue-600 text-white ${UI_RADIUS.inner} font-bold shadow-lg hover:bg-blue-700 transition-all active:scale-[0.98]`}
           >
             Masuk Sekarang
           </button>
         </form>
         <button 
           onClick={onBack} 
-          className="w-full text-slate-400 text-xs font-semibold hover:text-slate-600 transition text-center"
+          className="w-full text-slate-500 text-xs font-semibold hover:text-slate-600 transition text-center"
         >
           Kembali ke Beranda Toko
         </button>

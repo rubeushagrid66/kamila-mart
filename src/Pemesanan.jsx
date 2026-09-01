@@ -78,7 +78,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
 
           <button
             onClick={handleResetApp}
-            className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} w-full py-4.5 font-black`}
+            className={`${UI_BUTTON.base} ${UI_BUTTON.secondary} ${UI_RADIUS.inner} w-full py-4.5 font-semibold`}
           >
             Selesai & Kembali Belanja
           </button>
@@ -88,11 +88,11 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
   }
 
   return (
-    <div className="max-w-xl mx-auto bg-slate-50 min-h-screen flex flex-col relative shadow-2xl border-x border-slate-100">
-      <header className="flex justify-between items-center px-6 py-5 sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-100 z-20">
+    <div className="max-w-xl mx-auto bg-slate-50 min-h-screen flex flex-col relative shadow-2xl border-x border-slate-200">
+      <header className="flex justify-between items-center px-6 py-5 sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-200 z-20">
         <div>
-          <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">{settings?.martName || 'Kamila Mart'}</h1>
-          <p className="text-blue-600 text-[11px] font-black flex items-center gap-1 uppercase tracking-[0.1em]">Layanan Harian Keluarga</p>
+          <h1 className="text-xl font-semibold text-slate-900 tracking-tight leading-none mb-1">{settings?.martName || 'Kamila Mart'}</h1>
+          <p className="text-blue-600 text-[11px] font-semibold flex items-center gap-1 uppercase tracking-[0.1em]">Layanan Harian Keluarga</p>
         </div>
         <div className="flex items-center gap-3">
           {settings?.adminPhone && (
@@ -113,7 +113,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className={UI_TEXT.h2}>Katalog Produk</h2>
-            <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[11px] font-black uppercase">{products.filter(p => !p.isArchived).length} Item</span>
+            <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[11px] font-semibold uppercase">{products.filter(p => !p.isArchived).length} Item</span>
           </div>
           <div className="grid grid-cols-1 gap-4">
             {products.filter(p => p.status === 'aktif' || (!p.status && !p.isArchived)).map(p => {
@@ -122,28 +122,28 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
               return (
                 <div
                   key={p.id}
-                  className={`p-4 bg-white ${UI_RADIUS.outer} border transition-all duration-300 flex items-center gap-4 ${qty > 0 ? 'border-blue-500 shadow-lg shadow-blue-500/5 scale-[1.02]' : 'border-slate-100 shadow-sm'} ${isOutOfStock ? 'opacity-60 grayscale' : ''}`}
+                  className={`p-4 bg-white ${UI_RADIUS.outer} border transition-all duration-300 flex items-center gap-4 ${qty > 0 ? 'border-blue-500 shadow-lg shadow-blue-500/5 scale-[1.02]' : 'border-slate-200 shadow-sm'} ${isOutOfStock ? 'opacity-60 grayscale' : ''}`}
                 >
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-900 text-sm truncate mb-1">{p.name}</h3>
                     <div className="flex items-center gap-3">
-                      <p className="text-blue-600 font-black text-sm">{formatIDR(p.price)}</p>
+                      <p className="text-blue-600 font-semibold text-sm">{formatIDR(p.price)}</p>
                       {isOutOfStock ? (
-                        <span className="text-[10px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-sm">Habis</span>
+                        <span className="text-[10px] font-semibold bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-sm">Habis</span>
                       ) : (
-                        <span className={`text-[10px] font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-400'} uppercase tracking-tight`}>Stok: {p.stock}</span>
+                        <span className={`text-[10px] font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-500'} uppercase tracking-tight`}>Stok: {p.stock}</span>
                       )}
                     </div>
                   </div>
-                  <div className={`flex items-center bg-slate-50 ${UI_RADIUS.inner} border border-slate-100 p-1 ${isOutOfStock ? 'pointer-events-none' : ''}`}>
+                  <div className={`flex items-center bg-slate-50 ${UI_RADIUS.inner} border border-slate-200 p-1 ${isOutOfStock ? 'pointer-events-none' : ''}`}>
                     <button
                       onClick={() => handleAddToCart(p, -1)}
                       disabled={isOutOfStock || qty === 0}
-                      className={`p-2 text-slate-400 hover:text-rose-500 hover:bg-white ${UI_RADIUS.inner} transition-all disabled:opacity-30`}
+                      className={`p-2 text-slate-500 hover:text-rose-500 hover:bg-white ${UI_RADIUS.inner} transition-all disabled:opacity-30`}
                     >
                       <Minus size={16} />
                     </button>
-                    <span className="w-8 text-center text-sm font-black text-slate-900 tabular-nums">{qty}</span>
+                    <span className="w-8 text-center text-sm font-semibold text-slate-900 tabular-nums">{qty}</span>
                     <button
                       onClick={() => handleAddToCart(p, 1)}
                       disabled={isOutOfStock || (qty >= p.stock)}
@@ -163,7 +163,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
           <div className="flex items-center justify-between mb-6">
             <h2 className={UI_TEXT.h2}>Informasi Pengantaran</h2>
           </div>
-          <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} shadow-sm border border-slate-100 space-y-8`}>
+          <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} shadow-sm border border-slate-200 space-y-8`}>
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-2">
@@ -172,7 +172,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                     placeholder="Masukkan nama Anda"
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                    className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-bold text-sm text-slate-900`}
+                    className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-bold text-sm text-slate-900`}
                   />
                 </div>
                 <div className="space-y-2">
@@ -182,7 +182,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                     type="tel"
                     value={customerInfo.phone}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                    className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-bold text-sm text-slate-900`}
+                    className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-bold text-sm text-slate-900`}
                   />
                 </div>
               </div>
@@ -193,7 +193,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                   rows="3"
                   value={customerInfo.address}
                   onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
-                  className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-bold text-sm text-slate-900 resize-none h-28`}
+                  className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 transition-all font-bold text-sm text-slate-900 resize-none h-28`}
                 />
               </div>
             </div>
@@ -203,14 +203,14 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setCustomerInfo({ ...customerInfo, paymentMethod: 'cod' })}
-                  className={`flex flex-col items-center justify-center gap-3 p-5 ${UI_RADIUS.outer} font-black text-xs border-2 transition-all ${customerInfo.paymentMethod === 'cod' ? 'bg-slate-900 text-white border-slate-900 shadow-xl scale-105' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-200'}`}
+                  className={`flex flex-col items-center justify-center gap-3 p-5 ${UI_RADIUS.outer} font-semibold text-xs border-2 transition-all ${customerInfo.paymentMethod === 'cod' ? 'bg-slate-900 text-white border-slate-900 shadow-xl scale-105' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-200'}`}
                 >
                   <Wallet size={24} />
                   <span>Bayar di Tempat</span>
                 </button>
                 <button
                   onClick={() => setCustomerInfo({ ...customerInfo, paymentMethod: 'transfer' })}
-                  className={`flex flex-col items-center justify-center gap-3 p-5 ${UI_RADIUS.outer} font-black text-xs border-2 transition-all ${customerInfo.paymentMethod === 'transfer' ? 'bg-slate-900 text-white border-slate-900 shadow-xl scale-105' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-200'}`}
+                  className={`flex flex-col items-center justify-center gap-3 p-5 ${UI_RADIUS.outer} font-semibold text-xs border-2 transition-all ${customerInfo.paymentMethod === 'transfer' ? 'bg-slate-900 text-white border-slate-900 shadow-xl scale-105' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-200'}`}
                 >
                   <CreditCard size={24} />
                   <span>Transfer Bank</span>
@@ -224,11 +224,11 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                   <div className={`p-2 bg-blue-600 text-white ${UI_RADIUS.inner}`}>
                     <Info size={14} />
                   </div>
-                  <span className="text-xs font-black text-blue-900 uppercase tracking-widest">Detail Rekening</span>
+                  <span className="text-xs font-semibold text-blue-900 uppercase tracking-widest">Detail Rekening</span>
                 </div>
                 <div className={`p-5 bg-white ${UI_RADIUS.inner} border border-blue-100 shadow-sm space-y-2`}>
-                  <p className="text-[11px] text-blue-400 font-black uppercase tracking-[0.1em]">{settings?.bankName || 'BANK'}</p>
-                  <p className="font-black text-slate-900 text-lg tracking-tight tabular-nums">{settings?.bankAccountNumber || '-'}</p>
+                  <p className="text-[11px] text-blue-400 font-semibold uppercase tracking-[0.1em]">{settings?.bankName || 'BANK'}</p>
+                  <p className="font-semibold text-slate-900 text-lg tracking-tight tabular-nums">{settings?.bankAccountNumber || '-'}</p>
                   <p className="text-xs text-slate-500 font-bold">a/n {settings?.bankAccountName || '-'}</p>
                 </div>
               </div>
@@ -243,8 +243,8 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
       <div className="fixed bottom-6 left-0 right-0 px-6 max-w-xl mx-auto z-30">
         <div className={`bg-slate-900/95 backdrop-blur-xl p-4 ${UI_RADIUS.outer} border border-white/10 shadow-2xl flex items-center justify-between gap-6 animate-in slide-in-from-bottom-6 duration-700`}>
           <div className="flex-1 min-w-0 pl-2">
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] mb-1">Total Bayar</p>
-            <p className="text-xl font-black text-white truncate tabular-nums">{formatIDR(total)}</p>
+            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-[0.1em] mb-1">Total Bayar</p>
+            <p className="text-xl font-semibold text-white truncate tabular-nums">{formatIDR(total)}</p>
           </div>
           <button
             onClick={handleOrderSubmit}

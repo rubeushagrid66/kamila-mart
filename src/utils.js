@@ -38,34 +38,35 @@ export const EXTRA_PERMISSIONS = [
   { id: 'edit_profit_notes', label: 'Edit Catatan Laporan Keuntungan' },
 ];
 
+// One radius system: cards/panels use `outer`, every control/input/chip uses `inner`.
 export const UI_RADIUS = {
   outer: 'rounded-2xl',
-  inner: 'rounded-xl',
+  inner: 'rounded-lg',
   full: 'rounded-full'
 };
 
 export const UI_SPACING = {
-  page: 'p-6 md:p-14',
-  section: 'space-y-8',
-  card: 'p-8',
-  gap: 'gap-6'
+  page: 'p-5 md:p-8',
+  section: 'space-y-6',
+  card: 'p-6',
+  gap: 'gap-5'
 };
 
 export const UI_TEXT = {
-  h1: 'text-2xl md:text-3xl font-bold text-slate-900 tracking-tight',
+  h1: 'text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight',
   h2: 'text-lg md:text-xl font-semibold text-slate-900 tracking-tight',
-  h3: 'text-[15px] font-semibold text-slate-800',
+  h3: 'text-[15px] font-semibold text-slate-900',
   body: 'text-sm text-slate-600',
   label: 'text-[11px] font-semibold text-slate-500 uppercase tracking-wider',
   caption: 'text-xs text-slate-500'
 };
 
 export const UI_BUTTON = {
-  base: 'px-6 py-3.5 font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2',
-  primary: 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 disabled:opacity-50',
-  secondary: 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm',
+  base: 'px-5 py-2.5 font-semibold text-sm transition-colors active:scale-[0.98] flex items-center justify-center gap-2 rounded-lg',
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50',
+  secondary: 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50',
   danger: 'bg-rose-50 text-rose-600 hover:bg-rose-100',
-  ghost: 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+  ghost: 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
 };
 
 // Utility Functions
