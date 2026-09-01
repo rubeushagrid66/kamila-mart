@@ -30,3 +30,12 @@ h1, h2, h3, h4 {
 }
 
 input, textarea, select, button { font-family: inherit; }
+
+/* Safari on iOS auto-zooms the page when a form field's computed font-size
+   is below 16px at focus (typing) time. Force 16px on mobile viewports so
+   focusing/typing in any field never triggers the zoom. */
+@media (max-width: 639px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
