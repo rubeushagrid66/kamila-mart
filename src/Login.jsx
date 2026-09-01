@@ -15,7 +15,7 @@ export default function LoginPage({ onLogin, onBack }) {
         </div>
         <form onSubmit={onLogin} className="space-y-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Username</label>
+            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Username</label>
             <div className="relative">
               <User size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
               <input 
@@ -26,7 +26,7 @@ export default function LoginPage({ onLogin, onBack }) {
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Password</label>
+            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Password</label>
             <div className="relative">
               <Key size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
               <input 

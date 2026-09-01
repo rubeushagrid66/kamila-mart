@@ -21,10 +21,10 @@ export default {
           50:  '#F6F7F9',
           100: '#EEF0F4',
           200: '#E4E7ED',
-          300: '#D3D8E1',
-          400: '#9EA6B4',
-          500: '#79828F',
-          600: '#5B6472',
+          300: '#CDD3DD',
+          400: '#828B99',
+          500: '#626B79',
+          600: '#4C5563',
           700: '#3D4552',
           800: '#2A313D',
           900: '#1C2331',
@@ -67,7 +67,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['"Helvetica Neue"', 'Helvetica', 'Arial', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
       },
       // dial back the shouty weights the app leans on everywhere
       fontWeight: {
@@ -75,7 +75,22 @@ export default {
         black: '700',
       },
       letterSpacing: {
-        widest: '0.06em',
+        tighter: '-0.02em',
+        tight: '-0.012em',
+        widest: '0.08em',
+      },
+      // tighter, more readable type scale: small text bumped up, oversized
+      // headings pulled down so the hierarchy has less of a jump
+      fontSize: {
+        '2xs':  ['0.6875rem', { lineHeight: '1rem' }],      // 11px
+        xs:     ['0.78125rem', { lineHeight: '1.1rem' }],   // 12.5px
+        sm:     ['0.875rem', { lineHeight: '1.35rem' }],    // 14px
+        base:   ['1rem', { lineHeight: '1.55rem' }],        // 16px
+        lg:     ['1.0625rem', { lineHeight: '1.5rem' }],    // 17px
+        xl:     ['1.1875rem', { lineHeight: '1.55rem' }],   // 19px
+        '2xl':  ['1.375rem', { lineHeight: '1.75rem' }],    // 22px
+        '3xl':  ['1.625rem', { lineHeight: '2rem' }],       // 26px
+        '4xl':  ['2rem', { lineHeight: '2.35rem' }],        // 32px
       },
       // calmer corners
       borderRadius: {

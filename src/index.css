@@ -9,15 +9,24 @@
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Helvetica Neue', Helvetica, Arial, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   background: #F6F7F9;
   color: #1C2331;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
-/* Tighten headings/figures the way Helvetica wants */
-h1, h2, h3 {
-  letter-spacing: -0.01em;
+@media (min-width: 640px) {
+  html, body { font-size: 16px; }
 }
+
+/* Consistent heading rhythm regardless of the utility soup */
+h1, h2, h3, h4 {
+  letter-spacing: -0.012em;
+  line-height: 1.25;
+}
+
+input, textarea, select, button { font-family: inherit; }

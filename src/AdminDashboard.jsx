@@ -234,14 +234,14 @@ function ProductModal({ product, onClose, onSave }) {
           </div>
 
           <div className="space-y-4 pt-6 border-t border-slate-100">
-            <h4 className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2 w-fit">
+            <h4 className="text-[11px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-2 w-fit">
               <Plus size={14} /> Tambah Stok & Pembayaran
             </h4>
             
             <div className={`p-6 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-6 animate-in fade-in duration-500`}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Jumlah Stok Baru</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Jumlah Stok Baru</label>
                   <input
                     type="number"
                     value={newPayment.qty}
@@ -251,7 +251,7 @@ function ProductModal({ product, onClose, onSave }) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Pembayaran</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Total Pembayaran</label>
                   <div className="relative">
                     <span className="absolute left-4 top-4 text-slate-400 text-xs font-bold">Rp</span>
                     <input
@@ -265,7 +265,7 @@ function ProductModal({ product, onClose, onSave }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tahun</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Tahun</label>
                   <select
                     value={newPayment.year}
                     onChange={(e) => setNewPayment({ ...newPayment, year: Number(e.target.value) })}
@@ -275,7 +275,7 @@ function ProductModal({ product, onClose, onSave }) {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Bulan</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Bulan</label>
                   <select
                     value={newPayment.month}
                     onChange={(e) => setNewPayment({ ...newPayment, month: Number(e.target.value) })}
@@ -290,7 +290,7 @@ function ProductModal({ product, onClose, onSave }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Status</label>
                   <select
                     value={newPayment.status}
                     onChange={(e) => setNewPayment({ ...newPayment, status: e.target.value })}
@@ -301,7 +301,7 @@ function ProductModal({ product, onClose, onSave }) {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sumber Dana (Jika Lunas)</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Sumber Dana (Jika Lunas)</label>
                   <select
                     value={newPayment.source}
                     onChange={(e) => setNewPayment({ ...newPayment, source: e.target.value })}
@@ -323,11 +323,11 @@ function ProductModal({ product, onClose, onSave }) {
             </div>
 
             <div className="space-y-3">
-              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-4">
+              <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-4">
                 <CreditCard size={14} /> Riwayat Pembayaran Vendor
               </h4>
               {(formData.vendorPayments || []).length === 0 ? (
-                <p className="text-center py-8 text-[10px] text-slate-400 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">Belum ada riwayat stock</p>
+                <p className="text-center py-8 text-[11px] text-slate-400 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">Belum ada riwayat stock</p>
               ) : (
                 <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto pr-1">
                   {[...(formData.vendorPayments || [])].reverse().map(p => (
@@ -338,12 +338,12 @@ function ProductModal({ product, onClose, onSave }) {
                           <button
                             type="button"
                             onClick={() => toggleVendorPaymentStatus(p.id)}
-                            className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter cursor-pointer hover:scale-105 transition-all ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
+                            className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter cursor-pointer hover:scale-105 transition-all ${p.status === 'Sudah Bayar' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
                           >
                             {p.status}
                           </button>
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-bold uppercase tracking-tight">
                           <span>{p.qty} UNIT</span>
                           <span>•</span>
                           <span>{["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"][p.month]} {p.year}</span>
@@ -479,7 +479,7 @@ function UserModal({ user, onClose, onSave }) {
               placeholder="Masukkan nama lengkap"
               className={`w-full p-4 bg-slate-50 border ${errors.name ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
-            {errors.name && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.name}</p>}
+            {errors.name && <p className="text-[11px] text-rose-500 font-bold ml-1">{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
@@ -493,7 +493,7 @@ function UserModal({ user, onClose, onSave }) {
               placeholder="Username akun"
               className={`w-full p-4 bg-slate-50 border ${errors.username ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
-            {errors.username && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.username}</p>}
+            {errors.username && <p className="text-[11px] text-rose-500 font-bold ml-1">{errors.username}</p>}
           </div>
 
           <div className="space-y-2">
@@ -508,7 +508,7 @@ function UserModal({ user, onClose, onSave }) {
               placeholder="Password akun"
               className={`w-full p-4 bg-slate-50 border ${errors.password ? 'border-rose-400' : 'border-slate-100'} ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm text-slate-900`}
             />
-            {errors.password && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.password}</p>}
+            {errors.password && <p className="text-[11px] text-rose-500 font-bold ml-1">{errors.password}</p>}
           </div>
 
           <div className="space-y-4 pt-4 border-t border-slate-50">
@@ -522,7 +522,7 @@ function UserModal({ user, onClose, onSave }) {
                     onChange={() => togglePermission(perm)}
                     className="w-4 h-4 accent-blue-600 rounded"
                   />
-                  <span className={`text-[10px] font-bold uppercase tracking-tight ${formData.permissions.includes(perm) ? 'text-blue-600' : 'text-slate-500'}`}>{perm.replace(/_/g, ' ')}</span>
+                  <span className={`text-[11px] font-bold uppercase tracking-tight ${formData.permissions.includes(perm) ? 'text-blue-600' : 'text-slate-500'}`}>{perm.replace(/_/g, ' ')}</span>
                 </label>
               ))}
             </div>
@@ -643,17 +643,17 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className={`p-8 bg-slate-900 text-white ${UI_RADIUS.outer} shadow-xl relative overflow-hidden`}>
           <div className="relative z-10">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Keuntungan ({selectedYear})</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Keuntungan ({selectedYear})</p>
             <p className="text-3xl font-black tracking-tighter">{formatIDR(yearlyTotal.profit)}</p>
           </div>
           <DollarSign size={80} className="absolute -bottom-4 -right-4 text-white/5" />
         </div>
         <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-emerald-600">Omzet Berhasil</p>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-emerald-600">Omzet Berhasil</p>
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{formatIDR(yearlyTotal.revenue)}</p>
         </div>
         <div className={`p-8 bg-white ${UI_RADIUS.outer} border border-slate-100 shadow-sm`}>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 text-blue-600">Total Transaksi</p>
           <p className="text-2xl font-black text-slate-900 tracking-tighter">{yearlyTotal.totalTx} Pesanan</p>
         </div>
       </div>
@@ -671,38 +671,38 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
               <div className="flex justify-between items-center">
                 <span className="font-bold text-slate-700 text-sm">{s.monthName}</span>
                 {s.profit > 0 ? (
-                  <div className="flex items-center text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[10px] font-bold uppercase tracking-tight">Profit</span></div>
+                  <div className="flex items-center text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[11px] font-bold uppercase tracking-tight">Profit</span></div>
                 ) : (
-                  <div className="text-slate-300 font-bold text-[10px]">-</div>
+                  <div className="text-slate-300 font-bold text-[11px]">-</div>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Jumlah Item</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Jumlah Item</p>
                   <div className="flex gap-2">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-bold">{s.totalTx} Transaksi</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px] font-bold">{s.totalTx} Transaksi</span>
                   </div>
                 </div>
                 <div className="bg-slate-50/50 p-3 rounded-lg border border-slate-50">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Keuntungan</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Keuntungan</p>
                   <p className="font-black text-slate-900 text-[13px]">{formatIDR(s.profit)}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-50">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Transaksi</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transaksi</span>
                   <span className="text-xs font-bold text-slate-700">{s.totalTx}</span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Terjual</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terjual</span>
                   <span className="text-xs font-black text-blue-600">{s.itemsSold} unit</span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center pt-1 px-1">
-                <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Omzet</span>
+                <span className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">Total Omzet</span>
                 <span className="text-slate-600 font-bold text-sm tracking-tight">{formatIDR(s.revenue)}</span>
               </div>
             </div>
@@ -713,7 +713,7 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left min-w-[1000px]">
             <thead>
-              <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                 <th className="px-6 py-4">Bulan</th>
                 <th className="px-6 py-4 text-center">Transaksi</th>
                 <th className="px-6 py-4 text-center text-blue-600">Terjual</th>
@@ -727,16 +727,16 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
                 <tr key={i} className={`text-sm hover:bg-slate-50/30 transition-colors ${s.profit > 0 ? '' : 'opacity-60'}`}>
                   <td className="px-6 py-4 font-bold text-slate-700">{s.monthName}</td>
                   <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[10px] font-bold">{s.totalTx}</span>
+                    <span className="px-2 py-0.5 bg-slate-50 text-slate-600 rounded-md text-[11px] font-bold">{s.totalTx}</span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black">{s.itemsSold}</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[11px] font-black">{s.itemsSold}</span>
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-500">{formatIDR(s.revenue)}</td>
                   <td className="px-6 py-4 font-black text-slate-900">{formatIDR(s.profit)}</td>
                   <td className="px-6 py-4 text-right">
                     {s.profit > 0 ? (
-                      <div className="flex items-center justify-end text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[10px] font-bold uppercase">Profit</span></div>
+                      <div className="flex items-center justify-end text-emerald-500 gap-1"><ArrowUpRight size={14} /><span className="text-[11px] font-bold uppercase">Profit</span></div>
                     ) : (
                       <div className="flex items-center justify-end text-slate-300 gap-1">-</div>
                     )}
@@ -923,7 +923,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[1200px]">
             <thead>
-              <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
+              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
                 <th className="px-6 py-4">Bulan</th>
                 <th className="px-6 py-4">Total Profit</th>
                 <th className="px-6 py-4">Realisasi Profit</th>
@@ -955,7 +955,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                       }}
                       className="group flex flex-col items-center justify-center p-2 hover:bg-slate-100 rounded-lg transition-all"
                     >
-                      <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.musholaPercent}:{s.internalPercent}</span>
+                      <span className="text-[11px] font-bold text-slate-400 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{s.marbotPercent}:{s.musholaPercent}:{s.internalPercent}</span>
                       <Settings size={10} className="text-slate-300 group-hover:text-blue-500 mt-0.5" />
                     </button>
                   </td>
@@ -1002,11 +1002,11 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
                   <select
                     value={tempFormula.marbotSource}
                     onChange={(e) => setTempFormula({ ...tempFormula, marbotSource: e.target.value })}
-                    className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
+                    className="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
                   >
                     <option value="cod">Bayar di Tempat (Cash)</option>
                     <option value="transfer">Transfer</option>
@@ -1026,11 +1026,11 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
                   <select
                     value={tempFormula.musholaSource}
                     onChange={(e) => setTempFormula({ ...tempFormula, musholaSource: e.target.value })}
-                    className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
+                    className="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
                   >
                     <option value="cod">Bayar di Tempat (Cash)</option>
                     <option value="transfer">Transfer</option>
@@ -1050,11 +1050,11 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                 />
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Sumber Dana</span>
                   <select
                     value={tempFormula.internalSource}
                     onChange={(e) => setTempFormula({ ...tempFormula, internalSource: e.target.value })}
-                    className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
+                    className="text-[11px] font-bold text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 outline-none"
                   >
                     <option value="cod">Bayar di Tempat (Cash)</option>
                     <option value="transfer">Transfer</option>
@@ -1068,7 +1068,7 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
               </div>
 
               {Number(tempFormula.marbotPercent) + Number(tempFormula.musholaPercent) + Number(tempFormula.internalPercent) > 100 && (
-                <p className="text-[10px] text-rose-500 font-bold text-center animate-pulse">* Total tidak boleh melebihi 100%!</p>
+                <p className="text-[11px] text-rose-500 font-bold text-center animate-pulse">* Total tidak boleh melebihi 100%!</p>
               )}
 
               {!editingMonthFormula && (
@@ -1077,8 +1077,8 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                     {applyToAll && <CheckCircle2 size={12} />}
                   </div>
                   <div className="flex-1">
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${applyToAll ? 'text-amber-700' : 'text-slate-500'}`}>Apply to All Months</p>
-                    <p className="text-[9px] text-slate-400 font-medium">Terapkan formula ini ke seluruh bulan di tahun {selectedYear}</p>
+                    <p className={`text-[11px] font-black uppercase tracking-widest ${applyToAll ? 'text-amber-700' : 'text-slate-500'}`}>Apply to All Months</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Terapkan formula ini ke seluruh bulan di tahun {selectedYear}</p>
                   </div>
                 </div>
               )}
@@ -1187,10 +1187,10 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
+                       <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t.time}</p>
                        <button
                          onClick={(e) => { e.stopPropagation(); onToggleStatus && onToggleStatus(t); }}
-                         className={`text-[9px] font-bold px-1.5 py-0.5 rounded border transition-colors ${
+                         className={`text-[10px] font-bold px-1.5 py-0.5 rounded border transition-colors ${
                            (t.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
                              ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
                              : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
@@ -1221,16 +1221,16 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
 
                 <div className={`flex justify-between items-center bg-slate-50/50 p-4 ${UI_RADIUS.inner} border border-slate-50`}>
                   <div className="flex flex-col">
-                    <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">Total Bayar</span>
+                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Total Bayar</span>
                     <span className="text-blue-600 font-black text-xl tracking-tight">{formatIDR(t.total)}</span>
                   </div>
-                  <span className={`px-2.5 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[10px] font-black text-slate-500 uppercase tracking-tighter shadow-sm`}>
+                  <span className={`px-2.5 py-1 bg-white border border-slate-100 ${UI_RADIUS.inner} text-[11px] font-black text-slate-500 uppercase tracking-tighter shadow-sm`}>
                     {t.method === 'transfer' ? 'Transfer' : 'Cash'}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
-                  <p className="text-[10px] font-bold text-slate-400">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
+                  <p className="text-[11px] font-bold text-slate-400">{t.method === 'transfer' ? 'Transfer' : 'Cash'}</p>
                   <div className="flex gap-1">
                     <button
                       onClick={() => onEdit(t)}
@@ -1260,7 +1260,7 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left min-w-[1000px]">
           <thead>
-            <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+            <tr className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
               <th className="py-4 px-4 text-center">No</th>
               <th className="py-4 px-4">Tanggal pesanan</th>
               <th className="py-4 px-4">Nomor Rumah</th>
@@ -1279,19 +1279,19 @@ function TransactionList({ transactions, products, onDetail, onEdit, onDelete, i
                 <td className="py-4 px-4 text-center text-slate-400 font-medium">{item.no}</td>
                 <td className="py-4 px-4 whitespace-nowrap font-medium text-slate-600">{item.tanggalPesanan}</td>
                 <td className="py-4 px-4 font-extrabold text-slate-900">{item.nomorRumah}</td>
-                <td className="py-4 px-4 font-mono text-[10px] text-slate-500">{item.kodeBarang}</td>
+                <td className="py-4 px-4 font-mono text-[11px] text-slate-500">{item.kodeBarang}</td>
                 <td className="py-4 px-4 font-bold text-slate-800">{item.namaBarang}</td>
                 <td className="py-4 px-4 text-center font-black text-blue-600">{item.jumlah}</td>
                 <td className="py-4 px-4 text-right font-black text-blue-600">{formatIDR(item.totalHargaJual)}</td>
                 <td className="py-4 px-4">
-                  <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                  <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter ${item.caraPembayaran === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     {item.caraPembayaran}
                   </span>
                 </td>
                 <td className="py-4 px-4 text-center">
                   <button
                     onClick={() => onToggleStatus && onToggleStatus(item.originalTx)}
-                    className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter cursor-pointer transition-colors border ${
+                    className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter cursor-pointer transition-colors border ${
                       (item.originalTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
                         ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
                         : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
@@ -1441,7 +1441,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Pelanggan</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Pelanggan</label>
               <input
                 required
                 value={formData.customer}
@@ -1450,7 +1450,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">WhatsApp</label>
               <input
                 required
                 value={formData.phone}
@@ -1461,7 +1461,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Alamat</label>
+            <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Alamat</label>
             <textarea
               required
               value={formData.address}
@@ -1472,7 +1472,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
           </div>
 
           <div className="space-y-4 pt-4 border-t border-slate-100">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Item Transaksi</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Item Transaksi</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <select
                 value={selectedProduct}
@@ -1539,7 +1539,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
 
           <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Metode</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Metode</label>
               <select
                 value={formData.method}
                 onChange={(e) => setFormData({ ...formData, method: e.target.value })}
@@ -1550,7 +1550,7 @@ function TransactionModal({ products, onClose, onSave, transaction = null, saveP
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label>
               <input
                 type="datetime-local"
                 value={formData.date.slice(0, 16)}
@@ -1731,10 +1731,10 @@ function BalanceReport({ transactions, products, isLoading = false }) {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50">
-                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Bulan</th>
-                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Bayar di Tempat (Cash)</th>
-                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Transfer</th>
-                <th className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Total Balance</th>
+                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Bulan</th>
+                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Bayar di Tempat (Cash)</th>
+                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Transfer</th>
+                <th className="py-5 px-8 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Total Balance</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -1813,7 +1813,7 @@ function DashboardCharts({ transactions, products }) {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-4 border border-slate-100 shadow-xl rounded-2xl animate-in fade-in zoom-in duration-200">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">{label}</p>
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center gap-3 mb-1">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></div>
@@ -1840,7 +1840,7 @@ function DashboardCharts({ transactions, products }) {
             <button
               key={n}
               onClick={() => setRange(n)}
-              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap ${range === n ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
               {n} Bulan
             </button>
@@ -1853,17 +1853,17 @@ function DashboardCharts({ transactions, products }) {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
-              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">Status Pembayaran</p>
+              <p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.1em] mb-1">Status Pembayaran</p>
               <h4 className="text-lg font-black text-slate-900 leading-tight">Perbandingan Transaksi</h4>
             </div>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full shadow-sm"></div>
-                <span className="text-[10px] font-bold text-slate-400">Sudah Bayar</span>
+                <span className="text-[11px] font-bold text-slate-400">Sudah Bayar</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-rose-500 rounded-full shadow-sm"></div>
-                <span className="text-[10px] font-bold text-slate-400">Belum Bayar</span>
+                <span className="text-[11px] font-bold text-slate-400">Belum Bayar</span>
               </div>
             </div>
           </div>
@@ -1911,12 +1911,12 @@ function DashboardCharts({ transactions, products }) {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
-              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Pertumbuhan Profit</p>
+              <p className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.1em] mb-1">Pertumbuhan Profit</p>
               <h4 className="text-lg font-black text-slate-900 leading-tight">Total Profit Bersih</h4>
             </div>
             <div className="flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full gap-1.5 self-start sm:self-center">
               <TrendingUp size={12} />
-              <span className="text-[10px] font-black uppercase tracking-tight">Real-time</span>
+              <span className="text-[11px] font-black uppercase tracking-tight">Real-time</span>
             </div>
           </div>
           <div className="h-[280px] w-full">
@@ -2744,12 +2744,12 @@ export default function AdminDashboard({
                     {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                   <div className="flex bg-slate-100 p-1 rounded-lg">
-                    <button onClick={() => setTxSelectedStatus('all')} className={`px-3 py-1.5 rounded-md text-[10px] font-bold ${txSelectedStatus === 'all' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>Semua</button>
-                    <button onClick={() => setTxSelectedStatus('Belum Bayar')} className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1 ${txSelectedStatus === 'Belum Bayar' ? 'bg-amber-50 text-amber-600 shadow-sm border border-amber-200/50' : 'text-slate-500 hover:text-slate-700'}`}>
-                      Belum Bayar <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[8px] leading-none mb-0.5">{transactions?.filter(t => t.paymentStatus === 'Belum Bayar').length || 0}</span>
+                    <button onClick={() => setTxSelectedStatus('all')} className={`px-3 py-1.5 rounded-md text-[11px] font-bold ${txSelectedStatus === 'all' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>Semua</button>
+                    <button onClick={() => setTxSelectedStatus('Belum Bayar')} className={`px-3 py-1.5 rounded-md text-[11px] font-bold flex items-center gap-1 ${txSelectedStatus === 'Belum Bayar' ? 'bg-amber-50 text-amber-600 shadow-sm border border-amber-200/50' : 'text-slate-500 hover:text-slate-700'}`}>
+                      Belum Bayar <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px] leading-none mb-0.5">{transactions?.filter(t => t.paymentStatus === 'Belum Bayar').length || 0}</span>
                     </button>
-                    <button onClick={() => setTxSelectedStatus('Sudah Bayar')} className={`px-3 py-1.5 rounded-md text-[10px] font-bold flex items-center gap-1 ${txSelectedStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-200/50' : 'text-slate-500 hover:text-slate-700'}`}>
-                      Sudah Bayar <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[8px] leading-none mb-0.5">{transactions?.filter(t => (t.paymentStatus || 'Sudah Bayar') === 'Sudah Bayar').length || 0}</span>
+                    <button onClick={() => setTxSelectedStatus('Sudah Bayar')} className={`px-3 py-1.5 rounded-md text-[11px] font-bold flex items-center gap-1 ${txSelectedStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-200/50' : 'text-slate-500 hover:text-slate-700'}`}>
+                      Sudah Bayar <span className="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] leading-none mb-0.5">{transactions?.filter(t => (t.paymentStatus || 'Sudah Bayar') === 'Sudah Bayar').length || 0}</span>
                     </button>
                   </div>
                 </div>
@@ -2781,12 +2781,12 @@ export default function AdminDashboard({
                       <DollarSign size={24} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Total Tagihan Belum Dibayar</p>
+                      <p className="text-[11px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Total Tagihan Belum Dibayar</p>
                       <p className="text-2xl font-black text-slate-900">{formatIDR(filteredTransactions.reduce((acc, tx) => acc + (tx.total || 0), 0))}</p>
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-center sm:items-end">
-                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Ringkasan Pesanan</p>
+                    <p className="text-[11px] font-black text-amber-600 uppercase tracking-widest leading-none mb-1.5">Ringkasan Pesanan</p>
                     <p className="text-sm font-bold text-slate-600">{filteredTransactions.length} Transaksi Menunggu Pembayaran</p>
                   </div>
                 </div>
@@ -2846,7 +2846,7 @@ export default function AdminDashboard({
                           <td className="py-4 px-6 font-mono text-[11px] text-slate-700">{p.customId || `SKU-${p.id}`}</td>
                           <td className="py-4 px-6 font-bold text-slate-900">{p.name}</td>
                           <td className="py-4 px-6">
-                            <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[10px] font-black uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
+                            <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-[11px] font-black uppercase text-slate-500 tracking-tight">{p.category || '-'}</span>
                           </td>
                           <td className="py-4 px-6 text-right font-medium text-slate-600">{formatIDR(p.cost)}</td>
                           <td className="py-4 px-6 text-right font-black text-blue-600">{formatIDR(p.price)}</td>
@@ -2854,14 +2854,14 @@ export default function AdminDashboard({
                             <div className="flex flex-col items-center">
                               <span className={`font-bold ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</span>
                               {p.vendorStatus && (
-                                <span className={`mt-1 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                <span className={`mt-1 px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                                   {p.vendorStatus}
                                 </span>
                               )}
                             </div>
                           </td>
                           <td className="py-4 px-6 text-center">
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${p.status === 'aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
                               {p.status || 'aktif'}
                             </span>
                           </td>
@@ -2884,8 +2884,8 @@ export default function AdminDashboard({
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
-                            <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase">{p.category || 'General'}</span>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">SKU: {p.customId || p.id}</span>
+                            <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase">{p.category || 'General'}</span>
                           </div>
                           <h3 className="font-extrabold text-slate-900 text-sm leading-tight">{p.name}</h3>
                         </div>
@@ -2897,14 +2897,14 @@ export default function AdminDashboard({
 
                       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
                         <div>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Harga Jual</p>
                           <p className="text-sm font-black text-blue-600">{formatIDR(p.price)}</p>
                         </div>
                         <div className="text-right flex flex-col items-end">
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Stok</p>
                           <p className={`text-sm font-black ${p.stock < 10 ? 'text-rose-500' : 'text-slate-900'}`}>{p.stock}</p>
                           {p.vendorStatus && (
-                            <span className={`mt-1 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                            <span className={`mt-1 px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tight ${p.vendorStatus === 'Sudah Bayar' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                               {p.vendorStatus}
                             </span>
                           )}
@@ -2940,7 +2940,7 @@ export default function AdminDashboard({
                     <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
-                      <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                      <tr className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                         <th className="py-4 px-6">No</th>
                         <th className="py-4 px-6">Nama</th>
                         <th className="py-4 px-6">Username</th>
@@ -2956,7 +2956,7 @@ export default function AdminDashboard({
                             <div className="flex items-center gap-2">
                               {u.name}
                               {u.isAuthAccount && (
-                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase tracking-tighter">Akun Login</span>
+                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase tracking-tighter">Akun Login</span>
                               )}
                             </div>
                           </td>
@@ -2964,13 +2964,13 @@ export default function AdminDashboard({
                           <td className="py-4 px-6">
                             <div className="flex flex-wrap gap-1">
                               {(u.permissions || []).map(p => (
-                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
+                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
                               ))}
                             </div>
                           </td>
                           <td className="py-4 px-6 text-center">
                             {u.isAuthAccount ? (
-                              <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Akun Sistem</span>
+                              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Akun Sistem</span>
                             ) : (
                               <div className="flex justify-center gap-2">
                                 <button onClick={() => setEditingUser(u)} className="p-2 text-slate-300 hover:text-blue-600 hover:bg-white rounded-lg transition-all"><Edit size={16} /></button>
@@ -2997,14 +2997,14 @@ export default function AdminDashboard({
                             <h3 className="font-extrabold text-slate-900 text-sm leading-tight flex items-center gap-2">
                               {u.name}
                               {u.isAuthAccount && (
-                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-black uppercase tracking-tighter">Akun Login</span>
+                                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-black uppercase tracking-tighter">Akun Login</span>
                               )}
                             </h3>
-                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">@{u.username}</p>
                           </div>
                         </div>
                         {u.isAuthAccount ? (
-                          <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest pt-1">Akun Sistem</span>
+                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest pt-1">Akun Sistem</span>
                         ) : (
                           <div className="flex gap-1">
                             <button onClick={() => setEditingUser(u)} className="p-2 bg-slate-50 text-blue-600 rounded-lg"><Edit size={16} /></button>
@@ -3013,10 +3013,10 @@ export default function AdminDashboard({
                         )}
                       </div>
                       <div className="space-y-2 pt-4 border-t border-slate-50">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
                         <div className="flex flex-wrap gap-1">
                           {(u.permissions || []).map(p => (
-                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
+                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
                           ))}
                         </div>
                       </div>
@@ -3136,7 +3136,7 @@ export default function AdminDashboard({
                         <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
                           <div>
                             <p className="text-xs font-bold text-slate-900">Auto-Deploy (Trigger Hook)</p>
-                            <p className="text-[10px] text-slate-500">Picu build Vercel otomatis jika data dashboard berubah.</p>
+                            <p className="text-[11px] text-slate-500">Picu build Vercel otomatis jika data dashboard berubah.</p>
                           </div>
                           <button 
                             onClick={() => setSettings({ ...settings, autoDeploy: !settings.autoDeploy })}
@@ -3158,8 +3158,8 @@ export default function AdminDashboard({
                       </div>
 
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Perintah Git Manual:</p>
-                        <code className="text-[10px] font-mono font-bold text-blue-600 bg-white px-2 py-1 rounded border border-slate-100 block truncate">npm run deploy</code>
+                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Perintah Git Manual:</p>
+                        <code className="text-[11px] font-mono font-bold text-blue-600 bg-white px-2 py-1 rounded border border-slate-100 block truncate">npm run deploy</code>
                       </div>
                     </div>
                   </div>
@@ -3191,7 +3191,7 @@ export default function AdminDashboard({
                           className={`w-full p-4 bg-slate-50 border border-slate-100 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-mono`}
                         />
                       </div>
-                      <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Buka <a href="https://t.me/botfather" target="_blank" className="text-blue-600 underline">@BotFather</a> untuk membuat bot dan <a href="https://t.me/userinfobot" target="_blank" className="text-blue-600 underline">@userinfobot</a> untuk mendapatkan Chat ID Anda.</p>
+                      <p className="text-[11px] text-slate-400 leading-relaxed font-medium">Buka <a href="https://t.me/botfather" target="_blank" className="text-blue-600 underline">@BotFather</a> untuk membuat bot dan <a href="https://t.me/userinfobot" target="_blank" className="text-blue-600 underline">@userinfobot</a> untuk mendapatkan Chat ID Anda.</p>
                     </div>
                   </div>
                 </div>
@@ -3274,7 +3274,7 @@ export default function AdminDashboard({
 
             <div className="w-full space-y-4">
               <div className="flex justify-between items-end">
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest px-2 py-1 bg-blue-50 rounded-md">Progress Import</span>
+                <span className="text-[11px] font-black text-blue-600 uppercase tracking-widest px-2 py-1 bg-blue-50 rounded-md">Progress Import</span>
                 <span className="text-sm font-black text-slate-900">{Math.round((importStatus.current / importStatus.total) * 100) || 0}%</span>
               </div>
               
@@ -3285,7 +3285,7 @@ export default function AdminDashboard({
                 ></div>
               </div>
               
-              <div className="flex justify-between items-center text-[9px] font-bold text-slate-400 uppercase tracking-widest px-1">
+              <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">
                 <span>{importStatus.current} Baris</span>
                 <span>{importStatus.total} Total</span>
               </div>
@@ -3293,7 +3293,7 @@ export default function AdminDashboard({
 
             <div className="pt-2 flex items-center gap-3">
               <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-sm shadow-rose-500/50"></div>
-              <p className="text-[10px] text-slate-400 font-black italic uppercase tracking-widest">Jangan tutup atau refresh halaman</p>
+              <p className="text-[11px] text-slate-400 font-black italic uppercase tracking-widest">Jangan tutup atau refresh halaman</p>
             </div>
           </div>
         </div>
@@ -3342,7 +3342,7 @@ export default function AdminDashboard({
                         const newStatus = (selectedTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar' ? 'Sudah Bayar' : 'Belum Bayar';
                         saveTransaction({ ...selectedTx, paymentStatus: newStatus }, { silent: true }).then(() => setSelectedTx({ ...selectedTx, paymentStatus: newStatus }));
                       }}
-                      className={`mt-1 text-[10px] font-bold px-2 py-1 rounded border transition-colors ${
+                      className={`mt-1 text-[11px] font-bold px-2 py-1 rounded border transition-colors ${
                         (selectedTx.paymentStatus || 'Sudah Bayar') === 'Belum Bayar'
                           ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100'
                           : 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
@@ -3366,7 +3366,7 @@ export default function AdminDashboard({
                           <span className="font-extrabold text-slate-800">{item.qty}x {item.name}</span>
                           <span className="font-black text-blue-600">{formatIDR(item.price * item.qty)}</span>
                         </div>
-                        <div className="flex gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        <div className="flex gap-4 text-[11px] text-slate-400 font-bold uppercase tracking-tight">
                           <span>Modal: {formatIDR(cost)}</span>
                           <span>Total Modal: {formatIDR(cost * item.qty)}</span>
                           <span className="text-emerald-500">Net Profit: {formatIDR((item.price - cost) * item.qty)}</span>

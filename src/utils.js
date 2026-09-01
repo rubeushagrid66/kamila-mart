@@ -52,11 +52,11 @@ export const UI_SPACING = {
 };
 
 export const UI_TEXT = {
-  h1: 'text-2xl md:text-3xl font-black text-slate-900 tracking-tighter',
-  h2: 'text-xl font-extrabold text-slate-900 tracking-tight',
-  h3: 'text-base font-bold text-slate-800',
-  body: 'text-sm text-slate-600 font-medium',
-  label: 'text-[10px] font-bold text-slate-400 uppercase tracking-widest',
+  h1: 'text-2xl md:text-3xl font-bold text-slate-900 tracking-tight',
+  h2: 'text-lg md:text-xl font-semibold text-slate-900 tracking-tight',
+  h3: 'text-[15px] font-semibold text-slate-800',
+  body: 'text-sm text-slate-600',
+  label: 'text-[11px] font-semibold text-slate-500 uppercase tracking-wider',
   caption: 'text-xs text-slate-500'
 };
 

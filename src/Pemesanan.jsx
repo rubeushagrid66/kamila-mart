@@ -92,7 +92,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
       <header className="flex justify-between items-center px-6 py-5 sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-100 z-20">
         <div>
           <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">{settings?.martName || 'Kamila Mart'}</h1>
-          <p className="text-blue-600 text-[10px] font-black flex items-center gap-1 uppercase tracking-[0.2em]">Layanan Harian Keluarga</p>
+          <p className="text-blue-600 text-[11px] font-black flex items-center gap-1 uppercase tracking-[0.1em]">Layanan Harian Keluarga</p>
         </div>
         <div className="flex items-center gap-3">
           {settings?.adminPhone && (
@@ -113,7 +113,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className={UI_TEXT.h2}>Katalog Produk</h2>
-            <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase">{products.filter(p => !p.isArchived).length} Item</span>
+            <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[11px] font-black uppercase">{products.filter(p => !p.isArchived).length} Item</span>
           </div>
           <div className="grid grid-cols-1 gap-4">
             {products.filter(p => p.status === 'aktif' || (!p.status && !p.isArchived)).map(p => {
@@ -129,9 +129,9 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                     <div className="flex items-center gap-3">
                       <p className="text-blue-600 font-black text-sm">{formatIDR(p.price)}</p>
                       {isOutOfStock ? (
-                        <span className="text-[9px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-sm">Habis</span>
+                        <span className="text-[10px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-sm">Habis</span>
                       ) : (
-                        <span className={`text-[9px] font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-400'} uppercase tracking-tight`}>Stok: {p.stock}</span>
+                        <span className={`text-[10px] font-bold ${p.stock < 10 ? 'text-amber-500' : 'text-slate-400'} uppercase tracking-tight`}>Stok: {p.stock}</span>
                       )}
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
                   <span className="text-xs font-black text-blue-900 uppercase tracking-widest">Detail Rekening</span>
                 </div>
                 <div className={`p-5 bg-white ${UI_RADIUS.inner} border border-blue-100 shadow-sm space-y-2`}>
-                  <p className="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em]">{settings?.bankName || 'BANK'}</p>
+                  <p className="text-[11px] text-blue-400 font-black uppercase tracking-[0.1em]">{settings?.bankName || 'BANK'}</p>
                   <p className="font-black text-slate-900 text-lg tracking-tight tabular-nums">{settings?.bankAccountNumber || '-'}</p>
                   <p className="text-xs text-slate-500 font-bold">a/n {settings?.bankAccountName || '-'}</p>
                 </div>
@@ -243,7 +243,7 @@ export default function Pemesanan({ settings, products, cart, setCart, showSucce
       <div className="fixed bottom-6 left-0 right-0 px-6 max-w-xl mx-auto z-30">
         <div className={`bg-slate-900/95 backdrop-blur-xl p-4 ${UI_RADIUS.outer} border border-white/10 shadow-2xl flex items-center justify-between gap-6 animate-in slide-in-from-bottom-6 duration-700`}>
           <div className="flex-1 min-w-0 pl-2">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Bayar</p>
+            <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em] mb-1">Total Bayar</p>
             <p className="text-xl font-black text-white truncate tabular-nums">{formatIDR(total)}</p>
           </div>
           <button
