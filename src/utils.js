@@ -32,6 +32,12 @@ export const MENU_OPTIONS = [
   { id: 'settings', label: 'Pengaturan', icon: 'Settings' },
 ];
 
+// Fine-grained capabilities that are not full modules. Stored in the same
+// user.permissions array and toggled from the user editor.
+export const EXTRA_PERMISSIONS = [
+  { id: 'edit_profit_notes', label: 'Edit Catatan Laporan Keuntungan' },
+];
+
 export const UI_RADIUS = {
   outer: 'rounded-2xl',
   inner: 'rounded-xl',

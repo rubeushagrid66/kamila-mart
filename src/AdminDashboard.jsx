@@ -7,7 +7,7 @@ import {
   ArrowUpRight, ArrowDownRight, Camera, Trash2, Phone, MessageCircle, Send,
   Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet, Bell, RefreshCw
 } from 'lucide-react';
-import { formatIDR, UI_RADIUS, MENU_OPTIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
+import { formatIDR, UI_RADIUS, MENU_OPTIONS, EXTRA_PERMISSIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
 import Footer from './Footer';
 
@@ -522,7 +522,24 @@ function UserModal({ user, onClose, onSave }) {
                     onChange={() => togglePermission(perm)}
                     className="w-4 h-4 accent-blue-600 rounded"
                   />
-                  <span className={`text-[10px] font-bold uppercase tracking-tight ${formData.permissions.includes(perm) ? 'text-blue-600' : 'text-slate-500'}`}>{perm.replace('_', ' ')}</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-tight ${formData.permissions.includes(perm) ? 'text-blue-600' : 'text-slate-500'}`}>{perm.replace(/_/g, ' ')}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-slate-50">
+            <p className={UI_TEXT.label}>Hak Akses Khusus</p>
+            <div className="grid grid-cols-1 gap-3">
+              {EXTRA_PERMISSIONS.map(cap => (
+                <label key={cap.id} className={`flex items-center gap-3 p-3 border ${formData.permissions.includes(cap.id) ? 'border-blue-500 bg-blue-50/30' : 'border-slate-100'} ${UI_RADIUS.inner} cursor-pointer group transition-all`}>
+                  <input
+                    type="checkbox"
+                    checked={formData.permissions.includes(cap.id)}
+                    onChange={() => togglePermission(cap.id)}
+                    className="w-4 h-4 accent-blue-600 rounded"
+                  />
+                  <span className={`text-[11px] font-bold ${formData.permissions.includes(cap.id) ? 'text-blue-600' : 'text-slate-500'}`}>{cap.label}</span>
                 </label>
               ))}
             </div>
@@ -735,7 +752,7 @@ function FinanceView({ transactions, products, selectedYear, setSelectedYear, is
 }
 
 // --- PROFIT REPORT VIEW ---
-function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear, setSelectedYear, isLoading = false }) {
+function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyReport, settings, saveSettings, selectedYear, setSelectedYear, isLoading = false, canEditNotes = false }) {
   const [editingMonthFormula, setEditingMonthFormula] = useState(null);
   const [editingFormula, setEditingFormula] = useState(false);
   const [tempFormula, setTempFormula] = useState({
@@ -947,8 +964,10 @@ function ProfitReportView({ transactions, products, monthlyReports, saveMonthlyR
                   <td className="px-6 py-5 text-blue-600 font-bold">{formatIDR(s.profit * (s.internalPercent / 100))}</td>
                   <td className="px-6 py-5 min-w-[200px]">
                     <input
-                      className="w-full bg-slate-50 p-2 rounded-lg border border-slate-100 text-xs outline-none focus:border-blue-300 transition-all font-medium"
-                      placeholder="Add note..."
+                      disabled={!canEditNotes}
+                      title={!canEditNotes ? 'Anda tidak memiliki izin untuk mengubah catatan' : undefined}
+                      className={`w-full p-2 rounded-lg border text-xs outline-none transition-all font-medium ${canEditNotes ? 'bg-slate-50 border-slate-100 focus:border-blue-300' : 'bg-slate-100 border-slate-100 text-slate-400 cursor-not-allowed'}`}
+                      placeholder={canEditNotes ? 'Add note...' : 'Terkunci'}
                       value={s.notes}
                       onChange={(e) => saveMonthlyReport(s.id, { notes: e.target.value })}
                     />
@@ -2056,6 +2075,9 @@ export default function AdminDashboard({
     currentUserData?.permissions?.includes(m.id) || m.id === 'dashboard'
   );
 
+  // Fine-grained capability: allow editing the "Catatan" field on Laporan Keuntungan.
+  const canEditProfitNotes = !!currentUserData?.permissions?.includes('edit_profit_notes');
+
   // Merge the logged-in account (Firebase Auth) into the user list so it is always visible.
   // Auth accounts have no document in the "users" collection, so we synthesize a read-only row.
   const allUsers = useMemo(() => {
@@ -2691,6 +2713,7 @@ export default function AdminDashboard({
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
               isLoading={isLoading}
+              canEditNotes={canEditProfitNotes}
             />
           )}
 
@@ -2943,7 +2966,7 @@ export default function AdminDashboard({
                           <td className="py-4 px-6">
                             <div className="flex flex-wrap gap-1">
                               {(u.permissions || []).map(p => (
-                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
+                                <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
                               ))}
                             </div>
                           </td>
@@ -2995,7 +3018,7 @@ export default function AdminDashboard({
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hak Akses</p>
                         <div className="flex flex-wrap gap-1">
                           {(u.permissions || []).map(p => (
-                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace('_', ' ')}</span>
+                            <span key={p} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[8px] font-black uppercase tracking-tighter">{p.replace(/_/g, ' ')}</span>
                           ))}
                         </div>
                       </div>
