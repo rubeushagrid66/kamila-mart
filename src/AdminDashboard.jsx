@@ -1959,12 +1959,90 @@ function DashboardCharts({ transactions, products }) {
   );
 }
 
+// --- CHANGE SUPER ADMIN PASSWORD ---
+function ChangeSuperAdminPasswordCard({ onChangePassword }) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (newPassword.length < 6) {
+      toast.error('Password baru minimal 6 karakter.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Konfirmasi password baru tidak cocok.');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onChangePassword(currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch {
+      // Error toast already shown by onChangePassword
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <p className="text-xs text-slate-500 leading-relaxed font-medium">Ubah password akun Super Admin (login utama). Anda akan diminta memasukkan password saat ini untuk konfirmasi.</p>
+      <div className="space-y-1.5">
+        <label className={UI_TEXT.label}>Password Saat Ini</label>
+        <input
+          type="password"
+          required
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <label className={UI_TEXT.label}>Password Baru</label>
+        <input
+          type="password"
+          required
+          minLength={6}
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <label className={UI_TEXT.label}>Konfirmasi Password Baru</label>
+        <input
+          type="password"
+          required
+          minLength={6}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={`w-full p-4 bg-slate-50 border border-slate-200 ${UI_RADIUS.inner} outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium`}
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={isSaving}
+        className="w-full py-4 px-6 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+      >
+        {isSaving ? 'Menyimpan...' : 'Ubah Password'}
+      </button>
+    </form>
+  );
+}
+
 // --- MAIN ADMIN LAYOUT ---
 export default function AdminDashboard({
   products, saveProduct, deleteProduct,
   users, setUsers, saveUser, deleteUser, settings, setSettings, saveSettings, mobileMenuOpen, setMobileMenuOpen,
   handleLogout, onCustomerView, transactions, isLoading, saveTransaction, saveTransactionsBulk, deleteTransaction, clearAllTransactions, clearAllProducts,
-  monthlyReports, saveMonthlyReport, currentUserData, triggerDeployHook
+  monthlyReports, saveMonthlyReport, currentUserData, triggerDeployHook, changeSuperAdminPassword
 }) {
   const { tab: adminTab = 'dashboard' } = useParams();
   const navigate = useNavigate();
@@ -3209,6 +3287,18 @@ export default function AdminDashboard({
                     </div>
                   </div>
                 </div>
+
+                {currentUserData?.isAuthAccount && (
+                  <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><User size={18} /></div>
+                        Password Super Admin
+                      </h3>
+                      <ChangeSuperAdminPasswordCard onChangePassword={changeSuperAdminPassword} />
+                    </div>
+                  </div>
+                )}
 
                 <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
                   <div>

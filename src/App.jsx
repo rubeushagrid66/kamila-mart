@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit, increment, writeBatch } from 'firebase/firestore';
 import { auth, db } from './firebase-config';
 import toast, { Toaster } from 'react-hot-toast';
@@ -600,6 +600,32 @@ function AppContent() {
     }
   };
 
+  const changeSuperAdminPassword = async (currentPassword, newPassword) => {
+    if (!auth.currentUser) {
+      toast.error('Fitur ini hanya untuk akun Super Admin (login Firebase).');
+      throw new Error('not-firebase-auth-account');
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await updatePassword(auth.currentUser, newPassword);
+      toast.success('Password Super Admin berhasil diubah!');
+    } catch (error) {
+      console.error('Error changing super admin password:', error);
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        toast.error('Password saat ini salah.');
+      } else if (error.code === 'auth/weak-password') {
+        toast.error('Password baru terlalu lemah (minimal 6 karakter).');
+      } else if (error.code === 'auth/requires-recent-login') {
+        toast.error('Sesi login terlalu lama, silakan logout dan login kembali lalu coba lagi.');
+      } else {
+        toast.error('Gagal mengubah password.');
+      }
+      throw error;
+    }
+  };
+
   const onCustomerView = () => {
     setMobileMenuOpen(false);
     navigate('/');
@@ -658,6 +684,7 @@ function AppContent() {
                 setMobileMenuOpen={setMobileMenuOpen}
                 handleLogout={handleLogout}
                 onCustomerView={onCustomerView}
+                changeSuperAdminPassword={changeSuperAdminPassword}
                 transactions={transactions}
                 isLoading={loadingData}
                 saveTransaction={saveTransaction}
