@@ -8,6 +8,7 @@ import {
   Plus, Download, FileText, Archive, EyeOff, CheckCircle2, Wallet, Bell, RefreshCw
 } from 'lucide-react';
 import { formatIDR, UI_RADIUS, MENU_OPTIONS, EXTRA_PERMISSIONS, UI_SPACING, UI_TEXT, UI_BUTTON } from './utils';
+import { buildBackupJSON, buildSupabaseSQL, downloadTextFile } from './backup';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
 import Footer from './Footer';
 
@@ -2134,6 +2135,20 @@ export default function AdminDashboard({
     document.body.removeChild(link);
   };
 
+  const handleBackupJSON = () => {
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const json = buildBackupJSON({ products, users, transactions, monthlyReports, settings });
+    downloadTextFile(json, `kamila-mart-backup_${dateStamp}.json`, 'application/json');
+    toast.success('Backup JSON berhasil diunduh!');
+  };
+
+  const handleExportSupabaseSQL = () => {
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const sql = buildSupabaseSQL({ products, users, transactions, monthlyReports, settings });
+    downloadTextFile(sql, `kamila-mart-supabase_${dateStamp}.sql`, 'application/sql');
+    toast.success('File SQL untuk Supabase berhasil diunduh!');
+  };
+
   const handleImportCSV = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -3191,6 +3206,31 @@ export default function AdminDashboard({
                         />
                       </div>
                       <p className="text-[11px] text-slate-500 leading-relaxed font-medium">Buka <a href="https://t.me/botfather" target="_blank" className="text-blue-600 underline">@BotFather</a> untuk membuat bot dan <a href="https://t.me/userinfobot" target="_blank" className="text-blue-600 underline">@userinfobot</a> untuk mendapatkan Chat ID Anda.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`bg-white ${UI_SPACING.card} ${UI_RADIUS.outer} border border-slate-200 shadow-sm space-y-8`}>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-3">
+                      <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><Archive size={18} /></div>
+                      Backup & Migrasi Data
+                    </h3>
+                    <div className="space-y-4">
+                      <p className="text-xs text-slate-500 leading-relaxed font-medium">Unduh seluruh data (produk, user, transaksi, laporan bulanan, pengaturan) sebagai file backup.</p>
+                      <button
+                        onClick={handleBackupJSON}
+                        className="w-full py-4 px-6 bg-emerald-50 text-emerald-600 font-bold text-sm rounded-lg hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 border border-emerald-100 active:scale-95"
+                      >
+                        <Download size={18} /> Backup Data (JSON Lengkap)
+                      </button>
+                      <button
+                        onClick={handleExportSupabaseSQL}
+                        className="w-full py-4 px-6 bg-blue-50 text-blue-600 font-bold text-sm rounded-lg hover:bg-blue-100 transition-all flex items-center justify-center gap-2 border border-blue-100 active:scale-95"
+                      >
+                        <Download size={18} /> Export ke Supabase (.sql)
+                      </button>
+                      <p className="text-[11px] text-slate-500 leading-relaxed font-medium">File .sql membuat satu tabel Postgres per koleksi (products, users, transactions, monthly_reports, settings) dengan data tersimpan sebagai JSONB. Tinggal buka Supabase &rarr; SQL Editor, tempel isi file, lalu jalankan.</p>
                     </div>
                   </div>
                 </div>
