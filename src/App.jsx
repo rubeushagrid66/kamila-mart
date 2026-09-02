@@ -68,11 +68,21 @@ function AppContent() {
     let mounted = true;
     let unsubscribe = () => { };
 
+    const raceTimeout = (queryReq, ms) => Promise.race([
+      getDocs(queryReq),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+    ]);
+
+    // One retry after a short backoff before giving up — most "timeouts"
+    // are a single slow/flaky round-trip, not a real outage.
     const fetchWithTimeout = async (queryReq, ms = 8000) => {
-      return Promise.race([
-        getDocs(queryReq),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
-      ]);
+      try {
+        return await raceTimeout(queryReq, ms);
+      } catch (error) {
+        if (error.message !== 'timeout') throw error;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return raceTimeout(queryReq, ms);
+      }
     };
 
     const loadPublicData = async () => {
@@ -110,7 +120,7 @@ function AppContent() {
         r => r.status === 'rejected' && r.reason?.message === 'timeout'
       );
       if (anyTimedOut && mounted) {
-        toast.error('Pengambilan data lambat. Apakah Firestore Database sudah di-Create di Firebase Console?', { duration: 6000 });
+        toast.error('Koneksi lambat, sebagian data mungkin belum termuat. Coba muat ulang halaman.', { duration: 6000 });
       }
     };
 

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase configuration from environment variables
@@ -19,7 +19,14 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Persistent local cache: repeat visits render from cache instantly while
+// Firestore syncs in the background, and reads survive brief network blips
+// instead of stalling until the request times out.
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
+
 export const storage = getStorage(app);
 
 // Helper function to check if Firebase is configured
