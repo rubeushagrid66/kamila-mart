@@ -1,13 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot, query, orderBy, limit, increment, writeBatch } from 'firebase/firestore';
 import { auth, db } from './firebase-config';
-import Login from './Login';
-import Pemesanan from './Pemesanan';
-import AdminDashboard from './AdminDashboard';
 import toast, { Toaster } from 'react-hot-toast';
 import { formatIDR } from './utils';
+
+const Login = lazy(() => import('./Login'));
+const Pemesanan = lazy(() => import('./Pemesanan'));
+const AdminDashboard = lazy(() => import('./AdminDashboard'));
+
+function RouteLoading() {
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+    </div>
+  );
+}
 function AppContent() {
   const lastDeployRef = useRef(0);
   const [user, setUser] = useState(null);
@@ -67,23 +76,41 @@ function AppContent() {
     };
 
     const loadPublicData = async () => {
-      try {
-        // Detect if mobile for longer timeout
-        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-        const timeout = isMobile ? 15000 : 8000; // Increased to 15s for very slow connections
-        
-        const productsSnap = await fetchWithTimeout(collection(db, 'products'), timeout);
-        if (mounted) setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      // Detect if mobile for longer timeout
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      const timeout = isMobile ? 15000 : 8000; // Increased to 15s for very slow connections
 
-        const settingsSnap = await fetchWithTimeout(collection(db, 'settings'), timeout);
-        if (mounted && settingsSnap.docs.length > 0) {
-          setSettings(settingsSnap.docs[0].data());
+      const [productsResult, settingsResult, usersResult] = await Promise.allSettled([
+        fetchWithTimeout(collection(db, 'products'), timeout),
+        fetchWithTimeout(collection(db, 'settings'), timeout),
+        fetchWithTimeout(collection(db, 'users'), timeout)
+      ]);
+
+      if (productsResult.status === 'fulfilled') {
+        if (mounted) setProducts(productsResult.value.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } else {
+        console.error('Error fetching products:', productsResult.reason);
+      }
+
+      if (settingsResult.status === 'fulfilled') {
+        if (mounted && settingsResult.value.docs.length > 0) {
+          setSettings(settingsResult.value.docs[0].data());
         }
-      } catch (error) {
-        console.error('Error public data:', error);
-        if (error.message === 'timeout' && mounted) {
-          toast.error('Pengambilan data lambat. Apakah Firestore Database sudah di-Create di Firebase Console?', { duration: 6000 });
-        }
+      } else {
+        console.error('Error fetching settings:', settingsResult.reason);
+      }
+
+      if (usersResult.status === 'fulfilled') {
+        if (mounted) setUsers(usersResult.value.docs.map(d => ({ id: d.id, ...d.data() })));
+      } else {
+        console.error('Error fetching users for fallback:', usersResult.reason);
+      }
+
+      const anyTimedOut = [productsResult, settingsResult, usersResult].some(
+        r => r.status === 'rejected' && r.reason?.message === 'timeout'
+      );
+      if (anyTimedOut && mounted) {
+        toast.error('Pengambilan data lambat. Apakah Firestore Database sudah di-Create di Firebase Console?', { duration: 6000 });
       }
     };
 
@@ -97,14 +124,6 @@ function AppContent() {
       }
 
       await loadPublicData();
-
-      // Fetch users list early for login fallback
-      try {
-        const usersSnap = await getDocs(collection(db, 'users'));
-        if (mounted) setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) {
-        console.error("Error fetching users for fallback:", err);
-      }
 
       // Setup Auth Listener
       unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -591,6 +610,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-slate-50" style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
       <Toaster position="top-center" />
+      <Suspense fallback={<RouteLoading />}>
       <Routes>
         <Route
           path="/"
@@ -653,6 +673,7 @@ function AppContent() {
         <Route path="/dashboard" element={<Navigate to="/dashboard/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
     </div>
   );
 }
